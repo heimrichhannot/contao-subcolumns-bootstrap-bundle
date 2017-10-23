@@ -5,7 +5,6 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\ContaoManager;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
-use Contao\Contao\CoreBundle\ContaoCoreBundle;
 
 /**
  * Class Plugin
@@ -21,7 +20,7 @@ class Plugin implements BundlePluginInterface
     {
         return [
             BundleConfig::create('HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle')
-                ->setLoadAfter([ContaoCoreBundle::class])
+                ->setLoadAfter(['Subcolumns'])
         ];
     }
 }
