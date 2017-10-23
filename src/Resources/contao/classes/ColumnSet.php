@@ -25,7 +25,7 @@ class ColumnSet extends \Backend
             return static::$container[$id];
         }
 
-        $model = \ColumnsetModel::findByPk($id);
+        $model = ColumnsetModel::findByPk($id);
 
         if ($model === null) {
             static::$container[$id] = null;
@@ -92,7 +92,7 @@ class ColumnSet extends \Backend
         $model = \ContentModel::findByPK($dc->id);
 
         if ($model->sc_type > 0) {
-            \MetaPalettes::appendFields('tl_content', 'colsetStart', 'colset', ['columnset_id']);
+            MetaPalettes::appendFields('tl_content', 'colsetStart', 'colset', ['columnset_id']);
         }
     }
 
@@ -103,13 +103,14 @@ class ColumnSet extends \Backend
      */
     public function appendColumnSizesToPalette($dc)
     {
-        $model = \ColumnsetModel::findByPk($dc->id);
+        $model = ColumnsetModel::findByPk($dc->id);
         $sizes = array_merge(deserialize($model->sizes, true));
 
+        // TODO fix metapalettes
         foreach ($sizes as $size) {
             $field = 'columnset_' . $size;
 
-            \MetaPalettes::appendFields('tl_columnset', 'columnset', [$field]);
+            MetaPalettes::appendFields('tl_columnset', 'columnset', [$field]);
         }
     }
 
@@ -184,7 +185,7 @@ class ColumnSet extends \Backend
      */
     public function getAllColumnsets($dc)
     {
-        $collection = \ColumnsetModel::findBy('published=1 AND columns', $dc->activeRecord->sc_type, ['order' => 'title']);
+        $collection = ColumnsetModel::findBy('published=1 AND columns', $dc->activeRecord->sc_type, ['order' => 'title']);
         $set        = [];
 
         if ($collection !== null) {
