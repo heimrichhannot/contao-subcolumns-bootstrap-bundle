@@ -1,0 +1,9 @@
+<div class="layout_latest arc_<?= $this->archive->id ?> block<?= $this->class ?>" itemscope itemtype="http://schema.org/Article">
+    <?php if ($this->addImage): ?>
+        <?php $this->insert('image', $this->arrData); ?>
+    <?php endif; ?>
+
+    <a class="download btn btn-primary btn-xs" href="{{download_link::<?= $this->singleSRC ?>}}" title="Bild herunterladen">
+        <i class="fa fa-download"></i>
+    </a>
+</div>
