@@ -1,19 +1,7 @@
 <?php
 
 /**
- * Contao Open Source CMS
- *
- * Copyright (C) 2005-2012 Leo Feyer
- *
- * @package   netzmacht-columnset
- * @author    David Molineus <http://www.netzmacht.de>
- * @license   GNU/LGPL
- * @copyright Copyright 2012 David Molineus netzmacht creative
- *
- **/
-
-/**
- * legends
+ * Legends
  */
 $GLOBALS['TL_LANG']['tl_columnset']['title_legend'] = 'Titel';
 $GLOBALS['TL_LANG']['tl_columnset']['columnset_legend'] = 'Spaltendefinitionen';
@@ -21,7 +9,7 @@ $GLOBALS['TL_LANG']['tl_columnset']['published_legend'] = 'Veröffentlichung';
 
 
 /**
- * fields
+ * Fields
  */
 $GLOBALS['TL_LANG']['tl_columnset']['title'][0] = 'Titel';
 $GLOBALS['TL_LANG']['tl_columnset']['title'][1] = 'Bitte geben Sie einen Titel ein.';
@@ -61,7 +49,7 @@ $GLOBALS['TL_LANG']['tl_columnset']['order'][1] = 'Bestimmen Sie, ob die Spalten
 
 
 /**
- * values
+ * Values
  */
 $GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] = 'Spalten';
 
@@ -72,7 +60,7 @@ $GLOBALS['TL_LANG']['tl_columnset']['lg'] = 'Große Auflösung (lg)';
 
 
 /**
- * operations
+ * Operations
  */
 $GLOBALS['TL_LANG']['tl_columnset']['new'][0] = 'Neues Spatenset';
 $GLOBALS['TL_LANG']['tl_columnset']['new'][1] = 'Neues Spatenset anlegen';

@@ -1,19 +1,7 @@
 <?php
 
 /**
- * Contao Open Source CMS
- *
- * Copyright (C) 2005-2012 Leo Feyer
- *
- * @package   netzmacht-columnset
- * @author    David Molineus <http://www.netzmacht.de>
- * @license   GNU/LGPL
- * @copyright Copyright 2012 David Molineus netzmacht creative
- *
- **/
-
-/**
- * legends
+ * Legends
  */
 $GLOBALS['TL_LANG']['tl_columnset']['title_legend'] = 'Title';
 $GLOBALS['TL_LANG']['tl_columnset']['columnset_legend'] = 'Column definitions';
@@ -21,7 +9,7 @@ $GLOBALS['TL_LANG']['tl_columnset']['published_legend'] = 'Published';
 
 
 /**
- * fields
+ * Fields
  */
 $GLOBALS['TL_LANG']['tl_columnset']['title'][0] = 'Title';
 $GLOBALS['TL_LANG']['tl_columnset']['title'][1] = 'Please insert a title.';
@@ -61,7 +49,7 @@ $GLOBALS['TL_LANG']['tl_columnset']['order'][1] = 'You can use the pull and push
 
 
 /**
- * values
+ * Values
  */
 $GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] = 'columns';
 
@@ -72,7 +60,7 @@ $GLOBALS['TL_LANG']['tl_columnset']['lg'] = 'Large devices (lg)';
 
 
 /**
- * operations
+ * Operations
  */
 $GLOBALS['TL_LANG']['tl_columnset']['new'][0] = 'New column set';
 $GLOBALS['TL_LANG']['tl_columnset']['new'][1] = 'Create a ew column set';

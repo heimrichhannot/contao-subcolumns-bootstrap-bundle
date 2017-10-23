@@ -9,8 +9,8 @@ $GLOBALS['BE_MOD']['design']['columnset'] = [
 /**
  * replace content elements
  */
-$GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'Netzmacht\\ColumnSet\\colsetStart';
-$GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'Netzmacht\\ColumnSet\\colsetPart';
+$GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\colsetStart';
+$GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\colsetPart';
 
 
 /**
