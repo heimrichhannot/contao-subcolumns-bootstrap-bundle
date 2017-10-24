@@ -1,78 +1,78 @@
 <?php
 
+$lang = &$GLOBALS['TL_LANG']['tl_columnset'];
+
 /**
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_columnset']['title_legend'] = 'Titel';
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_legend'] = 'Spaltendefinitionen';
-$GLOBALS['TL_LANG']['tl_columnset']['published_legend'] = 'Veröffentlichung';
-
+$lang['general_legend']   = 'Allgemeines';
+$lang['columnset_legend'] = 'Spaltendefinition';
+$lang['published_legend'] = 'Veröffentlichung';
 
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_columnset']['title'][0] = 'Titel';
-$GLOBALS['TL_LANG']['tl_columnset']['title'][1] = 'Bitte geben Sie einen Titel ein.';
+$lang['title'][0] = 'Titel';
+$lang['title'][1] = 'Bitte geben Sie hier einen Titel ein.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['description'][0] = 'Beschreibung';
-$GLOBALS['TL_LANG']['tl_columnset']['description'][1] = 'Hier können Sie eine Beschreibung hintelegen';
+$lang['description'][0] = 'Beschreibung';
+$lang['description'][1] = 'Hier können Sie eine Beschreibung hinterlegen.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['columns'][0] = 'Spaltenanzahl';
-$GLOBALS['TL_LANG']['tl_columnset']['columns'][1] = 'Wie viele Spalten soll das Spaltenset erstellen';
+$lang['columns'][0] = 'Spaltenanzahl';
+$lang['columns'][1] = 'Wählen Sie hier aus, wie viele Spalten erzeugt werden sollen.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['sizes'][0] = 'Größen';
-$GLOBALS['TL_LANG']['tl_columnset']['sizes'][1] = 'Wählen Sie aus für welche Größen die Spalten angelegt werden sollen';
+$lang['useInside'][0] = 'Inneres DIV-Element erzeugen';
+$lang['useInside'][1] = 'Wählen Sie diese Option, wenn jede Spalte ein inneres DIV-Element erhalten soll.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['published'][0] = 'veröffentlicht';
-$GLOBALS['TL_LANG']['tl_columnset']['published'][1] = 'Spaltenset kann ausgewählt werden';
+$lang['insideClass'][0] = 'CSS-Klasse für das innere DIV-Element';
+$lang['insideClass'][1] = 'Vergeben Sie hier eine CSS-Klasse.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_xs'][0] = 'Sehr kleine Auflösung';
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_xs'][1] = 'Das Spaltenset gilt für alle Gerätegrößen';
+$lang['sizes'][0] = 'Größen';
+$lang['sizes'][1] = 'Wählen Sie aus, für welche Größen die Spalten angelegt werden sollen.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_sm'][0] = 'Kleine Auflösung';
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_sm'][1] = 'Das Spaltenset gilt für Geräte mit mindestens einer Tablet-Auflösung ';
+$lang['published'][0] = 'Veröffentlicht';
+$lang['published'][1] = 'Wählen Sie hier, ob das Spaltenset verfügbar ist.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_md'][0] = 'Mittlere Auflösung';
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_md'][1] = 'Das Spaltenset gilt für Geräte mit mindestens einer Desktop-Auflösung ';
+$lang['columnset_xs'][0] = 'Smartphone Hochformat (xs)';
+$lang['columnset_sm'][0] = 'Smartphone Querformat (sm)';
+$lang['columnset_md'][0] = 'Tablet Hochformat (md)';
+$lang['columnset_lg'][0] = 'Tablet Querformat (lg)';
+$lang['columnset_xl'][0] = 'Desktop (xl)';
 
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_lg'][0] = 'Große Auflösung';
-$GLOBALS['TL_LANG']['tl_columnset']['columnset_lg'][1] = 'Das Spaltenset gilt für Geräte mit mindestens einer großen Desktop-Auflösung ';
+$lang['width'][0] = 'Spaltenbreite';
+$lang['width'][1] = 'Bestimmen Sie, wie breit die Spalte angelegt sein soll.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['width'][0] = 'Spaltenbreite';
-$GLOBALS['TL_LANG']['tl_columnset']['width'][1] = 'Bestimmen Sie, wie breit die Spalte angelegt sein soll.';
+$lang['offset'][0] = 'Spaltenabstand';
+$lang['offset'][1] = 'Bestimmen Sie, ob wie groß der Spaltenabstand sein soll.';
 
-$GLOBALS['TL_LANG']['tl_columnset']['offset'][0] = 'Spaltenabstand';
-$GLOBALS['TL_LANG']['tl_columnset']['offset'][1] = 'Bestimmen Sie, ob wie groß der Spaltenabstand sein soll.';
-
-$GLOBALS['TL_LANG']['tl_columnset']['order'][0] = 'Reihenfolge';
-$GLOBALS['TL_LANG']['tl_columnset']['order'][1] = 'Bestimmen Sie, ob die Spalten in der Anzeigereihenfolge verschoben werden sollen.';
-
+$lang['order'][0] = 'Reihenfolge';
+$lang['order'][1] = 'Bestimmen Sie, ob die Spalten in der Anzeigereihenfolge verschoben werden sollen.';
 
 /**
  * Values
  */
-$GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] = 'Spalten';
+$lang['formatColumns'] = 'Spalten';
 
-$GLOBALS['TL_LANG']['tl_columnset']['xs'] = 'Sehr kleine Auflösung (xs)';
-$GLOBALS['TL_LANG']['tl_columnset']['sm'] = 'Kleine Auflösung (sm)';
-$GLOBALS['TL_LANG']['tl_columnset']['md'] = 'Mittlere Auflösung (md)';
-$GLOBALS['TL_LANG']['tl_columnset']['lg'] = 'Große Auflösung (lg)';
-
+$lang['xs'] = 'Smartphone Hochformat (xs)';
+$lang['sm'] = 'Smartphone Querformat (sm)';
+$lang['md'] = 'Tablet Hochformat (md)';
+$lang['lg'] = 'Tablet Querformat (lg)';
+$lang['xl'] = 'Desktop (xl)';
 
 /**
  * Operations
  */
-$GLOBALS['TL_LANG']['tl_columnset']['new'][0] = 'Neues Spatenset';
-$GLOBALS['TL_LANG']['tl_columnset']['new'][1] = 'Neues Spatenset anlegen';
+$lang['new'][0] = 'Neues Spaltenset';
+$lang['new'][1] = 'Neues Spaltenset anlegen';
 
-$GLOBALS['TL_LANG']['tl_columnset']['edit'][0] = 'Spatenset bearbeiten';
-$GLOBALS['TL_LANG']['tl_columnset']['edit'][1] = 'Spatenset ID %s bearbeiten';
+$lang['edit'][0] = 'Spaltenset bearbeiten';
+$lang['edit'][1] = 'Spaltenset ID %s bearbeiten';
 
-$GLOBALS['TL_LANG']['tl_columnset']['copy'][0] = 'Spatenset duplizieren';
-$GLOBALS['TL_LANG']['tl_columnset']['copy'][1] = 'Spatenset ID %s duplizieren';
+$lang['copy'][0] = 'Spaltenset duplizieren';
+$lang['copy'][1] = 'Spaltenset ID %s duplizieren';
 
-$GLOBALS['TL_LANG']['tl_columnset']['delete'][0] = 'Spatenset löschen';
-$GLOBALS['TL_LANG']['tl_columnset']['delete'][1] = 'Spatenset ID %s löschen';
+$lang['delete'][0] = 'Spaltenset löschen';
+$lang['delete'][1] = 'Spaltenset ID %s löschen';
 
-$GLOBALS['TL_LANG']['tl_columnset']['show'][0] = 'Spatenset anzeigen';
-$GLOBALS['TL_LANG']['tl_columnset']['show'][1] = 'Spatenset ID %s anzeigen';
+$lang['show'][0] = 'Spaltenset anzeigen';
+$lang['show'][1] = 'Spaltenset ID %s anzeigen';

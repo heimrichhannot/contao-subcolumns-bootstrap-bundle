@@ -1,6 +1,6 @@
 <?php
 
-namespace HeimrichHannot\SubColumnsBootstrapBundle;
+namespace HeimrichHannot\SubColumnsBootstrapBundle\Model;
 
 
 class ColumnsetModel extends \Model

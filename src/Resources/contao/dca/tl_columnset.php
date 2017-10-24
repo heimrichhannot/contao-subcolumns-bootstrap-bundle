@@ -1,13 +1,13 @@
 <?php
 
-$GLOBALS['TL_DCA']['tl_columnset'] = [
+$sizes = $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4]['sizes'];
 
-    // Config
+$GLOBALS['TL_DCA']['tl_columnset'] = [
     'config'       => [
         'dataContainer'    => 'Table',
         'enableVersioning' => true,
         'onload_callback'  => [
-            ['HeimrichHannot\SubColumnsBootstrapBundle\ColumnSet', 'appendColumnSizesToPalette']
+            ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'appendColumnSizesToPalette']
         ],
         'sql'              => [
             'keys' => [
@@ -15,8 +15,6 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             ]
         ]
     ],
-
-    // List
     'list'         => [
         'label'             => [
             'fields' => ['title', 'columns'],
@@ -66,17 +64,13 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             ]
         ],
     ],
-
-    // Palettes
-    'metapalettes' => [
-        'default' => [
-            'title'     => ['title', 'description', 'columns'],
-            'columnset' => ['sizes'],
-            'published' => ['published'],
-        ]
+    'palettes' => [
+        '__selector__' => ['useInside'],
+        'default' => '{general_legend},title,description,columns,useInside;{columnset_legend},sizes;{published_legend},published;'
     ],
-
-    // Fields
+    'subpalettes' => [
+        'useInside' => 'insideClass'
+    ],
     'fields'       => [
         'id'          => [
             'sql' => "int(10) unsigned NOT NULL auto_increment"
@@ -105,8 +99,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'eval'      => ['tl_class' => 'w50'],
             'sql'       => "varchar(255) NOT NULL default ''"
         ],
-
-        'columns' => [
+        'columns'     => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['columns'],
             'exclude'   => true,
             'sorting'   => true,
@@ -115,21 +108,33 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'inputType' => 'select',
             'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
-            'eval'      => ['submitOnChange' => true],
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
             'sql'       => "int(10) unsigned NOT NULL default '0'"
         ],
-
-        'sizes' => [
+        'useInside' => [
+            'label'                   => &$GLOBALS['TL_LANG']['tl_columnset']['useInside'],
+            'exclude'                 => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'sql'                     => "char(1) NOT NULL default ''"
+        ],
+        'insideClass' => [
+            'label'                   => &$GLOBALS['TL_LANG']['tl_columnset']['insideClass'],
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
+            'sql'                     => "varchar(255) NOT NULL default ''"
+        ],
+        'sizes'       => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['sizes'],
             'exclude'   => true,
             'inputType' => 'checkbox',
-            'options'   => ['xs', 'sm', 'md', 'lg'],
+            'options'   => $sizes,
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => ['multiple' => true, 'submitOnChange' => true],
             'sql'       => "mediumblob NULL"
         ],
-
-        'published' => [
+        'published'   => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['published'],
             'exclude'   => true,
             'default'   => '1',
@@ -141,62 +146,43 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
     ]
 ];
 
-
-// defining col set fields
-$colSetTemplate = [
-    'exclude'       => true,
-    'inputType'     => 'multiColumnWizard',
-    'load_callback' => [
-        ['HeimrichHannot\SubColumnsBootstrapBundle\ColumnSet', 'createColumns']
-    ],
-    'eval'          => [
-        'includeBlankOption' => true,
-        'columnFields'       => [
-            'width' => [
-                'label'     => $GLOBALS['TL_LANG']['tl_columnset']['width'],
-                'inputType' => 'select',
-                'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                'eval'      => ['style' => 'width: 100px;'],
-            ],
-
-            'offset' => [
-                'label'     => $GLOBALS['TL_LANG']['tl_columnset']['offset'],
-                'inputType' => 'select',
-                'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                'eval'      => ['style' => 'width: 100px;', 'includeBlankOption' => true],
-            ],
-
-            'order' => [
-                'label'     => $GLOBALS['TL_LANG']['tl_columnset']['order'],
-                'inputType' => 'select',
-                'options'   => [
-                    'push' => ['push-1', 'push-2', 'push-3', 'push-4', 'push-5', 'push-6', 'push-7', 'push-8', 'push-9', 'push-10', 'push-11', 'push-12'],
-                    'pull' => ['pull-1', 'pull-2', 'pull-3', 'pull-4', 'pull-5', 'pull-6', 'pull-7', 'pull-8', 'pull-9', 'pull-10', 'pull-11', 'pull-12'],
-                ],
-                'eval'      => ['style' => 'width: 160px;', 'includeBlankOption' => true],
-            ],
+foreach ($sizes as $size) {
+    $GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_' . $size] = [
+        'label' => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_' . $size],
+        'exclude'       => true,
+        'inputType'     => 'multiColumnWizard',
+        'load_callback' => [
+            ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'createColumns']
         ],
-        'buttons'            => ['copy' => false, 'delete' => false],
-    ],
-    'sql'           => "blob NULL"
-];
+        'eval'          => [
+            'includeBlankOption' => true,
+            'columnFields'       => [
+                'width' => [
+                    'label'     => $GLOBALS['TL_LANG']['tl_columnset']['width'],
+                    'inputType' => 'select',
+                    'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    'eval'      => ['style' => 'width: 100px;'],
+                ],
 
-$GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_xs'] = array_merge
-(
-    $colSetTemplate, ['label' => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_xs']]
-);
+                'offset' => [
+                    'label'     => $GLOBALS['TL_LANG']['tl_columnset']['offset'],
+                    'inputType' => 'select',
+                    'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    'eval'      => ['style' => 'width: 100px;', 'includeBlankOption' => true],
+                ],
 
-$GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_sm'] = array_merge
-(
-    $colSetTemplate, ['label' => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_sm']]
-);
-
-$GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_md'] = array_merge
-(
-    $colSetTemplate, ['label' => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_md']]
-);
-
-$GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_lg'] = array_merge
-(
-    $colSetTemplate, ['label' => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_lg']]
-);
+                'order' => [
+                    'label'     => $GLOBALS['TL_LANG']['tl_columnset']['order'],
+                    'inputType' => 'select',
+                    'options'   => [
+                        'push' => ['push-1', 'push-2', 'push-3', 'push-4', 'push-5', 'push-6', 'push-7', 'push-8', 'push-9', 'push-10', 'push-11', 'push-12'],
+                        'pull' => ['pull-1', 'pull-2', 'pull-3', 'pull-4', 'pull-5', 'pull-6', 'pull-7', 'pull-8', 'pull-9', 'pull-10', 'pull-11', 'pull-12'],
+                    ],
+                    'eval'      => ['style' => 'width: 160px;', 'includeBlankOption' => true],
+                ],
+            ],
+            'buttons'            => ['copy' => false, 'delete' => false],
+        ],
+        'sql'           => "blob NULL"
+    ];
+}

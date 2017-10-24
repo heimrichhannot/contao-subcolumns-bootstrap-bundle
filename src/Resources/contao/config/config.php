@@ -9,20 +9,24 @@ $GLOBALS['BE_MOD']['design']['columnset'] = [
 /**
  * replace content elements
  */
-$GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\colsetStart';
-$GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\colsetPart';
+$GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart';
+$GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart';
 
 
 /**
  * columset
  */
 
-$GLOBALS['TL_SUBCL']['boostrap4'] = [
-    'label'   => 'Bootstrap 4', // Label for the selectmenu
-    'scclass' => 'row', // Class for the wrapping container
-    'inside'  => false, // Are inside containers used?
-    'gap'     => false, // A gap between the columns can be entered in backend
-    'sets'    => [ // provide default column sets as fallback if an database entry is deleted
+$GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4] = [
+    'label'   => 'Bootstrap 4',
+    'scclass' => 'row',
+    'inside'  => false,
+    'gap'     => false,
+    'files'   => [
+        'css' => 'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static',
+    ],
+    'sizes'   => ['xs', 'sm', 'md', 'lg', 'xl'],
+    'sets'    => [
         '1'  => [
             ['col-lg-12'],
         ],
@@ -127,3 +131,8 @@ $GLOBALS['TL_SUBCL']['boostrap4'] = [
         ],
     ],
 ];
+
+/**
+ * Models
+ */
+$GLOBALS['TL_MODELS']['tl_columnset'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel';

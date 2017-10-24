@@ -1,10 +1,11 @@
 <?php
 
-// change label of sc_type
-if ($GLOBALS['TL_CONFIG']['subcolumns'] == 'boostrap_customizable') {
-    $GLOBALS['TL_LANG']['tl_content']['sc_type'][0] = 'Sub columns';
-    $GLOBALS['TL_LANG']['tl_content']['sc_type'][1] = 'Parelease choose how many columns are created';
+$lang = &$GLOBALS['TL_LANG']['tl_content'];
+
+if ($GLOBALS['TL_CONFIG']['subcolumns'] == \HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
+    $lang['sc_type'][0] = 'Sub columns';
+    $lang['sc_type'][1] = 'Please choose how many columns are created';
 }
 
-$GLOBALS['TL_LANG']['tl_content']['columnset_id'][0] = 'Column set';
-$GLOBALS['TL_LANG']['tl_content']['columnset_id'][1] = 'Please choose a defined column set.';
+$lang['columnset_id'][0] = 'Column set';
+$lang['columnset_id'][1] = 'Please choose a defined column set.';

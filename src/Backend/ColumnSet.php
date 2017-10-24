@@ -1,6 +1,9 @@
 <?php
 
-namespace HeimrichHannot\SubColumnsBootstrapBundle;
+namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
+
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class ColumnSet extends \Backend
 {
@@ -83,16 +86,22 @@ class ColumnSet extends \Backend
      *
      * @param $dc
      */
-    public function appendColumnsetIdToPalette($dc)
+    public function appendColumnsetIdToPalette(\DataContainer $dc)
     {
-        if ($GLOBALS['TL_CONFIG']['subcolumns'] != 'boostrap_customizable') {
+        if ($GLOBALS['TL_CONFIG']['subcolumns'] != SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
             return;
         }
 
-        $model = \ContentModel::findByPK($dc->id);
+        $arrDca = &$GLOBALS['TL_DCA']['tl_content'];
 
-        if ($model->sc_type > 0) {
-            MetaPalettes::appendFields('tl_content', 'colsetStart', 'colset', ['columnset_id']);
+        $content = \ContentModel::findByPK($dc->id);
+
+        $arrDca['palettes']['colsetStart'] = str_replace('sc_name', '', $arrDca['palettes']['colsetStart']);
+        $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,sc_name', $arrDca['palettes']['colsetStart']);
+
+        if ($content->sc_type > 0) {
+            $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id', $arrDca['palettes']['colsetStart']);
+            $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
         }
     }
 
@@ -105,12 +114,11 @@ class ColumnSet extends \Backend
     {
         $model = ColumnsetModel::findByPk($dc->id);
         $sizes = array_merge(deserialize($model->sizes, true));
+        $arrDca = &$GLOBALS['TL_DCA']['tl_columnset'];
 
-        // TODO fix metapalettes
         foreach ($sizes as $size) {
-            $field = 'columnset_' . $size;
-
-            MetaPalettes::appendFields('tl_columnset', 'columnset', [$field]);
+            $arrDca['palettes']['default'] = str_replace('sizes', 'sizes,' . 'columnset_' . $size,
+                $arrDca['palettes']['default']);
         }
     }
 
@@ -160,7 +168,7 @@ class ColumnSet extends \Backend
      */
     public function getAllTypes($dc)
     {
-        if ($GLOBALS['TL_CONFIG']['subcolumns'] != 'boostrap_customizable') {
+        if ($GLOBALS['TL_CONFIG']['subcolumns'] != SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
             $sc = new \tl_content_sc();
             return $sc->getAllTypes();
         }

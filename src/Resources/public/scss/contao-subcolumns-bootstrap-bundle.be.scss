@@ -1,0 +1,56 @@
+@import "mixins/grid";
+
+.tl_content {
+  &.wrapper_start, &.wrapper_separator, &.wrapper_stop {
+    h1 {
+      display: none;
+    }
+
+    .colsetexample {
+      width: 140px !important;
+      background-color: #ffffff;
+      float: none;
+      border: none;
+
+      > div {
+        background-color: #fff;
+        margin: 0;
+        text-align: center;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        border: 1px solid #cccccc;
+        line-height: 2em;
+        margin-left: -1px;
+
+        &.active {
+          background-color: #8ab858;
+          color: white;
+        }
+      }
+
+      &.final div {
+        background-color: #ff2222;
+        color: #FFF;
+      }
+    }
+
+    .row {
+      @include make-row();
+      flex-wrap: nowrap;
+      margin: 0 0 6px 5px !important;
+    }
+
+    @each $size in xs sm md lg xl {
+      @each $count in 1 2 3 4 5 6 7 8 9 10 11 12 {
+        .col-#{$size}-#{$count} {
+          @include make-col-ready();
+          @include make-col($count);
+        }
+      }
+    }
+  }
+
+  .sc_hint {
+    display: none;
+  }
+}
