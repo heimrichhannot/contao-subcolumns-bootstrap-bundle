@@ -6,7 +6,7 @@ use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
-class colsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
+class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 {
     protected function compile()
     {
