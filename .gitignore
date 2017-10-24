@@ -1,3 +1,4 @@
-*.idlk
+.idea
+thumbs.db
 .DS_Store
 .sass-cache
