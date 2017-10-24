@@ -8,10 +8,6 @@ use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
 {
-
-    /**
-     * extends subcolumns compile method for generating dynamically column set
-     */
     protected function compile()
     {
         parent::compile();

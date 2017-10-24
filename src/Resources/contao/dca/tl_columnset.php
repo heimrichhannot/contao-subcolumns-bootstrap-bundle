@@ -66,7 +66,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
     ],
     'palettes' => [
         '__selector__' => ['useInside'],
-        'default' => '{general_legend},title,description,columns,useInside;{columnset_legend},sizes;{published_legend},published;'
+        'default' => '{general_legend},title,description,columns,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;'
     ],
     'subpalettes' => [
         'useInside' => 'insideClass'
@@ -142,6 +142,13 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => [],
             'sql'       => "char(1) NULL"
+        ],
+        'cssID'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['cssID'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval'      => ['multiple' => true, 'size' => 2, 'tl_class' => 'w50 clr'],
+            'sql'       => "varchar(255) NOT NULL default ''"
         ]
     ]
 ];

@@ -7,6 +7,7 @@ $lang = &$GLOBALS['TL_LANG']['tl_columnset'];
  */
 $lang['general_legend']   = 'Allgemeines';
 $lang['columnset_legend'] = 'Spaltendefinition';
+$lang['expert_legend']    = 'Experten-Einstellungen';
 $lang['published_legend'] = 'Veröffentlichung';
 
 /**
@@ -47,6 +48,9 @@ $lang['offset'][1] = 'Bestimmen Sie, ob wie groß der Spaltenabstand sein soll.'
 
 $lang['order'][0] = 'Reihenfolge';
 $lang['order'][1] = 'Bestimmen Sie, ob die Spalten in der Anzeigereihenfolge verschoben werden sollen.';
+
+$lang['cssID'][0] = 'CSS-ID/Klasse';
+$lang['cssID'][1] = 'Hier können Sie eine ID und beliebig viele Klassen eingeben.';
 
 /**
  * Values

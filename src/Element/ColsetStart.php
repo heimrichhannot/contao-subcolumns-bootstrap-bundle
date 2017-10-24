@@ -26,6 +26,19 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
                 return;
             }
 
+            $cssID = $this->cssID;
+
+            if ($this->cssID == ['', ''] && $columnSet->cssID)
+            {
+                $cssID = deserialize($columnSet->cssID, true);
+            }
+
+            $cssID[1] = $this->Template->class . ' ' . $this->Template->scclass . ' ' . $cssID[1];
+            $this->cssID = $cssID;
+
+            $this->Template->class = '';
+            $this->Template->scclass = '';
+
             $this->Template->useInside = $columnSet->useInside;
 
             if ($columnSet->useInside) {

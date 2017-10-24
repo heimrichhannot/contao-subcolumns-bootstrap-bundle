@@ -7,15 +7,19 @@ $dca['config']['onload_callback'][] = ['HeimrichHannot\SubColumnsBootstrapBundle
 /**
  * Fields
  */
-$dca['fields']['columnset_id'] = [
-    'label'            => &$GLOBALS['TL_LANG']['tl_content']['columnset_id'],
-    'exclude'          => true,
-    'inputType'        => 'select',
-    'options_callback' => ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'getAllColumnsets'],
-    'reference'        => &$GLOBALS['TL_LANG']['tl_content'],
-    'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
-    'sql'              => "varchar(10) NOT NULL default ''"
+$fields = [
+    'columnset_id' => [
+        'label'            => &$GLOBALS['TL_LANG']['tl_content']['columnset_id'],
+        'exclude'          => true,
+        'inputType'        => 'select',
+        'options_callback' => ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'getAllColumnsets'],
+        'reference'        => &$GLOBALS['TL_LANG']['tl_content'],
+        'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+        'sql'              => "varchar(10) NOT NULL default ''"
+    ]
 ];
+
+$dca['fields'] += $fields;
 
 $dca['fields']['sc_name']['eval']['tl_class'] = 'w50';
 
