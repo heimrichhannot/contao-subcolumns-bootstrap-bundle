@@ -69,7 +69,7 @@ class ColumnSet extends \Backend
         $css = sprintf('col-%s-%s', $size, $definition['width']);
 
         if ($definition['offset']) {
-            $css .= sprintf(' col-%s-offset-%s', $size, $definition['offset']);
+            $css .= sprintf(' offset-%s-%s', $size, $definition['offset']);
         }
 
         if ($definition['order']) {
@@ -100,7 +100,7 @@ class ColumnSet extends \Backend
         $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,sc_name', $arrDca['palettes']['colsetStart']);
 
         if ($content->sc_type > 0) {
-            $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id', $arrDca['palettes']['colsetStart']);
+            $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $arrDca['palettes']['colsetStart']);
             $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
         }
     }

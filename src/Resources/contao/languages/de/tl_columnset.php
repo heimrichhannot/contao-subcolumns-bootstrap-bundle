@@ -56,6 +56,8 @@ $lang['cssID'][1] = 'Hier können Sie eine ID und beliebig viele Klassen eingebe
  * Values
  */
 $lang['formatColumns'] = 'Spalten';
+$lang['columnsSingular'] = 'Spalte';
+$lang['columnsPlural'] = 'Spalten';
 
 $lang['xs'] = 'Smartphone Hochformat (xs)';
 $lang['sm'] = 'Smartphone Querformat (sm)';

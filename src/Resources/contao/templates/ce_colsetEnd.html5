@@ -1,0 +1,8 @@
+        <?php if ($this->useInside): ?>
+        </div>
+        <?php endif; ?>
+    </div>
+</section>
+<?php if ($this->addContainer): ?>
+</div>
+<?php endif; ?>

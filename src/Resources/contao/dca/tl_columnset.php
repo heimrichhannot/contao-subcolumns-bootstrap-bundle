@@ -3,7 +3,7 @@
 $sizes = $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4]['sizes'];
 
 $GLOBALS['TL_DCA']['tl_columnset'] = [
-    'config'       => [
+    'config'      => [
         'dataContainer'    => 'Table',
         'enableVersioning' => true,
         'onload_callback'  => [
@@ -15,7 +15,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             ]
         ]
     ],
-    'list'         => [
+    'list'        => [
         'label'             => [
             'fields' => ['title', 'columns'],
             'format' => '%s <span style="color:#ccc;">[%s ' . $GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] . ']</span>'
@@ -64,14 +64,14 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             ]
         ],
     ],
-    'palettes' => [
+    'palettes'    => [
         '__selector__' => ['useInside'],
-        'default' => '{general_legend},title,description,columns,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;'
+        'default'      => '{general_legend},title,description,columns,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;'
     ],
     'subpalettes' => [
         'useInside' => 'insideClass'
     ],
-    'fields'       => [
+    'fields'      => [
         'id'          => [
             'sql' => "int(10) unsigned NOT NULL auto_increment"
         ],
@@ -111,19 +111,19 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
             'sql'       => "int(10) unsigned NOT NULL default '0'"
         ],
-        'useInside' => [
-            'label'                   => &$GLOBALS['TL_LANG']['tl_columnset']['useInside'],
-            'exclude'                 => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => ['tl_class' => 'w50', 'submitOnChange' => true],
-            'sql'                     => "char(1) NOT NULL default ''"
+        'useInside'   => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['useInside'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'sql'       => "char(1) NOT NULL default ''"
         ],
         'insideClass' => [
-            'label'                   => &$GLOBALS['TL_LANG']['tl_columnset']['insideClass'],
-            'exclude'                 => true,
-            'inputType'               => 'text',
-            'eval'                    => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-            'sql'                     => "varchar(255) NOT NULL default ''"
+            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['insideClass'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
+            'sql'       => "varchar(255) NOT NULL default ''"
         ],
         'sizes'       => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['sizes'],
@@ -143,7 +143,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'eval'      => [],
             'sql'       => "char(1) NULL"
         ],
-        'cssID'        => [
+        'cssID'       => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['cssID'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -155,7 +155,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
 
 foreach ($sizes as $size) {
     $GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_' . $size] = [
-        'label' => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_' . $size],
+        'label'         => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_' . $size],
         'exclude'       => true,
         'inputType'     => 'multiColumnWizard',
         'load_callback' => [
@@ -170,14 +170,12 @@ foreach ($sizes as $size) {
                     'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                     'eval'      => ['style' => 'width: 100px;'],
                 ],
-
                 'offset' => [
                     'label'     => $GLOBALS['TL_LANG']['tl_columnset']['offset'],
                     'inputType' => 'select',
                     'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                     'eval'      => ['style' => 'width: 100px;', 'includeBlankOption' => true],
                 ],
-
                 'order' => [
                     'label'     => $GLOBALS['TL_LANG']['tl_columnset']['order'],
                     'inputType' => 'select',

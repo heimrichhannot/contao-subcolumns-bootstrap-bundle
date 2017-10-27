@@ -8,6 +8,21 @@ Courtesy to:
 
 - [contao-legacy/subcolumns_bootstrap_customize](https://legacy-packages-via.contao-community-alliance.org/packages/contao-legacy/subcolumns_bootstrap_customize)
 
+## Requirements
+
+- Bootstrap 4.0.0 (Beta 2)
+
+## Features
+
+- Handle column sets in a contao entity -> also customizable by non-developers
+- clear layout for editors (see above)
+- Support for columns breaking out of the container (add a css class or click the corresponding option in your column start element)
+    - `col-full`: Column taking the full width of the viewport while being inside a container
+    - `col-full-left`: Column taking the full width *on the left* of the viewport while being inside a container
+    - `col-full-right`: Column taking the full width *on the right* of the viewport while being inside a container
+- add div wrappers with arbitrary css classes
+- wrap column sets with a "container"-div
+
 ## Technical instructions
 
 1. Specify "Bootstrap 4" in the subcolumns configuration

@@ -7,6 +7,7 @@
     "php": ">=7.1",
     "symfony/framework-bundle": "^3.3",
     "contao/core-bundle": "^4.4",
+    "heimrichhannot/contao-haste_plus": "^1.6",
     "felixpfeiffer/subcolumns": "^3.1.7"
   },
   "require-dev": {

@@ -9,3 +9,6 @@ if ($GLOBALS['TL_CONFIG']['subcolumns'] == \HeimrichHannot\SubColumnsBootstrapBu
 
 $lang['columnset_id'][0] = 'Spaltenset';
 $lang['columnset_id'][1] = 'Wählen Sie eines der verfügbaren Spaltensets.';
+
+$lang['addContainer'][0] = 'DIV mit der Klasse "container" hinzufügen';
+$lang['addContainer'][1] = 'Wählen Sie diese Option, um das Spaltenset in ein DIV-Element mit der Klasse "container" einzuschließen.';

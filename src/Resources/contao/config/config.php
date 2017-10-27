@@ -1,22 +1,36 @@
 <?php
 
+/**
+ * Backend modules
+ */
 $GLOBALS['BE_MOD']['design']['columnset'] = [
     'icon'   => 'system/modules/subcolumns_bootstrap_customizable/assets/icon.png',
     'tables' => ['tl_columnset'],
 ];
 
-
 /**
- * replace content elements
+ * Content elements
  */
 $GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart';
 $GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart';
-
+$GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd';
 
 /**
- * columset
+ * JavaScript
  */
+if (\HeimrichHannot\Haste\Util\Container::isFrontend()) {
+    $GLOBALS['TL_JAVASCRIPT']['contao-subcolumns-bootstrap-bundle'] =
+        'web/bundles/subcolumnsbootstrap/js/contao-subcolumns-bootstrap-bundle.fe.min.js|static';
+}
 
+/**
+ * Models
+ */
+$GLOBALS['TL_MODELS']['tl_columnset'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel';
+
+/**
+ * Columset
+ */
 $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4] = [
     'label'   => 'Bootstrap 4',
     'scclass' => 'row',
@@ -131,8 +145,3 @@ $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstr
         ],
     ],
 ];
-
-/**
- * Models
- */
-$GLOBALS['TL_MODELS']['tl_columnset'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel';
