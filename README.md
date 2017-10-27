@@ -2,7 +2,13 @@
 
 This Contao 4 bundle adds support for the bootstrap 4 grid to [felixpfeiffer/subcolumns](https://github.com/felixpfeiffer/Contao-Subcolumns).
 
+## Definition of a column set
+
 ![alt config](docs/config.png)
+
+## Usage of a column set
+
+![alt content](docs/content.png)
 
 Courtesy to:
 
@@ -11,6 +17,7 @@ Courtesy to:
 ## Requirements
 
 - Bootstrap 4.0.0 (Beta 2)
+- [felixpfeiffer/subcolumns](https://github.com/felixpfeiffer/Contao-Subcolumns)
 
 ## Features
 
