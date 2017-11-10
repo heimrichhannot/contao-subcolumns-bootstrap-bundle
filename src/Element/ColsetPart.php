@@ -94,6 +94,12 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
                 return;
             }
 
+            $this->Template->useOutside = $columnSet->useOutside;
+
+            if ($columnSet->useOutside) {
+                $this->Template->outside = $columnSet->outsideClass;
+            }
+
             $this->Template->useInside = $columnSet->useInside;
 
             if ($columnSet->useInside) {

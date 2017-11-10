@@ -100,8 +100,15 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             $this->Template->class = '';
             $this->Template->scclass = '';
 
-            $this->Template->useInside = $columnSet->useInside;
             $this->Template->addContainer = $this->addContainer;
+
+            $this->Template->useOutside = $columnSet->useOutside;
+
+            if ($columnSet->useOutside) {
+                $this->Template->outside = $columnSet->outsideClass;
+            }
+
+            $this->Template->useInside = $columnSet->useInside;
 
             if ($columnSet->useInside) {
                 $this->Template->inside = $columnSet->insideClass;

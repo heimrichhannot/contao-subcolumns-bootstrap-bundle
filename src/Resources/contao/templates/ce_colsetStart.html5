@@ -1,8 +1,11 @@
+<?php if ($this->useOutside): ?>
+    <div class="<?= $this->outside; ?>">
+<?php endif; ?>
 <?php if ($this->addContainer): ?>
 <div class="container">
 <?php endif; ?>
-<section class="<?php echo $this->class; ?> <?php echo $this->scclass; ?>"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
-    <div class="<?php echo $this->column; ?>">
+<section class="<?= $this->class; ?> <?= $this->scclass; ?>"<?= $this->cssID; ?><?php if ($this->style): ?> style="<?= $this->style; ?>"<?php endif; ?>>
+    <div class="<?= $this->column; ?>">
         <?php if($this->useInside): ?>
-        <div class="<?php echo $this->inside; ?>"<?php if($this->gap['right']): ?> style="padding-right:<?php echo $this->gap['right']; ?>;"<?php endif; ?>>
+        <div class="<?= $this->inside; ?>"<?php if($this->gap['right']): ?> style="padding-right:<?= $this->gap['right']; ?>;"<?php endif; ?>>
         <?php endif ?>

@@ -65,10 +65,11 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
         ],
     ],
     'palettes'    => [
-        '__selector__' => ['useInside'],
-        'default'      => '{general_legend},title,description,columns,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;'
+        '__selector__' => ['useOutside', 'useInside'],
+        'default'      => '{general_legend},title,description,columns,useOutside,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;'
     ],
     'subpalettes' => [
+        'useOutside' => 'outsideClass',
         'useInside' => 'insideClass'
     ],
     'fields'      => [
@@ -110,6 +111,20 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
             'sql'       => "int(10) unsigned NOT NULL default '0'"
+        ],
+        'useOutside'   => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['useOutside'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'sql'       => "char(1) NOT NULL default ''"
+        ],
+        'outsideClass' => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['outsideClass'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
+            'sql'       => "varchar(255) NOT NULL default ''"
         ],
         'useInside'   => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['useInside'],

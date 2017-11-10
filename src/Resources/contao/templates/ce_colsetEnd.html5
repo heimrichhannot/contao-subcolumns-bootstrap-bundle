@@ -6,3 +6,6 @@
 <?php if ($this->addContainer): ?>
 </div>
 <?php endif; ?>
+<?php if ($this->useOutside): ?>
+    </div>
+<?php endif; ?>

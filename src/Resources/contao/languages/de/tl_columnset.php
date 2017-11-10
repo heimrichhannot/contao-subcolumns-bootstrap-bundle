@@ -22,6 +22,12 @@ $lang['description'][1] = 'Hier können Sie eine Beschreibung hinterlegen.';
 $lang['columns'][0] = 'Spaltenanzahl';
 $lang['columns'][1] = 'Wählen Sie hier aus, wie viele Spalten erzeugt werden sollen.';
 
+$lang['useOutside'][0] = 'Äußeres DIV-Element erzeugen';
+$lang['useOutside'][1] = 'Wählen Sie diese Option, wenn jede Spalte ein äußeres DIV-Element erhalten soll.';
+
+$lang['outsideClass'][0] = 'CSS-Klasse für das äußere DIV-Element';
+$lang['outsideClass'][1] = 'Vergeben Sie hier eine CSS-Klasse.';
+
 $lang['useInside'][0] = 'Inneres DIV-Element erzeugen';
 $lang['useInside'][1] = 'Wählen Sie diese Option, wenn jede Spalte ein inneres DIV-Element erhalten soll.';
 

@@ -76,6 +76,14 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
             return;
 
         $this->Template->addContainer = $content->addContainer;
+
+        if (($columnSet = ColumnsetModel::findByPk($content->columnset_id)) !== null) {
+            $this->Template->useOutside = $columnSet->useOutside;
+
+            if ($columnSet->useOutside) {
+                $this->Template->outside = $columnSet->outsideClass;
+            }
+        }
     }
 
 
