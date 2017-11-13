@@ -37,7 +37,8 @@ $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstr
     'inside'  => false,
     'gap'     => false,
     'files'   => [
-        'css' => 'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static',
+        'css' => (\HeimrichHannot\Haste\Util\Container::isBackend() ?
+            'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static' : ''),
     ],
     'sizes'   => ['xs', 'sm', 'md', 'lg', 'xl'],
     'sets'    => [

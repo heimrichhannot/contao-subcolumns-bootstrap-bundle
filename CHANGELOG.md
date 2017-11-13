@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 2017-11-13
+
+### Fixed
+- backend styling
+
 ## [1.0.3] - 2017-11-10
 
 ### Added

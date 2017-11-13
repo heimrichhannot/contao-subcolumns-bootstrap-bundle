@@ -36,16 +36,13 @@
 
     .row {
       @include make-row();
-      flex-wrap: nowrap;
       margin: 0 0 6px 5px !important;
-    }
+      width: auto !important;
+      background-color: transparent;
 
-    @each $size in xs sm md lg xl {
-      @each $count in 1 2 3 4 5 6 7 8 9 10 11 12 {
-        .col-#{$size}-#{$count} {
-          @include make-col-ready();
-          @include make-col($count);
-        }
+      [class*="col-"] {
+        float: left;
+        width: 70px;
       }
     }
   }
