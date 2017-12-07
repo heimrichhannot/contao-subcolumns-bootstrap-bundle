@@ -4,6 +4,9 @@
   &.wrapper_start, &.wrapper_separator, &.wrapper_stop {
     h1 {
       margin: 0 0 9px 6px;
+      float: left;
+      margin-top: 8px;
+      margin-right: 12px;
     }
 
     .colsetexample {
@@ -35,14 +38,14 @@
     }
 
     .row {
-      @include make-row();
       margin: 0 0 6px 5px !important;
       width: auto !important;
       background-color: transparent;
 
       [class*="col-"] {
         float: left;
-        width: 70px;
+        width: 35px;
+        padding: 0;
       }
     }
   }
