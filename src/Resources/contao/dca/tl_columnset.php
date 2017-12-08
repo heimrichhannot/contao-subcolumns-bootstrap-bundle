@@ -195,8 +195,7 @@ foreach ($sizes as $size) {
                     'label'     => $GLOBALS['TL_LANG']['tl_columnset']['order'],
                     'inputType' => 'select',
                     'options'   => [
-                        'push' => ['push-1', 'push-2', 'push-3', 'push-4', 'push-5', 'push-6', 'push-7', 'push-8', 'push-9', 'push-10', 'push-11', 'push-12'],
-                        'pull' => ['pull-1', 'pull-2', 'pull-3', 'pull-4', 'pull-5', 'pull-6', 'pull-7', 'pull-8', 'pull-9', 'pull-10', 'pull-11', 'pull-12'],
+                        'order-1', 'order-2', 'order-3', 'order-4', 'order-5', 'order-6', 'order-7', 'order-8', 'order-9', 'order-10', 'order-11', 'order-12'
                     ],
                     'eval'      => ['style' => 'width: 160px;', 'includeBlankOption' => true],
                 ],
