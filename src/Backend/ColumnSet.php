@@ -66,10 +66,24 @@ class ColumnSet extends \Backend
      */
     protected static function prepareSize($size, array $definition)
     {
-        $css = sprintf('col-%s-%s', $size, $definition['width']);
+        if ($size === 'xs')
+        {
+            $css = sprintf('col-%s', $definition['width']);
+        }
+        else
+        {
+            $css = sprintf('col-%s-%s', $size, $definition['width']);
+        }
 
         if ($definition['offset']) {
-            $css .= sprintf(' offset-%s-%s', $size, $definition['offset']);
+            if ($size === 'xs')
+            {
+                $css .= sprintf(' offset-%s', $definition['offset']);
+            }
+            else
+            {
+                $css .= sprintf(' offset-%s-%s', $size, $definition['offset']);
+            }
         }
 
         if ($definition['order']) {
