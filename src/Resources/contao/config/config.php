@@ -18,7 +18,7 @@ $GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBoots
 /**
  * JavaScript
  */
-if (\HeimrichHannot\Haste\Util\Container::isFrontend()) {
+if (System::getContainer()->get('huh.utils.container')->isFrontend()) {
     $GLOBALS['TL_JAVASCRIPT']['contao-subcolumns-bootstrap-bundle'] =
         'web/bundles/subcolumnsbootstrap/js/contao-subcolumns-bootstrap-bundle.fe.min.js|static';
 }
@@ -37,7 +37,7 @@ $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstr
     'inside'  => false,
     'gap'     => false,
     'files'   => [
-        'css' => (\HeimrichHannot\Haste\Util\Container::isBackend() ?
+        'css' => (System::getContainer()->get('huh.utils.container')->isBackend() ?
             'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static' : ''),
     ],
     'sizes'   => ['xs', 'sm', 'md', 'lg', 'xl'],

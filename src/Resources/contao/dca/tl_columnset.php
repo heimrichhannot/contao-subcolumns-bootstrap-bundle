@@ -7,18 +7,18 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
         'dataContainer'    => 'Table',
         'enableVersioning' => true,
         'onload_callback'  => [
-            ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'appendColumnSizesToPalette']
+            ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'appendColumnSizesToPalette'],
         ],
         'sql'              => [
             'keys' => [
                 'id' => 'primary',
-            ]
-        ]
+            ],
+        ],
     ],
     'list'        => [
         'label'             => [
             'fields' => ['title', 'columns'],
-            'format' => '%s <span style="color:#ccc;">[%s ' . $GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] . ']</span>'
+            'format' => '%s <span style="color:#ccc;">[%s '.$GLOBALS['TL_LANG']['tl_columnset']['formatColumns'].']</span>',
         ],
         'sorting'           => [
             'mode'        => 2,
@@ -31,58 +31,58 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
                 'label'      => &$GLOBALS['TL_LANG']['MSC']['all'],
                 'href'       => 'act=select',
                 'class'      => 'header_edit_all',
-                'attributes' => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-            ]
+                'attributes' => 'onclick="Backend.getScrollOffset()" accesskey="e"',
+            ],
         ],
         'operations'        => [
             'edit'   => [
                 'label' => &$GLOBALS['TL_LANG']['tl_columnset']['edit'],
                 'href'  => 'act=edit',
-                'icon'  => 'edit.gif'
+                'icon'  => 'edit.svg',
             ],
             'copy'   => [
                 'label'      => &$GLOBALS['TL_LANG']['tl_columnset']['copy'],
-                'href'       => 'act=paste&amp;mode=copy',
-                'icon'       => 'copy.gif',
-                'attributes' => 'onclick="Backend.getScrollOffset()"'
+                'href'       => 'act=copy',
+                'icon'       => 'copy.svg',
+                'attributes' => 'onclick="Backend.getScrollOffset()"',
             ],
             'delete' => [
                 'label'      => &$GLOBALS['TL_LANG']['tl_columnset']['delete'],
                 'href'       => 'act=delete',
-                'icon'       => 'delete.gif',
-                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"',
+                'icon'       => 'delete.svg',
+                'attributes' => 'onclick="if(!confirm(\''.$GLOBALS['TL_LANG']['MSC']['deleteConfirm'].'\'))return false;Backend.getScrollOffset()"',
             ],
             'toggle' => [
                 'label'      => &$GLOBALS['TL_LANG']['tl_columnset']['toggle'],
-                'icon'       => 'visible.gif',
+                'icon'       => 'visible.svg',
                 'attributes' => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
             ],
             'show'   => [
                 'label' => &$GLOBALS['TL_LANG']['tl_columnset']['show'],
                 'href'  => 'act=show',
-                'icon'  => 'show.gif'
-            ]
+                'icon'  => 'show.svg',
+            ],
         ],
     ],
     'palettes'    => [
         '__selector__' => ['useOutside', 'useInside'],
-        'default'      => '{general_legend},title,description,columns,useOutside,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;'
+        'default'      => '{general_legend},title,description,columns,useOutside,useInside;{columnset_legend},sizes;{expert_legend:hide},cssID;{published_legend},published;',
     ],
     'subpalettes' => [
         'useOutside' => 'outsideClass',
-        'useInside' => 'insideClass'
+        'useInside'  => 'insideClass',
     ],
     'fields'      => [
-        'id'          => [
-            'sql' => "int(10) unsigned NOT NULL auto_increment"
+        'id'           => [
+            'sql' => "int(10) unsigned NOT NULL auto_increment",
         ],
-        'pid'         => [
-            'sql' => "int(10) unsigned NOT NULL default '0'"
+        'pid'          => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'tstamp'      => [
-            'sql' => "int(10) unsigned NOT NULL default '0'"
+        'tstamp'       => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'title'       => [
+        'title'        => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['title'],
             'exclude'   => true,
             'sorting'   => true,
@@ -90,17 +90,17 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'search'    => true,
             'inputType' => 'text',
             'eval'      => ['tl_class' => 'w50'],
-            'sql'       => "varchar(255) NOT NULL default ''"
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'description' => [
+        'description'  => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['description'],
             'exclude'   => true,
             'search'    => true,
             'inputType' => 'text',
             'eval'      => ['tl_class' => 'w50'],
-            'sql'       => "varchar(255) NOT NULL default ''"
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'columns'     => [
+        'columns'      => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['columns'],
             'exclude'   => true,
             'sorting'   => true,
@@ -110,76 +110,76 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
-            'sql'       => "int(10) unsigned NOT NULL default '0'"
+            'sql'       => "int(10) unsigned NOT NULL default '0'",
         ],
         'useOutside'   => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['useOutside'],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
-            'sql'       => "char(1) NOT NULL default ''"
+            'sql'       => "char(1) NOT NULL default ''",
         ],
         'outsideClass' => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['outsideClass'],
             'exclude'   => true,
             'inputType' => 'text',
             'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-            'sql'       => "varchar(255) NOT NULL default ''"
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'useInside'   => [
+        'useInside'    => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['useInside'],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
-            'sql'       => "char(1) NOT NULL default ''"
+            'sql'       => "char(1) NOT NULL default ''",
         ],
-        'insideClass' => [
+        'insideClass'  => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['insideClass'],
             'exclude'   => true,
             'inputType' => 'text',
             'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-            'sql'       => "varchar(255) NOT NULL default ''"
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'sizes'       => [
+        'sizes'        => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['sizes'],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'options'   => $sizes,
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => ['multiple' => true, 'submitOnChange' => true],
-            'sql'       => "mediumblob NULL"
+            'sql'       => "mediumblob NULL",
         ],
-        'published'   => [
+        'published'    => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['published'],
             'exclude'   => true,
             'default'   => '1',
             'inputType' => 'checkbox',
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => [],
-            'sql'       => "char(1) NULL"
+            'sql'       => "char(1) NULL",
         ],
-        'cssID'       => [
+        'cssID'        => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['cssID'],
             'exclude'   => true,
             'inputType' => 'text',
             'eval'      => ['multiple' => true, 'size' => 2, 'tl_class' => 'w50 clr'],
-            'sql'       => "varchar(255) NOT NULL default ''"
-        ]
-    ]
+            'sql'       => "varchar(255) NOT NULL default ''",
+        ],
+    ],
 ];
 
 foreach ($sizes as $size) {
-    $GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_' . $size] = [
-        'label'         => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_' . $size],
+    $GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_'.$size] = [
+        'label'         => &$GLOBALS['TL_LANG']['tl_columnset']['columnset_'.$size],
         'exclude'       => true,
         'inputType'     => 'multiColumnWizard',
         'load_callback' => [
-            ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'createColumns']
+            ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'createColumns'],
         ],
         'eval'          => [
             'includeBlankOption' => true,
             'columnFields'       => [
-                'width' => [
+                'width'  => [
                     'label'     => $GLOBALS['TL_LANG']['tl_columnset']['width'],
                     'inputType' => 'select',
                     'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -191,17 +191,28 @@ foreach ($sizes as $size) {
                     'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                     'eval'      => ['style' => 'width: 100px;', 'includeBlankOption' => true],
                 ],
-                'order' => [
+                'order'  => [
                     'label'     => $GLOBALS['TL_LANG']['tl_columnset']['order'],
                     'inputType' => 'select',
                     'options'   => [
-                        'order-1', 'order-2', 'order-3', 'order-4', 'order-5', 'order-6', 'order-7', 'order-8', 'order-9', 'order-10', 'order-11', 'order-12'
+                        'order-1',
+                        'order-2',
+                        'order-3',
+                        'order-4',
+                        'order-5',
+                        'order-6',
+                        'order-7',
+                        'order-8',
+                        'order-9',
+                        'order-10',
+                        'order-11',
+                        'order-12',
                     ],
                     'eval'      => ['style' => 'width: 160px;', 'includeBlankOption' => true],
                 ],
             ],
             'buttons'            => ['copy' => false, 'delete' => false],
         ],
-        'sql'           => "blob NULL"
+        'sql'           => "blob NULL",
     ];
 }

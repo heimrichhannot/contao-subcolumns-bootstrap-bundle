@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2018-06-07
+
+### Changed
+- replaced `heimrichhannot/contao-haste_plus` with `heimrichhannot/contao-utils-bundle`
+
 ## [1.1.1] - 2017-12-08
 
 ### Fixed
