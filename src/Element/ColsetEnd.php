@@ -83,6 +83,12 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
             if ($columnSet->useOutside) {
                 $this->Template->outside = $columnSet->outsideClass;
             }
+
+            $this->Template->useInside = $columnSet->useInside;
+
+            if ($columnSet->useInside) {
+                $this->Template->inside = $columnSet->insideClass;
+            }
         }
     }
 

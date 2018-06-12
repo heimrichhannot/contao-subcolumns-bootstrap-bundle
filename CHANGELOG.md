@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.2] - 2018-06-12
+
+### Fixed
+- `ColsetEnd` did not provide `useInside` and `inside` property from colset settings that caused invalid html markup
+
 ## [1.2.1] - 2018-06-12
 
 ### Fixed
