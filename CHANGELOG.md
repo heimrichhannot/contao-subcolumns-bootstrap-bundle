@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2018-09-24
+
+### Fixed
+- always replace hypen in `sccclass` variable value `col-[NUMBER]` (e.g. `col-1`) with underscore `_`
+- fallback class should not start with `col-lg-`, better use `col-` instead to support width despite of viewport breakpoints 
+
 ## [1.3.0] - 2018-09-24
 
 ### Added

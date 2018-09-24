@@ -81,6 +81,8 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 
                 $this->Template->column  = $container[$this->sc_sortid][0] . ' col_' . ($this->sc_sortid + 1) . (($this->sc_sortid == count($container) - 1) ? ' last' : '');
                 $this->Template->scclass = $equalize . $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' colcount_' . count($container) . ' ' . $this->strSet . ' col_' . $this->sc_type;
+            }else{
+                $this->Template->scclass =  $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' ' . $this->strSet . ' col_' . $this->sc_type;
             }
 
             if (($columnSet = ColumnsetModel::findByPk($this->columnset_id)) === null) {
