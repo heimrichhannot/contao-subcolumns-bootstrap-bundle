@@ -20,7 +20,7 @@ $GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBoots
  */
 if (System::getContainer()->get('huh.utils.container')->isFrontend()) {
     $GLOBALS['TL_JAVASCRIPT']['contao-subcolumns-bootstrap-bundle'] =
-        'web/bundles/subcolumnsbootstrap/js/contao-subcolumns-bootstrap-bundle.fe.min.js|static';
+        'bundles/subcolumnsbootstrap/js/contao-subcolumns-bootstrap-bundle.fe.min.js|static';
 }
 
 /**

@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2018-09-24
+
+### Added
+- `heimrichhannot/contao-encore-bundle` support, to load frontend js on demand for performance reasons
+
+### Changed
+- rewrite frontend js from jQuery to vanilla js
+
 ## [1.2.2] - 2018-06-12
 
 ### Fixed

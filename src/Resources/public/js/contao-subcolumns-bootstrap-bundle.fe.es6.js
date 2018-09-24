@@ -1,4 +1,4 @@
-var SubColumnsBootstrapBundle = {
+let SubColumnsBootstrapBundle = {
     onReady: function () {
         this.initColFull();
     },
@@ -30,7 +30,7 @@ var SubColumnsBootstrapBundle = {
         }, true);
 
         function makeFullScreen() {
-            var w = window,
+            let w = window,
                 d = document,
                 e = d.documentElement,
                 g = d.getElementsByTagName('body')[0],
@@ -42,7 +42,7 @@ var SubColumnsBootstrapBundle = {
                     for (var i = 0, max = cols.length; i < max; i++) {
                         cols[i].style.marginLeft = ((width - containerWidth) / -2) + 'px';
                     }
-
+                    
                     break;
                 case 'right':
                     for (var i = 0, max = cols.length; i < max; i++) {
