@@ -1,4 +1,4 @@
-huh_encore:
+huh:
   encore:
     entries:
     - { name: contao-subcolumns-bootstrap-bundle, file: "vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/src/Resources/public/js/contao-subcolumns-bootstrap-bundle.fe.es6.js" }

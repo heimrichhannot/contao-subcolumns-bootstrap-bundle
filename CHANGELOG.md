@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2018-10-04
+
+### Fixed
+- invoke `config_encore.yml` only if `heimrichhannot/contao-encore-bundle` is installed (see: [#1](https://github.com/heimrichhannot/contao-subcolumns-bootstrap-bundle/issues/1)) 
+
 ## [1.3.1] - 2018-09-24
 
 ### Fixed
