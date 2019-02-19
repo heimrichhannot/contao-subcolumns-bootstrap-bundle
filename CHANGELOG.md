@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2018-02-19
+
+### Fixed
+- substract padding from containerWidth for correct `makeFullScreen` calculation
+
 ## [1.3.2] - 2018-10-04
 
 ### Fixed

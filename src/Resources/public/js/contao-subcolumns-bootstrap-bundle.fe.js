@@ -35,7 +35,11 @@ var SubColumnsBootstrapBundle = {
                 e = d.documentElement,
                 g = d.getElementsByTagName('body')[0],
                 width = w.innerWidth || e.clientWidth || g.clientWidth,
-                containerWidth = document.querySelectorAll('.container')[0].clientWidth;
+                firstContainer = document.querySelectorAll('.container')[0],
+                containerWidth = firstContainer.clientWidth;
+
+            containerWidth -= parseFloat(window.getComputedStyle(firstContainer).getPropertyValue('padding-right'));
+            containerWidth -= parseFloat(window.getComputedStyle(firstContainer).getPropertyValue('padding-left'));
 
             switch (mode) {
                 case 'left':
