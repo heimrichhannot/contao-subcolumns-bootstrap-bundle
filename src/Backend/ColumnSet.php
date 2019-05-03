@@ -184,7 +184,7 @@ class ColumnSet extends \Backend
     {
         if ($GLOBALS['TL_CONFIG']['subcolumns'] != SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
             $sc = new \tl_content_sc();
-            return $sc->getAllTypes();
+            return @$sc->getAllTypes();
         }
 
         $this->import('Database');
