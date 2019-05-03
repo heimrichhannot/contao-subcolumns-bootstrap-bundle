@@ -70,7 +70,7 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
 
     protected function compile()
     {
-        parent::compile();
+        @parent::compile();
 
         if (($content = ContentModel::findByPk($this->sc_parent)) === null)
             return;

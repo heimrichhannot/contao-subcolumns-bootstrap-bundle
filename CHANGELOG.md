@@ -1,10 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.5] - 2018-05-03
+
+### Changes
+- suppress warnings in compile method of content elements
+
 ## [1.3.4] - 2018-05-03
 
-### Changed
-- surpress warning from tl_content_sc::getAllTypes
+### Changes
+- suppress warnings from tl_content_sc::getAllTypes
 
 ## [1.3.3] - 2018-02-19
 

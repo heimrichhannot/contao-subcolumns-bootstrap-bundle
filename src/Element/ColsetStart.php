@@ -2,7 +2,9 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
+use Contao\BackendTemplate;
 use Contao\ContentElement;
+use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -20,7 +22,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 
             if(!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'])
             {
-                $this->Template = new \BackendTemplate('be_subcolumns');
+                $this->Template = new BackendTemplate('be_subcolumns');
                 $this->Template->setColor = $this->compileColor($arrColor);
                 $this->Template->colsetTitle = '### COLUMNSET START '.$this->sc_type.' <strong>'.$this->sc_name.'</strong> ###';
                 $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$GLOBALS['TL_LANG']['MSC']['sc_first']);
@@ -71,7 +73,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 
     protected function compile()
     {
-        parent::compile();
+        @parent::compile();
 
         if ($GLOBALS['TL_CONFIG']['subcolumns'] == SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
             $container = ColumnSet::prepareContainer($this->columnset_id);
@@ -93,7 +95,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 
             if ($this->cssID == ['', ''] && $columnSet->cssID)
             {
-                $cssID = deserialize($columnSet->cssID, true);
+                $cssID = StringUtil::deserialize($columnSet->cssID, true);
             }
 
             $cssID[1] = $this->Template->class . ' ' . $this->Template->scclass . ' ' . $cssID[1];

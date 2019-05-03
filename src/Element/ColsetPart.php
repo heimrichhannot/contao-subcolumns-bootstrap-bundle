@@ -80,7 +80,7 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
 
     protected function compile()
     {
-        parent::compile();
+        @parent::compile();
 
         if ($GLOBALS['TL_CONFIG']['subcolumns'] == SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
             $parent    = \ContentModel::findByPk($this->sc_parent);
