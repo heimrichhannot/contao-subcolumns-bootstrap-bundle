@@ -69,5 +69,3 @@ var SubColumnsBootstrapBundle = {
 document.addEventListener("DOMContentLoaded", function (event) {
     SubColumnsBootstrapBundle.onReady();
 });
-
-module.exports = SubColumnsBootstrapBundle;

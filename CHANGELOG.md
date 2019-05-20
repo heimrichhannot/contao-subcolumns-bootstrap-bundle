@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.6] - 2018-05-20
+
+### Fixed
+- remove `module` export from `contao-subcolumns-bootstrap-bundle.fe.js` files
+
 ## [1.3.5] - 2018-05-03
 
 ### Changes
