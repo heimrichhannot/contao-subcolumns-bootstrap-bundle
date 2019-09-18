@@ -87,7 +87,14 @@ class ColumnSet extends \Backend
         }
 
         if ($definition['order']) {
-            $css .= ' ' . str_replace('-', '-' . $size . '-', $definition['order']);
+            if ($size === 'xs')
+            {
+                $css .= sprintf(' %s', $definition['order']);
+            }
+            else
+            {
+                $css .= ' ' . str_replace('-', '-' . $size . '-', $definition['order']);
+            }
         }
 
         return $css;

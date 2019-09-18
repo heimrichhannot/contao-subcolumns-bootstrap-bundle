@@ -1,22 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.3.6] - 2018-05-20
+## [1.3.7] - 2019-09-18
+
+### Fixed
+- classes order-xs-<digit> to order-<digit>
+
+## [1.3.6] - 2019-05-20
 
 ### Fixed
 - remove `module` export from `contao-subcolumns-bootstrap-bundle.fe.js` files
 
-## [1.3.5] - 2018-05-03
+## [1.3.5] - 2019-05-03
 
 ### Changes
 - suppress warnings in compile method of content elements
 
-## [1.3.4] - 2018-05-03
+## [1.3.4] - 2019-05-03
 
 ### Changes
 - suppress warnings from tl_content_sc::getAllTypes
 
-## [1.3.3] - 2018-02-19
+## [1.3.3] - 2019-02-19
 
 ### Fixed
 - substract padding from containerWidth for correct `makeFullScreen` calculation
