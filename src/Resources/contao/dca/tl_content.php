@@ -3,6 +3,7 @@
 $dca = &$GLOBALS['TL_DCA']['tl_content'];
 
 $dca['config']['onload_callback'][] = ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'appendColumnsetIdToPalette'];
+$dca['config']['onload_callback'][] = ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\Content', 'createPalette'];
 
 /**
  * Fields
