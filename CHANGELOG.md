@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2019-10-02
+
+### Fixed
+- optional support for onemarshall/contao-aos
+
 ## [1.4.0] - 2019-10-01
 
 ### Added
