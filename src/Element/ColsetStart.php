@@ -37,7 +37,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
             $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
-            $intCountContainers = count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type]);
+            $intCountContainers = isset($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type]) ? count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type]) : 0;
 
             $strMiniset = '';
 
