@@ -5,9 +5,10 @@ $lang = &$GLOBALS['TL_LANG']['tl_columnset'];
 /**
  * Legends
  */
-$lang['title_legend']     = 'Title';
+$lang['general_legend']   = 'General settings';
 $lang['columnset_legend'] = 'Column definitions';
-$lang['published_legend'] = 'Published';
+$lang['expert_legend']    = 'Expert settings';
+$lang['published_legend'] = 'Publishing settings';
 
 /**
  * Fields
@@ -20,6 +21,18 @@ $lang['description'][1] = 'Please insert an optional description.';
 
 $lang['columns'][0] = 'Columns';
 $lang['columns'][1] = 'Please choose how many columns are created';
+
+$lang['useOutside'][0] = 'Create an wrapping DIV-element';
+$lang['useOutside'][1] = 'Use this option if each column should get an wrapping DIV-element';
+
+$lang['outsideClass'][0] = 'CSS-class for wrapping DIV-element';
+$lang['outsideClass'][1] = 'Enter an CSS-class.';
+
+$lang['useInside'][0] = 'Create an inner DIV-element';
+$lang['useInside'][1] = 'Use this option if each column should get an inner DIV-element';
+
+$lang['insideClass'][0] = 'CSS-class for inner DIV-element';
+$lang['insideClass'][1] = 'Enter an CSS-class.';
 
 $lang['sizes'][0] = 'Sizes';
 $lang['sizes'][1] = 'Please choose which grid sizes are used.';
@@ -42,10 +55,15 @@ $lang['offset'][1] = 'You can define an offset to the left column.';
 $lang['order'][0] = 'Ordering';
 $lang['order'][1] = 'You can use the pull and push behavior (Bootstrap does not provide this for extra small devices).';
 
+$lang['cssID'][0] = 'CSS-ID/Class';
+$lang['cssID'][1] = 'Here you can enter one CSS-ID and arbitrary CSS-classes.';
+
 /**
  * Values
  */
-$lang['formatColumns'] = 'columns';
+$lang['formatColumns'] = 'Columns';
+$lang['columnsSingular'] = 'Column';
+$lang['columnsPlural'] = 'Columns';
 
 $lang['xs'] = 'Smartphone Portrait (xs)';
 $lang['sm'] = 'Smartphone Landscape (sm)';
