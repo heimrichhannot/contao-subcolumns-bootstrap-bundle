@@ -1,8 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.3] - 2020-01-07
+- added missing translations (see #4, thanks to @daniel-nemeth)
+
 ## [1.4.2] - 2019-11-27
-- removed symfony framework bundle dependency
+- removed symfony framework bundle dependency (see #3)
 - fixed a warning
 
 ## [1.4.1] - 2019-10-02
