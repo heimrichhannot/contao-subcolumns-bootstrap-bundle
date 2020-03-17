@@ -53,4 +53,10 @@
   .sc_hint {
     display: none;
   }
+
+  &.wrapper_separator .tl_content_right {
+    .edit, .editDraft, .copy, .cut {
+      display: none;
+    }
+  }
 }

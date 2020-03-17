@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.4] - 2020-03-17
+- added backend css style
+
 ## [1.4.3] - 2020-01-07
 - added missing translations (see #4, thanks to @daniel-nemeth)
 
