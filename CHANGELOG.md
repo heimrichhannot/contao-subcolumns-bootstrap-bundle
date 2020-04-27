@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.6] - 2020-04-27
+- fixed backend css style for contao 4.9
+
 ## [1.4.5] - 2020-03-17
 - added backend css style
 

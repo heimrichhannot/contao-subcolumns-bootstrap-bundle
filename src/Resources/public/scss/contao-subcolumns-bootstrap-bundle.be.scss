@@ -1,5 +1,9 @@
 @import "mixins/grid";
 
+.tl_content.wrapper_start, .tl_content.wrapper_separator, .tl_content.wrapper_stop {
+  background: #f3f3f5;
+}
+
 .tl_content {
   &.wrapper_start, &.wrapper_separator, &.wrapper_stop {
     h1 {
