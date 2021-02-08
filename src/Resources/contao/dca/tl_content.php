@@ -30,7 +30,7 @@ $fields = [
     ],
 ];
 
-$dca['fields'] += $fields;
+$dca['fields'] = array_merge(is_array($dca['fields']) ? $dca['fields'] : [], $fields);
 
 $dca['fields']['sc_name']['eval']['tl_class'] = 'w50';
 
