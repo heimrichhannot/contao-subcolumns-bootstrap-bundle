@@ -45,9 +45,10 @@ $lang['columnset_sm'][0] = 'Smartphone Landscape (sm)';
 $lang['columnset_md'][0] = 'Tablet Portrait (md)';
 $lang['columnset_lg'][0] = 'Tablet Landscape (lg)';
 $lang['columnset_xl'][0] = 'Desktop (xl)';
+$lang['columnset_xxl'][0] = 'Desktop large (xxl)';
 
 $lang['width'][0] = 'Width';
-$lang['width'][1] = 'Pleaase choose how many columns of the grid is used for this column.';
+$lang['width'][1] = 'Please choose how many columns of the grid is used for this column.';
 
 $lang['offset'][0] = 'Offset';
 $lang['offset'][1] = 'You can define an offset to the left column.';
@@ -70,6 +71,7 @@ $lang['sm'] = 'Smartphone Landscape (sm)';
 $lang['md'] = 'Tablet Portrait (md)';
 $lang['lg'] = 'Tablet Landscape (lg)';
 $lang['xl'] = 'Desktop (xl)';
+$lang['xxl'] = 'Desktop large (xxl)';
 
 /**
  * Operations

@@ -1,6 +1,6 @@
 <?php
 
-$sizes = $GLOBALS['TL_SUBCL'][\HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4]['sizes'];
+$sizes = $GLOBALS['TL_SUBCL'][\Contao\Config::get('subcolumns')]['sizes'];
 
 $GLOBALS['TL_DCA']['tl_columnset'] = [
     'config'      => [

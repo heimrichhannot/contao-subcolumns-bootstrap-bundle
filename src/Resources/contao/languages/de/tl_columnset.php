@@ -45,6 +45,7 @@ $lang['columnset_sm'][0] = 'Smartphone Querformat (sm)';
 $lang['columnset_md'][0] = 'Tablet Hochformat (md)';
 $lang['columnset_lg'][0] = 'Tablet Querformat (lg)';
 $lang['columnset_xl'][0] = 'Desktop (xl)';
+$lang['columnset_xxl'][0] = 'Desktop groß (xxl)';
 
 $lang['width'][0] = 'Spaltenbreite';
 $lang['width'][1] = 'Bestimmen Sie, wie breit die Spalte angelegt sein soll.';
@@ -70,6 +71,8 @@ $lang['sm'] = 'Smartphone Querformat (sm)';
 $lang['md'] = 'Tablet Hochformat (md)';
 $lang['lg'] = 'Tablet Querformat (lg)';
 $lang['xl'] = 'Desktop (xl)';
+$lang['xxl'] = 'Desktop groß (xxl)';
+
 
 /**
  * Operations
