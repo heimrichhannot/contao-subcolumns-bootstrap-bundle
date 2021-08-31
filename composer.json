@@ -4,7 +4,7 @@
   "description": "This bundle adds support for the bootstrap grid to felixpfeiffer's subcolumns module.",
   "license": "LGPL-3.0+",
   "require": {
-    "php": "^7.1",
+    "php": "^7.1||^8.0",
     "contao/core-bundle": "^4.4",
     "heimrichhannot/contao-utils-bundle": "^2.16",
     "felixpfeiffer/subcolumns": "^3.1.7"
