@@ -75,7 +75,10 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
     {
         @parent::compile();
 
-        if ($GLOBALS['TL_CONFIG']['subcolumns'] == SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
+        if (in_array($GLOBALS['TL_CONFIG']['subcolumns'], [
+            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
+            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5
+        ])) {
             $container = ColumnSet::prepareContainer($this->columnset_id);
 
             if ($container) {
