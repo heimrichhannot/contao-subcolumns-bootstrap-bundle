@@ -2,12 +2,13 @@
   "name": "heimrichhannot/contao-subcolumns-bootstrap-bundle",
   "type": "contao-bundle",
   "description": "This bundle adds support for the bootstrap grid to felixpfeiffer's subcolumns module.",
-  "license": "LGPL-3.0+",
+  "license": "LGPL-3.0-or-later",
   "require": {
     "php": "^7.1||^8.0",
     "contao/core-bundle": "^4.4",
     "heimrichhannot/contao-utils-bundle": "^2.16",
-    "felixpfeiffer/subcolumns": "^3.1.7"
+    "felixpfeiffer/subcolumns": "^3.1.7",
+    "symfony/http-kernel": "^3.4||^4.0||^5.0"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.0",
