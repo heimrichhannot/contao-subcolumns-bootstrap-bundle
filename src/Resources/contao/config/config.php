@@ -1,6 +1,7 @@
 <?php
 
-use \HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao\LoadDataContainerListener;
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 /**
  * Backend modules
@@ -29,6 +30,11 @@ if (System::getContainer()->get('huh.utils.container')->isFrontend()) {
  * Models
  */
 $GLOBALS['TL_MODELS']['tl_columnset'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel';
+
+/**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class, '__invoke'];
 
 /**
  * Columset
