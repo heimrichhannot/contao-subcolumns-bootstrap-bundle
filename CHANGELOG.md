@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.1] - 2021-09-29
+- Fixed: another "Warning: Invalid argument supplied for foreach()"
+
 ## [1.7.0] - 2021-09-23
 - Changed: corrected license to LGPL-3.0-or-later and added license file
 - Fixed: "Warning: Invalid argument supplied for foreach()"

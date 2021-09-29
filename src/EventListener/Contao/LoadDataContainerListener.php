@@ -23,6 +23,9 @@ class LoadDataContainerListener
         }
 
         $sizes = $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'];
+        if (!$sizes) {
+            return;
+        }
 
         foreach ($sizes as $size) {
             $GLOBALS['TL_DCA']['tl_columnset']['fields']['columnset_'.$size] = [
