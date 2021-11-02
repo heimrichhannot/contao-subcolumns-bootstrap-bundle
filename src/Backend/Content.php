@@ -3,10 +3,11 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
 
+use Contao\Backend;
 use Contao\DataContainer;
 use Contao\System;
 
-class Content extends \Backend
+class Content extends Backend
 {
     public function createPalette(DataContainer $dc)
     {

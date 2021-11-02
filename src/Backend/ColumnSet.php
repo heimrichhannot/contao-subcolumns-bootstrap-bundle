@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
+use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
@@ -35,18 +36,18 @@ class ColumnSet extends \Backend
             return null;
         }
 
-        $sizes     = deserialize($model->sizes, true);
+        $sizes     = StringUtil::deserialize($model->sizes, true);
         $container = [];
 
         foreach ($sizes as $size) {
             $key     = 'columnset_' . $size;
-            $columns = deserialize($model->{$key}, true);
+            $columns = StringUtil::deserialize($model->{$key}, true);
 
             foreach ($columns as $index => $column) {
                 if (isset($container[$index][0])) {
-                    $container[$index][0] .= ' ' . self::prepareSize($size, deserialize($column, true));
+                    $container[$index][0] .= ' ' . self::prepareSize($size, StringUtil::deserialize($column, true));
                 } else {
-                    $container[$index][0] .= self::prepareSize($size, deserialize($column, true));
+                    $container[$index][0] .= self::prepareSize($size, StringUtil::deserialize($column, true));
                 }
             }
         }

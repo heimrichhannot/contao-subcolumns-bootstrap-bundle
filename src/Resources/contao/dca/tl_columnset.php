@@ -1,11 +1,14 @@
 <?php
 
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+
 $GLOBALS['TL_DCA']['tl_columnset'] = [
     'config'      => [
         'dataContainer'    => 'Table',
         'enableVersioning' => true,
         'onload_callback'  => [
             ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'appendColumnSizesToPalette'],
+            [ColumnsetContainer::class, 'onLoadCallback']
         ],
         'sql'              => [
             'keys' => [
