@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2022-02-14
+
+- Fixed: array index issues in php 8+
+- Added: heimrichhannot fork of felixpfeiffer subcolumns module since it's abandoned
+
 ## [1.8.0] - 2021-11-02
 - Added: warning when database rows are missing
 - Fixed: some deprecations

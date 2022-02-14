@@ -19,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
     'list'        => [
         'label'             => [
             'fields' => ['title', 'columns'],
-            'format' => '%s <span style="color:#ccc;">[%s '.$GLOBALS['TL_LANG']['tl_columnset']['formatColumns'].']</span>',
+            'format' => '%s <span style="color:#ccc;">[%s '.($GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] ?? null).']</span>',
         ],
         'sorting'           => [
             'mode'        => 2,
@@ -51,7 +51,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
                 'label'      => &$GLOBALS['TL_LANG']['tl_columnset']['delete'],
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
-                'attributes' => 'onclick="if(!confirm(\''.$GLOBALS['TL_LANG']['MSC']['deleteConfirm'].'\'))return false;Backend.getScrollOffset()"',
+                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false;Backend.getScrollOffset()"',
             ],
             'toggle' => [
                 'label'      => &$GLOBALS['TL_LANG']['tl_columnset']['toggle'],

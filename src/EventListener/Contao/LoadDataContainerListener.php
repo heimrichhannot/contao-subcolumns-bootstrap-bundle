@@ -39,19 +39,19 @@ class LoadDataContainerListener
                     'includeBlankOption' => true,
                     'columnFields'       => [
                         'width'  => [
-                            'label'     => $GLOBALS['TL_LANG']['tl_columnset']['width'],
+                            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['width'],
                             'inputType' => 'select',
                             'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                             'eval'      => ['style' => 'width: 100px;'],
                         ],
                         'offset' => [
-                            'label'     => $GLOBALS['TL_LANG']['tl_columnset']['offset'],
+                            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['offset'],
                             'inputType' => 'select',
                             'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                             'eval'      => ['style' => 'width: 100px;', 'includeBlankOption' => true],
                         ],
                         'order'  => [
-                            'label'     => $GLOBALS['TL_LANG']['tl_columnset']['order'],
+                            'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['order'],
                             'inputType' => 'select',
                             'options'   => [
                                 'order-1',
