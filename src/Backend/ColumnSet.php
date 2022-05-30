@@ -2,11 +2,14 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
+use Contao\Backend;
+use Contao\ContentModel;
+use Contao\DataContainer;
 use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
-class ColumnSet extends \Backend
+class ColumnSet extends Backend
 {
 
     /**
@@ -47,7 +50,7 @@ class ColumnSet extends \Backend
                 if (isset($container[$index][0])) {
                     $container[$index][0] .= ' ' . self::prepareSize($size, StringUtil::deserialize($column, true));
                 } else {
-                    $container[$index][0] .= self::prepareSize($size, StringUtil::deserialize($column, true));
+                    $container[$index][0] = self::prepareSize($size, StringUtil::deserialize($column, true));
                 }
             }
         }
@@ -119,7 +122,7 @@ class ColumnSet extends \Backend
 
         $arrDca = &$GLOBALS['TL_DCA']['tl_content'];
 
-        $content = \ContentModel::findByPK($dc->id);
+        $content = ContentModel::findByPK($dc->id);
 
         $arrDca['palettes']['colsetStart'] = str_replace('sc_name', '', $arrDca['palettes']['colsetStart']);
         $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,sc_name', $arrDca['palettes']['colsetStart']);
@@ -138,7 +141,7 @@ class ColumnSet extends \Backend
     public function appendColumnSizesToPalette($dc)
     {
         $model = ColumnsetModel::findByPk($dc->id);
-        $sizes = array_merge(deserialize($model->sizes, true));
+        $sizes = array_merge(StringUtil::deserialize($model->sizes, true));
         $arrDca = &$GLOBALS['TL_DCA']['tl_columnset'];
 
         foreach ($sizes as $size) {
@@ -152,13 +155,13 @@ class ColumnSet extends \Backend
      * create a MCW row for each column
      *
      * @param string $value deseriazable value, for getting an array
-     * @param $mcw multi column wizard or DC_Table
+     * @param DataContainer $mcw multi column wizard or DC_Table
      * @return mixed
      */
     public function createColumns($value, $mcw)
     {
         $columns = (int)$mcw->activeRecord->columns;
-        $value   = deserialize($value, true);
+        $value   = StringUtil::deserialize($value, true);
         $count   = count($value);
 
         // initialize columns
@@ -188,7 +191,7 @@ class ColumnSet extends \Backend
      * replace subcolumns getAllTypes method, to load all created columnsets. There is a fallback provided if not
      * bootstra_customizable is used
      *
-     * @param DC_Table $dc
+     * @param DataContainer $dc
      * @return array
      */
     public function getAllTypes($dc)

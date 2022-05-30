@@ -5,6 +5,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\StringUtil;
+use Contao\System;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -54,11 +55,11 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
                 $strMiniset .= '</div>';
             }
 
-            $this->Template = new \BackendTemplate('be_subcolumns');
+            $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $this->compileColor($arrColor);
 
             if (($columnSet = ColumnsetModel::findByPk($this->columnset_id)) !== null) {
-                \System::loadLanguageFile('tl_columnset');
+                System::loadLanguageFile('tl_columnset');
                 $this->Template->colsetTitle = $columnSet->title . ' (' . $this->sc_type . ' ' . $GLOBALS['TL_LANG']['tl_columnset']['columns' . ($this->sc_type > 1 ? 'Plural' : 'Singular')] . ')';
             }
 
@@ -82,7 +83,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             $container = ColumnSet::prepareContainer($this->columnset_id);
 
             if ($container) {
-                $equalize = $GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] && $this->sc_equalize ? $GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] . ' ' : '';
+                $equalize = (($GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] ?? false) && $this->sc_equalize) ? $GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] . ' ' : '';
 
                 $this->Template->column  = $container[$this->sc_sortid][0] . ' col_' . ($this->sc_sortid + 1) . (($this->sc_sortid == count($container) - 1) ? ' last' : '');
                 $this->Template->scclass = $equalize . $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' colcount_' . count($container) . ' ' . $this->strSet . ' col_' . $this->sc_type;
@@ -96,12 +97,12 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 
             $cssID = $this->cssID;
 
-            if ($this->cssID == ['', ''] && $columnSet->cssID)
+            if ((!is_array($this->cssID) || empty(array_filter($this->cssID))) && $columnSet->cssID)
             {
                 $cssID = StringUtil::deserialize($columnSet->cssID, true);
             }
 
-            $cssID[1] = $this->Template->class . ' ' . $this->Template->scclass . ' ' . $cssID[1];
+            $cssID[1] = $this->Template->class . ' ' . $this->Template->scclass.(($cssID[1] ?? false) ? ' '.$cssID[1] : '') ;
             $this->cssID = $cssID;
 
             $this->Template->class = '';

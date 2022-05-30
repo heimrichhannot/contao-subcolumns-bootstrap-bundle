@@ -31,7 +31,7 @@ class Content extends Backend
         $GLOBALS['TL_DCA']['tl_content']['palettes']['colsetStart'] = $palette;
     }
 
-    public function editColumnset(\DataContainer $dc)
+    public function editColumnset(DataContainer $dc)
     {
         if ($dc->value > 0) {
             return System::getContainer()->get('huh.utils.dca')->getModalEditLink('columnset', (int)$dc->value);

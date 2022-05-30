@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 2022-05-30
+- Fixed: warning in php 8
+
 ## [1.9.0] - 2022-02-14
 
 - Fixed: array index issues in php 8+
