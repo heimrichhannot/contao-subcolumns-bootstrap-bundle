@@ -29,10 +29,15 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
             }
 
             $arrColor = unserialize($this->sc_color);
+            if(count($arrColor) === 2 && empty($arrColor[1])) {
+                $arrColor = '';
+            } else {
+                $arrColor  = $this->compileColor($arrColor);
+            }
 
             if (!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css']) {
                 $this->Template              = new \BackendTemplate('be_subcolumns');
-                $this->Template->setColor    = $this->compileColor($arrColor);
+                $this->Template->setColor    = $arrColor;
                 $this->Template->colsetTitle = '### COLUMNSET START ' . $this->sc_type . ' <strong>' . $this->sc_name . '</strong> ###';
                 #$this->Template->visualSet = $strMiniset;
                 $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $colID);
@@ -59,7 +64,7 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
             $strMiniset .= '</div>';
 
             $this->Template           = new \BackendTemplate('be_subcolumns');
-            $this->Template->setColor = $this->compileColor($arrColor);
+            $this->Template->setColor = $arrColor;
 
             $parent = \ContentModel::findByPk($this->sc_parent);
 

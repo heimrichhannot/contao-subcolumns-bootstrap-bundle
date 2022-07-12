@@ -127,7 +127,7 @@ class ColumnSet extends Backend
         $arrDca['palettes']['colsetStart'] = str_replace('sc_name', '', $arrDca['palettes']['colsetStart']);
         $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,sc_name', $arrDca['palettes']['colsetStart']);
 
-        if ($content->sc_type > 0) {
+        if ($content && isset($content->sc_type) && $content->sc_type > 0) {
             $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $arrDca['palettes']['colsetStart']);
             $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
         }

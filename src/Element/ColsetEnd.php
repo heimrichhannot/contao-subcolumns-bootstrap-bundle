@@ -18,11 +18,16 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
         {
 
             $arrColor = unserialize($this->sc_color);
+            if(count($arrColor) === 2 && empty($arrColor[1])) {
+                $arrColor = '';
+            } else {
+                $arrColor  = $this->compileColor($arrColor);
+            }
 
             if(!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'])
             {
                 $this->Template = new \BackendTemplate('be_subcolumns');
-                $this->Template->setColor = $this->compileColor($arrColor);
+                $this->Template->setColor = $arrColor;
                 $this->Template->colsetTitle = '### COLUMNSET START '.$this->sc_type.' <strong>'.$this->sc_name.'</strong> ###';
 
                 return $this->Template->parse();
@@ -50,7 +55,7 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
             $strMiniset .= '</div>';
 
             $this->Template = new \BackendTemplate('be_subcolumns');
-            $this->Template->setColor = $this->compileColor($arrColor);
+            $this->Template->setColor = $arrColor;
 
             $parent = \ContentModel::findByPk($this->sc_parent);
 

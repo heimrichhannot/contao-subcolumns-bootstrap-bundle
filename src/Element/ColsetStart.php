@@ -20,11 +20,17 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
         {
 
             $arrColor = unserialize($this->sc_color);
+            // avoid firing compileColor for php8 compatibility
+            if(count($arrColor) === 2 && empty($arrColor[1])) {
+                $arrColor = '';
+            } else {
+                $arrColor  = $this->compileColor($arrColor);
+            }
 
             if(!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'])
             {
                 $this->Template = new BackendTemplate('be_subcolumns');
-                $this->Template->setColor = $this->compileColor($arrColor);
+                $this->Template->setColor = $arrColor;
                 $this->Template->colsetTitle = '### COLUMNSET START '.$this->sc_type.' <strong>'.$this->sc_name.'</strong> ###';
                 $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$GLOBALS['TL_LANG']['MSC']['sc_first']);
 
@@ -34,7 +40,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
             $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ? $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] : false;
 
-            $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type];
+            $arrColset = !empty($this->sc_type) ? $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] : '';
             $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
             $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
@@ -56,7 +62,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             }
 
             $this->Template = new BackendTemplate('be_subcolumns');
-            $this->Template->setColor = $this->compileColor($arrColor);
+            $this->Template->setColor = $arrColor;
 
             if (($columnSet = ColumnsetModel::findByPk($this->columnset_id)) !== null) {
                 System::loadLanguageFile('tl_columnset');
