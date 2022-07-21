@@ -4,5 +4,5 @@
     </div>
     <div class="<?= $this->class; ?> <?= $this->column; ?>"<?= $this->cssID; ?>>
         <?php if($this->useInside): ?>
-        <div class="<?= $this->inside; ?>"<?php if ($this->gap['left'] || $this->gap['right']) : ?> style="<?php if ($this->gap['right']) : ?>padding-right:<?= $this->gap['right']; ?>;<?php endif; ?><?php if ($this->gap['left']) : ?>padding-left:<?= $this->gap['left']; ?>;<?php endif; ?>"<?php endif; ?>>
+        <div class="<?= $this->inside; ?>"<?php if (isset($this->gap['left']) || isset($this->gap['right'])) : ?> style="<?php if (isset($this->gap['right'])) : ?>padding-right:<?= $this->gap['right']; ?>;<?php endif; ?><?php if (isset($this->gap['left'])) : ?>padding-left:<?= $this->gap['left']; ?>;<?php endif; ?>"<?php endif; ?>>
         <?php endif; ?>

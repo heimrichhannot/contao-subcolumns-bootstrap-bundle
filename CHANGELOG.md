@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.3] - 2022-07-21
+- Fixed: php8 warnings in templates
+
 ## [1.9.2] - 2022-07-12
 - Changed: raise subcolumns dependency
 - Fixed: avoid array offset on php8
