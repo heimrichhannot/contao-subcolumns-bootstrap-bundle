@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.0] - 2023-01-11
+- Changed: use encore contracts
+- Changed: requires at least contao 4.9
+- Changed: requires at least php 7.4
+
 ## [1.9.5] - 2023-01-11
 - Fixed: warning with php 8
 
