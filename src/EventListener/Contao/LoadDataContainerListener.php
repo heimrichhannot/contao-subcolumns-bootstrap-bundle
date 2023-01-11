@@ -22,7 +22,7 @@ class LoadDataContainerListener
             return;
         }
 
-        $sizes = $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'];
+        $sizes = $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'] ?? null;
         if (!$sizes) {
             return;
         }
