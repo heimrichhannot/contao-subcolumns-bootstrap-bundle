@@ -1,8 +1,10 @@
 <?php
 
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+
 $lang = &$GLOBALS['TL_LANG']['tl_content'];
 
-if ($GLOBALS['TL_CONFIG']['subcolumns'] == \HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
+if (($GLOBALS['TL_CONFIG']['subcolumns'] ?? '') == SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4) {
     $lang['sc_type'][0] = 'Spaltenanzahl';
     $lang['sc_type'][1] = 'Wählen Sie die Spaltenanzahl aus, die das Spaltenset besitzen soll.';
 }
