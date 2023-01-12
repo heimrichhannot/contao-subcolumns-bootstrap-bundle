@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [1.10.0] - 2023-01-11
-- Changed: use encore contracts
+- Added: encore contracts support ([#11])
 - Changed: requires at least contao 4.9
 - Changed: requires at least php 7.4
 
@@ -208,3 +208,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - initial state
+
+
+[#11]: https://github.com/heimrichhannot/contao-subcolumns-bootstrap-bundle/pull/11
