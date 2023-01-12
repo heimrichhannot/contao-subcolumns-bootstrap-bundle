@@ -6,6 +6,7 @@ use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\System;
+use HeimrichHannot\SubColumnsBootstrapBundle\Asset\FrontendAsset;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -127,6 +128,8 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             if ($columnSet->useInside) {
                 $this->Template->inside = $columnSet->insideClass;
             }
+
+            System::getContainer()->get(FrontendAsset::class)->addAsset();
         }
     }
 }

@@ -6,9 +6,7 @@ use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Contao\ManagerPlugin\Config\ConfigPluginInterface;
-use Contao\ManagerPlugin\Config\ContainerBuilder;
-use Contao\ManagerPlugin\Config\ExtensionPluginInterface;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 /**
@@ -16,7 +14,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
  *
  * @package HeimrichHannot\SubColumnsBootstrapBundle\ContaoManager
  */
-class Plugin implements BundlePluginInterface, ExtensionPluginInterface, ConfigPluginInterface
+class Plugin implements BundlePluginInterface, ConfigPluginInterface
 {
     /**
      * {@inheritdoc}
@@ -30,21 +28,9 @@ class Plugin implements BundlePluginInterface, ExtensionPluginInterface, ConfigP
         }
 
         return [
-            BundleConfig::create('HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle')->setLoadAfter($loadAfter),
+            BundleConfig::create(SubColumnsBootstrapBundle::class)
+                ->setLoadAfter($loadAfter),
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container)
-    {
-        return ContainerUtil::mergeConfigFile(
-            'huh_encore',
-            $extensionName,
-            $extensionConfigs,
-            __DIR__.'/../Resources/config/config_encore.yml'
-        );
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)

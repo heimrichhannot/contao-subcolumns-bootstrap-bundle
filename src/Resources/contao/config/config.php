@@ -19,14 +19,6 @@ $GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBoots
 $GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd';
 
 /**
- * JavaScript
- */
-if (System::getContainer()->get('huh.utils.container')->isFrontend()) {
-    $GLOBALS['TL_JAVASCRIPT']['contao-subcolumns-bootstrap-bundle'] =
-        'bundles/subcolumnsbootstrap/js/contao-subcolumns-bootstrap-bundle.fe.min.js|static';
-}
-
-/**
  * Models
  */
 $GLOBALS['TL_MODELS']['tl_columnset'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel';
