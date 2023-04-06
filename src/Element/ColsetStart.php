@@ -128,8 +128,6 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             if ($columnSet->useInside) {
                 $this->Template->inside = $columnSet->insideClass;
             }
-
-            System::getContainer()->get(FrontendAsset::class)->addAsset();
         }
     }
 }

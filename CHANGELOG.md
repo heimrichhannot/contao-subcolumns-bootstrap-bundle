@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.1] - 2023-04-06
+- Fixed: col full js loaded by default
+
 ## [1.10.0] - 2023-01-11
 - Added: encore contracts support ([#11])
 - Changed: requires at least contao 4.9
