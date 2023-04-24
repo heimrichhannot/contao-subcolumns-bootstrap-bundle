@@ -3,27 +3,21 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 
 use Contao\Config;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\Input;
+use Contao\CoreBundle\ServiceAnnotation\Callback;
+use Contao\DataContainer;
 use Contao\Message;
+use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
-use HeimrichHannot\UtilsBundle\Util\Utils;
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ColumnsetContainer
 {
-    /**
-     * @var Connection
-     */
-    private              $connection;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-    /**
-     * @var ScopeMatcher
-     */
-    private $scopeMatcher;
+    private Connection $connection;
+    private RequestStack $requestStack;
+    private ScopeMatcher $scopeMatcher;
 
     public function __construct(Connection $connection, RequestStack $requestStack, ScopeMatcher $scopeMatcher)
     {
@@ -32,13 +26,17 @@ class ColumnsetContainer
         $this->scopeMatcher = $scopeMatcher;
     }
 
-
-    public function onLoadCallback($dc): void
+    /**
+     * @Callback(table="tl_columnset", target="config.onload")
+     */
+    public function onLoadCallback(DataContainer $dc = null): void
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request || !$this->scopeMatcher->isBackendRequest($request) || 'edit' !== $request->get('act')) {
             return;
         }
+
+        [$sizes, $arrDca, $size] = $this->preparePalette((int)$dc->id);
 
         $sizes = $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'] ?? null;
         if (!$sizes) {
@@ -54,5 +52,20 @@ class ColumnsetContainer
                 return;
             }
         }
+    }
+
+    protected function preparePalette(int $id): array
+    {
+        $model  = ColumnsetModel::findByPk($id);
+        $sizes  = array_merge(StringUtil::deserialize($model->sizes, true));
+        $arrDca = &$GLOBALS['TL_DCA']['tl_columnset'];
+
+        $pm = PaletteManipulator::create();
+
+        foreach ($sizes as $size) {
+            $pm->addField('columnset_' . $size, 'sizes', PaletteManipulator::POSITION_APPEND);
+        }
+        $pm->applyToPalette('default', 'tl_columnset');
+        return [$sizes, $arrDca, $size];
     }
 }

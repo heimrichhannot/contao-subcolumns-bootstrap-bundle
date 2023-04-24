@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.2] - 2023-04-24
+- Fixed: warnings
+
 ## [1.10.1] - 2023-04-06
 - Fixed: col full js loaded by default
 

@@ -135,23 +135,6 @@ class ColumnSet extends Backend
 
 
     /**
-     * Append column sizes fields dynamically to the palettes. Not using
-     * @param $dc
-     */
-    public function appendColumnSizesToPalette($dc)
-    {
-        $model = ColumnsetModel::findByPk($dc->id);
-        $sizes = array_merge(StringUtil::deserialize($model->sizes, true));
-        $arrDca = &$GLOBALS['TL_DCA']['tl_columnset'];
-
-        foreach ($sizes as $size) {
-            $arrDca['palettes']['default'] = str_replace('sizes', 'sizes,' . 'columnset_' . $size,
-                $arrDca['palettes']['default']);
-        }
-    }
-
-
-    /**
      * create a MCW row for each column
      *
      * @param string $value deseriazable value, for getting an array
