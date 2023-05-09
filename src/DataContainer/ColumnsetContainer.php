@@ -36,7 +36,7 @@ class ColumnsetContainer
             return;
         }
 
-        [$sizes, $arrDca, $size] = $this->preparePalette((int)$dc->id);
+        $this->preparePalette((int)$dc->id);
 
         $sizes = $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'] ?? null;
         if (!$sizes) {
@@ -54,7 +54,7 @@ class ColumnsetContainer
         }
     }
 
-    protected function preparePalette(int $id): array
+    protected function preparePalette(int $id): void
     {
         $model  = ColumnsetModel::findByPk($id);
         $sizes  = array_merge(StringUtil::deserialize($model->sizes, true));
@@ -66,6 +66,5 @@ class ColumnsetContainer
             $pm->addField('columnset_' . $size, 'sizes', PaletteManipulator::POSITION_APPEND);
         }
         $pm->applyToPalette('default', 'tl_columnset');
-        return [$sizes, $arrDca, $size];
     }
 }
