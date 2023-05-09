@@ -6,7 +6,6 @@ use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\System;
-use HeimrichHannot\SubColumnsBootstrapBundle\Asset\FrontendAsset;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -41,7 +40,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
             $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
             $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ? $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] : false;
 
-            $arrColset = !empty($this->sc_type) ? $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] : '';
+            $arrColset = !empty($this->sc_type) ? ($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '') : '';
             $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
             $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 

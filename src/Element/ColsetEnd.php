@@ -38,11 +38,11 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
 
 
 
-            $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type];
+            $arrColset = ($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '');
             $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
             $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
-            $intCountContainers = count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type]);
+            $intCountContainers = count(($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? []));
 
             $strMiniset = '<div class="colsetexample final '.$strSCClass.'">';
 
