@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.3] - 2023-04-10
+- Fixed: exception
+- Fixed: warnings
+
 ## [1.10.2] - 2023-04-24
 - Fixed: warnings
 
