@@ -24,7 +24,7 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
                 $arrColor  = $this->compileColor($arrColor);
             }
 
-            if(!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'])
+            if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
             {
                 $this->Template = new \BackendTemplate('be_subcolumns');
                 $this->Template->setColor = $arrColor;

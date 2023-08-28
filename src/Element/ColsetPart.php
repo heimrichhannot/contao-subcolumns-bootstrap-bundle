@@ -35,7 +35,7 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
                 $arrColor  = $this->compileColor($arrColor);
             }
 
-            if (!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css']) {
+            if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false)) {
                 $this->Template              = new \BackendTemplate('be_subcolumns');
                 $this->Template->setColor    = $arrColor;
                 $this->Template->colsetTitle = '### COLUMNSET START ' . $this->sc_type . ' <strong>' . $this->sc_name . '</strong> ###';
