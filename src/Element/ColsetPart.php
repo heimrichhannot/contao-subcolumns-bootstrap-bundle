@@ -10,7 +10,7 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
 {
     public function generate()
     {
-        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ? $GLOBALS['TL_CONFIG']['subcolumns'] : 'yaml3';
+        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ?: 'yaml3';
 
         if (TL_MODE == 'BE') {
             switch ($this->sc_sortid) {
@@ -87,10 +87,7 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
     {
         @parent::compile();
 
-        if (in_array($GLOBALS['TL_CONFIG']['subcolumns'], [
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5
-        ])) {
+        if (SubColumnsBootstrapBundle::validSubtype($GLOBALS['TL_CONFIG']['subcolumns'])) {
             $parent    = \ContentModel::findByPk($this->sc_parent);
             $container = ColumnSet::prepareContainer($parent->columnset_id);
 
