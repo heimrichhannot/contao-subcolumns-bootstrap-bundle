@@ -4,8 +4,8 @@
 <?php if ($this->addContainer): ?>
 <div class="container">
 <?php endif; ?>
-<section class="<?= $this->class; ?> <?= $this->scclass; ?>"<?= $this->cssID; ?><?php if ($this->style): ?> style="<?= $this->style; ?>"<?php endif; ?>>
-    <div class="<?= $this->column; ?>">
+<section class="<?= $this->class; ?> <?=$this->scclass?>" <?= $this->cssID; ?><?php if ($this->style): ?> style="<?= $this->style; ?>"<?php endif; ?>>
+    <div class="col-12 <?=trim($this->column)?>">
         <?php if($this->useInside): ?>
         <div class="<?= $this->inside; ?>"<?php if(isset($this->gap['right'])): ?> style="padding-right:<?= $this->gap['right']; ?>;"<?php endif; ?>>
         <?php endif ?>
