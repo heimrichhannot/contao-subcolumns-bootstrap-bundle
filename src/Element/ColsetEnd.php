@@ -12,7 +12,7 @@ class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
 {
     public function generate()
     {
-        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ? $GLOBALS['TL_CONFIG']['subcolumns'] : 'yaml3';
+        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ?: 'yaml3';
 
         if (TL_MODE == 'BE')
         {
