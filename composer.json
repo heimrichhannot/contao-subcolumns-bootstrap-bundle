@@ -8,7 +8,7 @@
     "contao/core-bundle": "^4.9",
     "heimrichhannot/contao-encore-contracts": "^1.0",
     "heimrichhannot/contao-utils-bundle": "^2.16",
-    "heimrichhannot/subcolumns": "^4.1",
+    "heimrichhannot/subcolumns": "^4.1.1",
     "symfony/http-kernel": "^4.0 || ^5.0",
     "symfony/service-contracts": "^1.0 || ^2.0 || ^3.0"
   },
