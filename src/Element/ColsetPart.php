@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
+use HeimrichHannot\Subcolumns\SubcolumnTypes;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -10,7 +11,7 @@ class ColsetPart extends \FelixPfeiffer\Subcolumns\colsetPart
 {
     public function generate()
     {
-        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ?: 'yaml3';
+        $this->strSet = SubcolumnTypes::compatSetType();
 
         if (TL_MODE == 'BE') {
             switch ($this->sc_sortid) {

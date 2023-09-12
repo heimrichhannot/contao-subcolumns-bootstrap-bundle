@@ -6,6 +6,7 @@ use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\System;
+use HeimrichHannot\Subcolumns\SubcolumnTypes;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -14,7 +15,7 @@ class ColsetStart extends \FelixPfeiffer\Subcolumns\colsetStart
 {
     public function generate()
     {
-        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ? $GLOBALS['TL_CONFIG']['subcolumns'] : 'yaml3';
+        $this->strSet = SubcolumnTypes::compatSetType();
 
         if (TL_MODE == 'BE')
         {

@@ -2,17 +2,15 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
-use Contao\ContentElement;
 use Contao\ContentModel;
-use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
+use HeimrichHannot\Subcolumns\SubcolumnTypes;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
-use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class ColsetEnd extends \FelixPfeiffer\Subcolumns\colsetEnd
 {
     public function generate()
     {
-        $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ?: 'yaml3';
+        $this->strSet = SubcolumnTypes::compatSetType();
 
         if (TL_MODE == 'BE')
         {
