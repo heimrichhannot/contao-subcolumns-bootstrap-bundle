@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.1] - 2023-09-13
+- Fixed: typo in subolumn type constants
+- Fixed: php8 warnings
+- Changed: columns now default to class col-12 with col-md-{n}
+
 ## [1.10.4] - 2023-08-28
 - Fixed: warnings
 
