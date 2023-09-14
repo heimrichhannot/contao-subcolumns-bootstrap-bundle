@@ -2,8 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.2] - 2023-09-14
+- Fixed: subcolumn type not updated in settings (please run migration after update)
+
 ## [1.11.1] - 2023-09-13
-- Fixed: typo in subolumn type constants
+- Fixed: typo in subcolumn type constants
 - Fixed: php8 warnings
 - Changed: columns now default to class col-12 with col-md-{n}
 
