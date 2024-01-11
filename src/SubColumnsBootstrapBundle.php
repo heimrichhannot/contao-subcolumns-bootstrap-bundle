@@ -20,7 +20,7 @@ class SubColumnsBootstrapBundle extends Bundle
      * @param string $scType
      * @return string|null
      */
-    public static function validateTypeString(string $scType): ?string
+    public static function filterTypeString(string $scType): ?string
     {
         return $scType ? [
             'boostrap4' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
@@ -40,6 +40,6 @@ class SubColumnsBootstrapBundle extends Bundle
      */
     public static function validSubtype(string $scType, ?int $bootstrapVersion = null): bool
     {
-        return $scType === self::validateTypeString($scType) && ($bootstrapVersion === null || substr($scType, -1) == (string)$bootstrapVersion);
+        return $scType === self::filterTypeString($scType) && ($bootstrapVersion === null || substr($scType, -1) == (string)$bootstrapVersion);
     }
 }
