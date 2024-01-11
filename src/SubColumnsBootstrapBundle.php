@@ -2,12 +2,15 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle;
 
+use Contao\Config;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class SubColumnsBootstrapBundle extends Bundle
 {
     public const SUBCOLUMNS_TYPE_BOOTSTRAP4 = 'bootstrap4';
     public const SUBCOLUMNS_TYPE_BOOTSTRAP5 = 'bootstrap5';
+
+    protected static string $subType;
 
     /**
      * This is the overhead of a typo fix within the constants above.
@@ -38,8 +41,43 @@ class SubColumnsBootstrapBundle extends Bundle
      * @param int|null $bootstrapVersion
      * @return bool
      */
-    public static function validSubtype(string $scType, ?int $bootstrapVersion = null): bool
+    public static function validSubType(string $scType, ?int $bootstrapVersion = null): bool
     {
-        return $scType === self::filterTypeString($scType) && ($bootstrapVersion === null || substr($scType, -1) == (string)$bootstrapVersion);
+        return $scType === self::filterTypeString($scType) && ($bootstrapVersion === null || substr($scType, -1) === (string)$bootstrapVersion);
+    }
+
+    /**
+     * Sets the current sub-column type to the given value.
+     *
+     * @param string $subType The sub-column type string to set. Must be a valid sub-column type string.
+     * @return void
+     */
+    public static function setSubType(string $subType): void
+    {
+        static::$subType = static::filterTypeString($subType);
+    }
+
+    /**
+     * Retrieves the current sub-column type, if it is already set,
+     * otherwise, it will be retrieved from the configuration and set.
+     * If no sub-columns configuration is found, the default value is 'bootstrap4'.
+     *
+     * @return string The current sub-column type.
+     */
+    public static function getSubType(): string
+    {
+        if (isset(static::$subType)) {
+            return static::$subType;
+        }
+
+        $subcolumns = Config::get('subcolumns') ?: 'bootstrap4';
+        static::$subType = SubColumnsBootstrapBundle::filterTypeString($subcolumns) ?: $subcolumns;
+
+        return static::$subType;
+    }
+
+    public function getPath(): string
+    {
+        return dirname(__DIR__);
     }
 }

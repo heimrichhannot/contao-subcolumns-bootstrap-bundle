@@ -6,6 +6,7 @@ use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Contao\ManagerPlugin\Config\ConfigPluginInterface;
+use Exception;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -19,7 +20,7 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
     /**
      * {@inheritdoc}
      */
-    public function getBundles(ParserInterface $parser)
+    public function getBundles(ParserInterface $parser): array
     {
         $loadAfter = ['Subcolumns'];
 
@@ -33,8 +34,12 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     * @throws Exception
+     */
     public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
     {
-        $loader->load("@SubColumnsBootstrapBundle/Resources/config/services.yml");
+        $loader->load("@SubColumnsBootstrapBundle/config/services.yaml");
     }
 }

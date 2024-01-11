@@ -58,13 +58,13 @@ class ColumnsetContainer
     {
         $model  = ColumnsetModel::findByPk($id);
         $sizes  = array_merge(StringUtil::deserialize($model->sizes, true));
-        $arrDca = &$GLOBALS['TL_DCA']['tl_columnset'];
 
         $pm = PaletteManipulator::create();
 
         foreach ($sizes as $size) {
             $pm->addField('columnset_' . $size, 'sizes', PaletteManipulator::POSITION_APPEND);
         }
+
         $pm->applyToPalette('default', 'tl_columnset');
     }
 }

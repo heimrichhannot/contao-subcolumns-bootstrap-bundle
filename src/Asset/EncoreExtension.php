@@ -23,7 +23,7 @@ class EncoreExtension implements EncoreExtensionInterface
     public function getEntries(): array
     {
         return [
-            EncoreEntry::create('contao-subcolumns-bootstrap-bundle', 'src/Resources/public/js/contao-subcolumns-bootstrap-bundle.fe.es6.js')
+            EncoreEntry::create('contao-subcolumns-bootstrap-bundle', 'public/js/contao-subcolumns-bootstrap-bundle.fe.es6.js')
                 ->addJsEntryToRemoveFromGlobals('contao-subcolumns-bootstrap-bundle')
         ];
     }
