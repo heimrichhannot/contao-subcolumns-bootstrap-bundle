@@ -4,5 +4,5 @@ services:
     autoconfigure: true
 
   HeimrichHannot\SubColumnsBootstrapBundle\:
-    resource: '../../{Asset,DataContainer,Migration}/*'
+    resource: '../src/{Asset,DataContainer,EventListener,Migration}/*'
     public: true

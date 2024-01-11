@@ -144,7 +144,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'inputType' => 'checkbox',
             'options_callback'   => static function ()
             {
-                return isset($GLOBALS['TL_SUBCL'][Config::get('subcolumns')]) ? $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'] : [];
+                return $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'] ?? [];
             },
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => ['multiple' => true, 'submitOnChange' => true],

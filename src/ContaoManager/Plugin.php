@@ -35,6 +35,7 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
     }
 
     /**
+     * {@inheritdoc}
      * @throws Exception
      */
     public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
