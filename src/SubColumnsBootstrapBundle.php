@@ -42,4 +42,9 @@ class SubColumnsBootstrapBundle extends Bundle
     {
         return $scType === self::filterTypeString($scType) && ($bootstrapVersion === null || substr($scType, -1) == (string)$bootstrapVersion);
     }
+
+    public function getPath(): string
+    {
+        return dirname(__DIR__);
+    }
 }

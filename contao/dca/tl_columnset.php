@@ -1,5 +1,6 @@
 <?php
 
+use Contao\Config;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 
 $GLOBALS['TL_DCA']['tl_columnset'] = [
@@ -143,7 +144,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'inputType' => 'checkbox',
             'options_callback'   => static function ()
             {
-                return isset($GLOBALS['TL_SUBCL'][Contao\Config::get('subcolumns')]) ? $GLOBALS['TL_SUBCL'][Contao\Config::get('subcolumns')]['sizes'] : [];
+                return isset($GLOBALS['TL_SUBCL'][Config::get('subcolumns')]) ? $GLOBALS['TL_SUBCL'][Config::get('subcolumns')]['sizes'] : [];
             },
             'reference' => &$GLOBALS['TL_LANG']['tl_columnset'],
             'eval'      => ['multiple' => true, 'submitOnChange' => true],
