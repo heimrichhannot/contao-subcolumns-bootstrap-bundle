@@ -18,7 +18,6 @@ class ColumnSet extends Backend
      */
     protected static $container = [];
 
-
     /**
      * prepare the container which sub columns expects
      *
@@ -166,8 +165,7 @@ class ColumnSet extends Backend
 
 
     /**
-     * replace subcolumns getAllTypes method, to load all created columnsets. There is a fallback provided if not
-     * bootstra_customizable is used
+     * replace subcolumns getAllTypes method, to load all created columnsets.
      *
      * @param DataContainer $dc
      * @return array
@@ -187,6 +185,18 @@ class ColumnSet extends Backend
         while ($collection->next()) {
             $types[] = $collection->columns;
         }
+
+        /*while ($collection->next()) {
+            $types['Aus Datenbank'][] = $collection->columns;
+        }
+
+        foreach ($GLOBALS['TL_SUBCL'] as $subType => $config) {
+            foreach ($config['sets'] as $set => $columns) {
+                $types[$config['label']][$subType . '.' . $set] = $set;
+            }
+        }
+
+        ksort($types);*/
 
         return $types;
     }

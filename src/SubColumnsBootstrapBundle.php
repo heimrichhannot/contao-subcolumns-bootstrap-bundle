@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class SubColumnsBootstrapBundle extends Bundle
 {
+    public const SUBCOLUMNS_TYPE_BOOTSTRAP3 = 'bootstrap3';
     public const SUBCOLUMNS_TYPE_BOOTSTRAP4 = 'bootstrap4';
     public const SUBCOLUMNS_TYPE_BOOTSTRAP5 = 'bootstrap5';
 
@@ -26,10 +27,12 @@ class SubColumnsBootstrapBundle extends Bundle
     public static function filterTypeString(string $scType): ?string
     {
         return $scType ? [
+            'bootstrap' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3,
             'boostrap4' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
             'boostrap5' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5,
+            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3,
             SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5
+            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5,
         ][$scType] ?? null : null;
     }
 
