@@ -4,6 +4,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
 use Contao\Backend;
 use Contao\ContentModel;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\DataContainer;
 use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
@@ -108,9 +109,9 @@ class ColumnSet extends Backend
      * add column set field to the colsetStart content element. We need to do it dynamically because subcolumns
      * creates its palette dynamically
      *
-     * @param $dc
+     * @param DataContainer $dc
      */
-    public function appendColumnsetIdToPalette(\DataContainer $dc)
+    public function appendColumnsetIdToPalette(DataContainer $dc)
     {
         if (!SubColumnsBootstrapBundle::validSubType($GLOBALS['TL_CONFIG']['subcolumns'])) return;
 
@@ -125,6 +126,12 @@ class ColumnSet extends Backend
             $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $arrDca['palettes']['colsetStart']);
             $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
         }
+
+        PaletteManipulator::create()
+            ->addField('sc_name', 'sc_type')
+            ->addField('sc_columnset', 'sc_type', PaletteManipulator::POSITION_BEFORE)
+            ->applyToPalette('colsetStart', 'tl_content')
+        ;
     }
 
 
