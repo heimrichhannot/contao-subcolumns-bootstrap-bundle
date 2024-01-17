@@ -4,6 +4,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
 use Contao\BackendTemplate;
 use Contao\ContentModel;
+use Contao\StringUtil;
 use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetEnd as FelixPfeifferColsetEnd;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
@@ -20,8 +21,8 @@ class ColsetEnd extends FelixPfeifferColsetEnd
             return parent::generate();
         }
 
-        $arrColor = unserialize($this->sc_color);
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
+        $arrColor = StringUtil::deserialize($this->sc_color);
+        if (is_countable($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
             $arrColor  = $this->compileColor($arrColor);

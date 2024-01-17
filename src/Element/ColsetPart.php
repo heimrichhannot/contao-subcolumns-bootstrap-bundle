@@ -2,7 +2,10 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
+use Contao\BackendTemplate;
 use Contao\ContentModel;
+use Contao\StringUtil;
+use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetPart as FelixPfeifferColsetPart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
@@ -34,15 +37,15 @@ class ColsetPart extends FelixPfeifferColsetPart
                 break;
         }
 
-        $arrColor = unserialize($this->sc_color);
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
+        $arrColor = StringUtil::deserialize($this->sc_color);
+        if (is_countable($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
             $arrColor  = $this->compileColor($arrColor);
         }
 
         if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false)) {
-            $this->Template              = new \BackendTemplate('be_subcolumns');
+            $this->Template              = new BackendTemplate('be_subcolumns');
             $this->Template->setColor    = $arrColor;
             $this->Template->colsetTitle = '### COLUMNSET START ' . $this->sc_type . ' <strong>' . $this->sc_name . '</strong> ###';
             #$this->Template->visualSet = $strMiniset;
@@ -69,13 +72,13 @@ class ColsetPart extends FelixPfeifferColsetPart
 
         $strMiniset .= '</div>';
 
-        $this->Template           = new \BackendTemplate('be_subcolumns');
+        $this->Template           = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
 
         $parent = \ContentModel::findByPk($this->sc_parent);
 
         if ($parent !== null && ($columnSet = ColumnsetModel::findByPk($parent->columnset_id)) !== null) {
-            \System::loadLanguageFile('tl_columnset');
+            System::loadLanguageFile('tl_columnset');
 
             $this->Template->colsetTitle = $columnSet->title . ' (' . $this->sc_type . ' ' . $GLOBALS['TL_LANG']['tl_columnset']['columns' . ($this->sc_type > 1 ? 'Plural' : 'Singular')] . ')';
         }
