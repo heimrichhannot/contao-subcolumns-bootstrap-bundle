@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\ContaoManager;
 
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
@@ -25,7 +26,7 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface, RoutingPlu
      */
     public function getBundles(ParserInterface $parser): array
     {
-        $loadAfter = ['Subcolumns'];
+        $loadAfter = [ContaoCoreBundle::class, 'Subcolumns'];
 
         if (class_exists('onemarshall\AosBundle\AosBundle')) {
             $loadAfter[] = 'onemarshall\AosBundle\AosBundle';

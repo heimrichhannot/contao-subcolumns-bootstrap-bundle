@@ -12,34 +12,27 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao;
 
 
-use Contao\ArticleModel;
 use Contao\Config;
-use Contao\ContentElement;
-use Contao\ContentModel;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\Input;
-use Contao\Model;
-use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnSetSource;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class LoadDataContainerListener
 {
-    private ContaoFramework $contaoFramework;
+    // private ContaoFramework $contaoFramework;
 
-    public function __construct(ContaoFramework $contaoFramework, ColumnSetSource $columnSetSource)
-    {
-        $this->contaoFramework = $contaoFramework;
-        $columnSetSource->getOptions();
-    }
+    // public function __construct(ContaoFramework $contaoFramework)
+    // {
+    //     $this->contaoFramework = $contaoFramework;
+    // }
 
     public function __invoke(string $table): void
     {
         if ($table === 'tl_content')
         {
             SubColumnsBootstrapBundle::setSubType('bootstrap3');
-            $ce = ContentModel::findByPk(Input::get('id'));
-            $parentModel = $this->contaoFramework->getAdapter(Model::class)->getClassFromTable($ce->ptable);
-            $parent = $parentModel::findByPk($ce->pid);
+            //$ce = ContentModel::findByPk(Input::get('id'));
+            //$parentModel = $this->contaoFramework->getAdapter(Model::class)->getClassFromTable($ce->ptable);
+            //$parent = $parentModel::findByPk($ce->pid);
             return;
         }
 

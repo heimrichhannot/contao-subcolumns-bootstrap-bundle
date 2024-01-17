@@ -17,7 +17,7 @@ class Content extends Backend
 
         $palette = $GLOBALS['TL_DCA']['tl_content']['palettes']['colsetStart'];
 
-        $palette = str_replace('invisible,', '', $palette) . ';{invisible_legend:hide},invisible;' . '{aos_legend:hide},
+        $palette = str_replace('invisible,', '', $palette) . ';{invisible_legend:hide},invisible;{aos_legend:hide},
                 aosAnimation,
                 aosEasing,
                 aosDuration,
