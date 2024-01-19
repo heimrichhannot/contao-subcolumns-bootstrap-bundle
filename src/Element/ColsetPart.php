@@ -8,14 +8,16 @@ use Contao\StringUtil;
 use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetPart as FelixPfeifferColsetPart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
-class ColsetPart extends FelixPfeifferColsetPart
+class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInterface
 {
     public function generate()
     {
-        $this->strSet = SubColumnsBootstrapBundle::getSubType();
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
         if (TL_MODE !== 'BE')
         {
@@ -44,10 +46,14 @@ class ColsetPart extends FelixPfeifferColsetPart
             $arrColor  = $this->compileColor($arrColor);
         }
 
-        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false)) {
+        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
+        {
+            $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+            $title = $columnsetContainer->getTitle($this->sc_columnset);
+
             $this->Template              = new BackendTemplate('be_subcolumns');
             $this->Template->setColor    = $arrColor;
-            $this->Template->colsetTitle = '### COLUMNSET START ' . $this->sc_type . ' <strong>' . $this->sc_name . '</strong> ###';
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px'>—————</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
             #$this->Template->visualSet = $strMiniset;
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $colID);
 
@@ -93,33 +99,44 @@ class ColsetPart extends FelixPfeifferColsetPart
     {
         @parent::compile();
 
-        if (!SubColumnsBootstrapBundle::validSubType(SubColumnsBootstrapBundle::getSubType()))
+        if (!SubColumnsBootstrapBundle::validProfile())
         {
             return;
         }
 
-        $parent    = ContentModel::findByPk($this->sc_parent);
-        $container = ColumnSet::prepareContainer($parent->columnset_id);
+        /** @var ColumnsetContainer $colsetContainer */
+        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
 
-        if ($container) {
-            $this->Template->column = $container[$this->sc_sortid][0] . ' col_' . ($this->sc_sortid + 1) . (($this->sc_sortid == count($container) - 1) ? ' last' : '');
-        }
-
-        $columnSet = ColumnsetModel::findByPk($parent->columnset_id);
-        if ($columnSet === null) {
+        if ($colset === null)
+        {
             return;
         }
 
-        $this->Template->useOutside = $columnSet->useOutside;
-
-        if ($columnSet->useOutside) {
-            $this->Template->outside = $columnSet->outsideClass;
+        if (!empty($colset))
+        {
+            $colClass = ' sc-col:' . ($this->sc_sortid + 1);
+            $lastClass = ($this->sc_sortid == count($colset) - 1) ? ' last' : '';
+            $this->Template->column = $colset[$this->sc_sortid][0] . $colClass . $lastClass;
         }
 
-        $this->Template->useInside = $columnSet->useInside;
-
-        if ($columnSet->useInside) {
-            $this->Template->inside = $columnSet->insideClass;
+        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
+        if ($columnsetModel === null)
+        {
+            return;
         }
+
+        if ($this->Template->useOutside = (bool)$columnsetModel->useOutside) {
+            $this->Template->outside = $columnsetModel->outsideClass ?: '';
+        }
+
+        if ($this->Template->useInside = (bool)$columnsetModel->useInside) {
+            $this->Template->inside = $columnsetModel->insideClass ?: '';
+        }
+    }
+
+    public static function getSubscribedServices(): array
+    {
+        return [ColumnsetContainer::class];
     }
 }

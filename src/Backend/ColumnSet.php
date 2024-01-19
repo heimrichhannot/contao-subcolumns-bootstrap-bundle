@@ -113,7 +113,7 @@ class ColumnSet extends Backend
      */
     public function appendColumnsetIdToPalette(DataContainer $dc)
     {
-        if (!SubColumnsBootstrapBundle::validSubType($GLOBALS['TL_CONFIG']['subcolumns'])) return;
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
 
         $arrDca = &$GLOBALS['TL_DCA']['tl_content'];
 
@@ -179,7 +179,7 @@ class ColumnSet extends Backend
      */
     public function getAllTypes($dc)
     {
-        if (!SubColumnsBootstrapBundle::validSubType($GLOBALS['TL_CONFIG']['subcolumns'])) {
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) {
             $sc = new \tl_content_sc();
             return @$sc->getAllTypes();
         }

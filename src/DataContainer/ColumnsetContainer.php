@@ -2,21 +2,22 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 
+use Contao\Config;
 use Contao\ContentModel;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\Database\Result;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
-use Contao\System;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
+use Exception;
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class ColumnsetContainer
@@ -76,7 +77,7 @@ class ColumnsetContainer
         $pm = PaletteManipulator::create();
 
         foreach ($sizes as $size) {
-            $pm->addField('columnset_' . $size, 'sizes', PaletteManipulator::POSITION_APPEND);
+            $pm->addField('columnset_' . $size, 'columnset_legend', PaletteManipulator::POSITION_APPEND);
         }
 
         $pm->applyToPalette('default', 'tl_columnset');
@@ -85,59 +86,123 @@ class ColumnsetContainer
     /* ===== ERICs WORK BELOW (this comment is temporary) ===== */
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @param string|ColumnsetIdentifier $identifier
      */
-    public function getColumnSettings(string $identifier): ?array
+    public function getColumnSettings($identifier): ?array
     {
-        $exploded = explode('.', $identifier, 3);
+        $identifier = ColumnsetIdentifier::deconstruct($identifier);
 
-        if (count($exploded) !== 3) {
+        if (!$identifier) {
             return null;
         }
 
-        $source = $exploded[0];
-
-        switch ($source) {
+        switch ($identifier->getSource()) {
             case 'globals':
-                return $this->getGlobalColumnSettings($exploded[1], $exploded[2]);
+                return $this->getGlobalColumnSettings(...$identifier->getParams());
             case 'db':
-                return $this->getDBColumnSettings($exploded[1], $exploded[2]);
+                return $this->getDBColumnSettings(...$identifier->getParams());
         }
 
         return null;
     }
 
-    private function getGlobalColumnSettings(string $columnSetContainer, string $columnSet): ?array
+    private function getGlobalColumnSettings(string $profile, string $columnSet): ?array
     {
-        return $GLOBALS['TL_SUBCL'][$columnSetContainer]['sets'][$columnSet] ?? null;
+        return $GLOBALS['TL_SUBCL'][$profile]['sets'][$columnSet] ?? null;
+    }
+
+    public function getGlobalColumnsetProfile(string $profile): ?array
+    {
+        return $GLOBALS['TL_SUBCL'][$profile] ?? null;
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @param ColumnsetIdentifier|string $identifier
+     * @return array|null
+     */
+    public function tryGlobalColumnsetProfileByIdentifier(string $identifier): ?array
+    {
+        $identifier = ColumnsetIdentifier::deconstruct($identifier);
+
+        if (!$identifier) {
+            return null;
+        }
+
+        return $this->getGlobalColumnsetProfile(...$identifier->getParams());
+    }
+
+    /**
+     * @param ColumnsetIdentifier|string $identifier
+     * @return ColumnsetModel|null
+     */
+    public function tryColumnsetModelByIdentifier(string $identifier): ?ColumnsetModel
+    {
+        $identifier = ColumnsetIdentifier::deconstruct($identifier);
+
+        if (!$identifier) {
+            return null;
+        }
+
+        if ($identifier->getSource() !== 'db') {
+            return null;
+        }
+
+        return $this->tryColumnsetModel(...$identifier->getParams());
+    }
+
+
+    /**
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      */
+    public function tryColumnsetModel(string $table, string $id): ?ColumnsetModel
+    {
+        if ($table !== 'tl_columnset')
+        {
+            return null;
+        }
+
+        return ColumnsetModel::findByPk($id);
+    }
+
+    public function getTitle(string $identifier): string
+    {
+        $identifier = ColumnsetIdentifier::deconstruct($identifier);
+        $columnsetModel = $this->tryColumnsetModelByIdentifier($identifier);
+        $globalProfile = $this->tryGlobalColumnsetProfileByIdentifier($identifier);
+        $title = $columnsetModel->title ?? '';
+        if (!$title && $globalProfile) {
+            $title = $globalProfile['label'] ?? '';
+            if ($title) {
+                $title .= ':&ensp;' . ($identifier->getParams()[1] ?? '');
+            } else {
+                $title = implode(' ', $identifier->getParams());
+            }
+        }
+        return $title;
+    }
+
     private function getDBColumnSettings(string $table, string $id): ?array
     {
-        if ($table !== 'tl_columnset') {
+        $columnsetModel = $this->tryColumnsetModel($table, $id);
+
+        if ($columnsetModel === null) {
             return null;
         }
 
-        $result = $this->connection->fetchAssociative('SELECT * FROM `tl_columnset` WHERE `id`=? LIMIT 1', [$id]);
-
-        if (empty($result)) {
-            return null;
-        }
-
-        $breakpoints = StringUtil::deserialize($result['sizes']) ?: [];
+        $breakpoints = $columnsetModel->getSizes();
         $cssClasses = [];
 
-        foreach ($breakpoints as $breakpoint) {
-            $colSetup = StringUtil::deserialize($result["columnset_$breakpoint"] ?? null);
-            if (!$colSetup) {
+        foreach ($breakpoints as $breakpoint)
+        {
+            $colSetup = $columnsetModel->getColumnset($breakpoint);
+
+            if (!$colSetup)
+            {
                 continue;
             }
 
-            foreach ($colSetup as $i => $col) {
+            foreach ($colSetup as $i => $col)
+            {
                 $classes = &$cssClasses[$i];
 
                 if ($width = $col['width']) {
@@ -145,6 +210,7 @@ class ColumnsetContainer
                 }
 
                 if ($offset = $col['offset']) {
+                    $offset = ($offset === 'reset') ? 0 : $offset;
                     $classes[] = "offset-$breakpoint-$offset";
                 }
 
@@ -162,9 +228,6 @@ class ColumnsetContainer
         }, $cssClasses);
     }
 
-    /**
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
     public function getOptions(): array
     {
         if ($this->options !== null) {
@@ -177,18 +240,24 @@ class ColumnsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      */
     private function getOptionsFromDatabase(): array
     {
-        $columnSets = $this->connection
-            ->fetchAllAssociative('SELECT id, title, columns, description FROM `tl_columnset` ORDER BY columns');
+        try {
+            $columnSets = $this->connection
+                ->fetchAllAssociative('SELECT id, title, columns, description FROM `tl_columnset` ORDER BY columns');
+        } catch (\Exception $e) {
+            return [];
+        }
 
         $types = [];
 
-        foreach ($columnSets as $columnSet) {
-            $types['[DB]']['db.tl_columnset.' . $columnSet['id']] = "[{$columnSet['columns']}] " . $columnSet['title']
+        foreach ($columnSets as $columnSet)
+        {
+            $types['[DB]']['db.tl_columnset.' . $columnSet['id']] =
+                "[{$columnSet['columns']}] "
+                . $columnSet['title']
                 . (!empty($columnSet['description']) ? " ({$columnSet['description']})" : '');
         }
 
@@ -211,12 +280,13 @@ class ColumnsetContainer
     }
 
     /**
+     * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      */
-    private function moveRows($pid, $ptable, $sorting, $ammount=128)
+    private function moveRows($pid, $ptable, $sorting, int $ammount = 128)
     {
-        $database = System::getContainer()->get('database_connection');
-        $database
+        $this->connection
             ->prepare("UPDATE `tl_content` SET sorting = sorting + ? WHERE pid=? AND ptable=? AND sorting > ?")
             ->executeQuery([$ammount, $pid, $ptable, $sorting]);
     }
@@ -228,31 +298,22 @@ class ColumnsetContainer
     {
         /** @var Result $record */
         $record = $dc->activeRecord;
-        $colset = $record->sc_columnset ?? null;
+        $colsetIdentifier = $record->sc_columnset ?? null;
+        $colset = $this->getColumnSettings($colsetIdentifier);
 
-        if (!$colset)
-        {
-            return false;
-        }
-
-        $colSettings = $this->getColumnSettings($colset);
-
-        if (empty($colSettings))
+        if (empty($colset))
         {
             return false;
         }
 
         $children = StringUtil::deserialize($record->sc_childs ?? null) ?: null;
 
-        return $this->createColset($record, $colset, $colSettings, $children);
+        return $this->createOrUpdateColset($record, $colsetIdentifier, $colset, $children);
     }
 
-    /**
-     * @throws Exception
-     */
     private function updateEqualColset($record, array $children): bool
     {
-        foreach ($children as $i => $childId)
+        foreach (array_values($children) as $i => $childId)
         {
             $i++;
             $scName = $record->sc_name . ($i === count($children) ? '-End' : ("-Part-$i"));
@@ -268,59 +329,85 @@ class ColumnsetContainer
                 'sc_columnset' => $record->sc_columnset
             ];
 
+            if ($published = $record->published) {
+                $update['published'] = $published;
+            }
+
             $this->connection->update('tl_content', $update, ['id' => $childId]);
         }
 
         return true;
     }
 
-    private function updateReduceColset($record, array $colSettings, array $children = null): bool
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function updateReduceColset($record, array $colSettings, array $children): bool
     {
         $diff = count($children) - count($colSettings);
 
         $toDelete = array_slice($children, count($colSettings) - 1, $diff);
 
-        return false;
+        $this->connection->createQueryBuilder()
+            ->delete('tl_content')
+            ->where('id IN (:ids)')
+            ->setParameter(':ids', $toDelete, Connection::PARAM_INT_ARRAY)
+            ->execute()
+        ;
 
-        for ($i = 1; $i <= $diff; $i++)
-        {
-            $intChildId = array_pop($children);
-            $this->Database->prepare("DELETE FROM tl_content WHERE id=?")
-                ->execute($intChildId);
-        }
+        $remainingChildren = array_values(array_diff($children, $toDelete));
 
-        $this->Database->prepare("UPDATE tl_content %s WHERE id=?")
-            ->set(array('sc_childs'=>$children))
-            ->execute($record->id);
+        $this->connection->update('tl_content', [
+            'sc_childs' => serialize($remainingChildren),
+        ], ['id' => $record->id]);
 
-        /* Andere Daten im Colset anpassen - Spaltenabstand und SpaltenSet-Typ */
-        $arrSet = array(
-            'sc_type'=>$sc_type,
+        return $this->updateEqualColset($record, $remainingChildren);
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function updateExpandColset($record, array $colSettings, array $children): bool
+    {
+        $diff = count($colSettings) - count($children);
+
+        $colsetEnd = ContentModel::findByPk($children[count($children) - 1]);
+
+        $this->moveRows($record->pid, $record->ptable, $colsetEnd->sorting - 1, 64 * $diff);
+
+        $insert = [
+            'type' => 'colsetPart',
+            'pid' => $record->pid,
+            'ptable' => $record->ptable,
+            'tstamp' => time(),
+            'sorting' => 0,
+            'sc_name' => '',
+            'sc_type' => 'deprecated',
+            'sc_parent' => $record->id,
+            'sc_sortid' => 0,
             'sc_gap' => $record->sc_gap,
             'sc_gapdefault' => $record->sc_gapdefault,
-            'sc_color' => $record->sc_color
-        );
+            'sc_color' => $record->sc_color,
+            'sc_columnset' => $record->sc_columnset
+        ];
 
-        foreach($children as $value)
+        $insertedChildren = [];
+
+        for ($i = 0; $i < $diff; $i++)
         {
-
-            $this->Database->prepare("UPDATE tl_content %s WHERE id=?")
-                ->set($arrSet)
-                ->execute($value);
-
+            $insert['sorting'] = $colsetEnd->sorting + $i * 64;
+            $this->connection->insert('tl_content', $insert);
+            $insertedChildren[] = $this->connection->lastInsertId();
         }
 
-        /*  Den Typ des letzten Elements auf End-ELement umsetzen und FSC-namen anpassen */
-        $intChildId = array_pop($children);
+        array_splice($children, count($children) - 1, 0, $insertedChildren);
 
-        $arrSet['sc_name'] = $record->sc_name.'-End';
-        $arrSet['type'] = 'colsetEnd';
+        $this->connection->update('tl_content', [
+            'sc_childs' => serialize($children),
+        ], ['id' => $record->id]);
 
-        $this->Database->prepare("UPDATE tl_content %s WHERE id=?")
-            ->set($arrSet)
-            ->execute($intChildId);
-
-        return true;
+        return $this->updateEqualColset($record, $children);
     }
 
     /**
@@ -330,8 +417,9 @@ class ColumnsetContainer
      * @param array|null $children
      * @return bool
      * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
-    private function createColset($record, string $colset, array $colSettings, array $children = null): bool
+    private function createOrUpdateColset($record, string $colset, array $colSettings, array $children = null): bool
     {
         /* Neues Spaltenset anlegen */
         if (empty($children))
@@ -339,124 +427,24 @@ class ColumnsetContainer
             return $this->setupColset($record, $colset, $colSettings);
         }
 
+        $newColCount = count($colSettings);
+        $oldColCount = count($children);
+
         /* Gleiche Spaltenzahl */
-        if (count($colSettings) === count($children))
+        if ($newColCount === $oldColCount)
         {
             return $this->updateEqualColset($record, $children);
         }
 
         /* Weniger Spalten */
-        if (count($colSettings) < count($children))
+        if ($newColCount < $oldColCount)
         {
             return $this->updateReduceColset($record, $colSettings, $children);
         }
 
-        return false;
-
         /* Mehr Spalten */
-        if (count($children) < count($colSettings))
-        {
-            $intDiff = count($colSettings) - count($children);
-
-            $objEnd = $this->Database->prepare("SELECT id,sorting,sc_sortid FROM tl_content WHERE id=?")->execute($children[count($children)-1]);
-
-            $this->moveRows($record->pid,$record->ptable,$objEnd->sorting,64 * ( $intDiff) );
-
-            /*  Den Typ des letzten Elements auf End-ELement umsetzen und SC-namen anpassen */
-            $intChildId	= count($children);
-            $arrSet['sc_name'] = $record->sc_name.'-Part-'.($intChildId);
-            $arrSet['type'] = 'colsetPart';
-
-            $this->Database->prepare("UPDATE tl_content %s WHERE id=?")
-                ->set($arrSet)
-                ->execute($objEnd->id);
-
-
-
-            $intFscSortId = $objEnd->sc_sortid;
-            $intSorting = $objEnd->sorting;
-
-            $arrSet = array('type' => 'colsetPart',
-                'pid' => $record->pid,
-                'ptable' => $record->ptable,
-                'tstamp' => time(),
-                'sorting' => 0,
-                'sc_name' => '',
-                'sc_type'=>$sc_type,
-                'sc_parent' => $record->id,
-                'sc_sortid' => 0,
-                'sc_gap' => $record->sc_gap,
-                'sc_gapdefault' => $record->sc_gapdefault,
-                'sc_color' => $record->sc_color
-            );
-
-            if(in_array('GlobalContentelements',$this->Config->getActiveModules()))
-            {
-                $arrSet['do'] = $this->Input->get('do');
-            }
-
-            if($intDiff>0)
-            {
-
-                /* Andere Daten im Colset anpassen - Spaltenabstand und SpaltenSet-Typ */
-                for($i=1;$i<$intDiff;$i++)
-                {
-                    ++$intChildId;
-                    ++$intFscSortId;
-                    $intSorting += 64;
-                    $arrSet['sc_name'] = $record->sc_name.'-Part-'.($intChildId);
-                    $arrSet['sc_sortid'] = $intFscSortId;
-                    $arrSet['sorting'] = $intSorting;
-
-                    $objInsertElement = $this->Database->prepare("INSERT INTO tl_content %s")
-                        ->set($arrSet)
-                        ->execute();
-
-                    $insertElement = $objInsertElement->insertId;
-
-                    $children[] = $insertElement;
-
-                }
-
-            }
-
-            /* Andere Daten im Colset anpassen - Spaltenabstand und SpaltenSet-Typ */
-            $arrData = array(
-                'sc_type'=>$sc_type,
-                'sc_gap' => $record->sc_gap,
-                'sc_gapdefault' => $record->sc_gapdefault,
-                'sc_color' => $record->sc_color
-            );
-
-            foreach($children as $value)
-            {
-
-                $this->Database->prepare("UPDATE tl_content %s WHERE id=?")
-                    ->set($arrData)
-                    ->execute($value);
-
-            }
-
-            /* Neues End-element erzeugen */
-            $arrSet['sorting'] = $intSorting + 64;
-            $arrSet['type'] = 'colsetEnd';
-            $arrSet['sc_name'] = $record->sc_name.'-End';
-            $arrSet['sc_sortid'] = ++$intFscSortId;
-
-            $insertElement = $this->Database->prepare("INSERT INTO tl_content %s")
-                ->set($arrSet)
-                ->execute()
-                ->insertId;
-
-            $children[] = $insertElement;
-
-            /* Kindelemente in Startelement schreiben */
-            $insertElement = $this->Database->prepare("UPDATE tl_content %s WHERE id=?")
-                ->set(array('sc_childs'=>$children))
-                ->execute($record->id);
-
-            return true;
-
+        if ($newColCount > $oldColCount) {
+            return $this->updateExpandColset($record, $colSettings, $children);
         }
 
         return false;
@@ -466,6 +454,7 @@ class ColumnsetContainer
      * @param ContentModel|Result $record
      * @return true
      * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     private function setupColset($record, string $colset, array $colSettings): bool
     {
@@ -535,7 +524,7 @@ class ColumnsetContainer
     public function onDelete(DataContainer $dc)
     {
         $delRecord = $this->connection->fetchAssociative(
-            "SELECT id, type, sc_parent FROM tl_content WHERE id=?",
+            "SELECT * FROM tl_content WHERE id=? LIMIT 1",
             [$dc->id]
         );
 
@@ -544,30 +533,13 @@ class ColumnsetContainer
             return;
         }
 
-        if ($delRecord['type'] === 'colsetStart')
-        {
-            $parent = $delRecord;
-        }
-        else
-        {
-            $parent = $this->connection->fetchAssociative(
-                "SELECT id, sc_childs FROM tl_content WHERE id=?",
-                [$delRecord['sc_parent'] ?? -1]
-            );
-        }
-
-        $toDelete = StringUtil::deserialize($parent['sc_childs']) ?: [];
-        $toDelete[] = $parent['id'];
-
-        if (empty($toDelete))
-        {
-            return;
-        }
-
         $this->connection->createQueryBuilder()
             ->delete('tl_content')
-            ->where('id IN (:ids)')
-            ->setParameter(':ids', $toDelete, Connection::PARAM_INT_ARRAY)
+            ->where('id=:id')
+            ->orWhere('id=:parent_id')
+            ->orWhere('sc_parent=:parent_id')
+            ->setParameter(':id', $delRecord['id'])
+            ->setParameter(':parent_id', $delRecord['sc_parent'])
             ->execute()
         ;
     }
