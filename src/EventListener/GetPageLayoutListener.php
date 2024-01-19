@@ -21,7 +21,7 @@ class GetPageLayoutListener
     {
         $theme = $layout->getRelated('pid');
         if ($theme->subcolumns !== null) {
-            SubColumnsBootstrapBundle::setSubType($theme->subcolumns);
+            SubColumnsBootstrapBundle::setProfile($theme->subcolumns);
         }
     }
 }

@@ -32,7 +32,7 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class,
  * Columset
  */
 // bootstrap 3
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3] = [
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3] = [
     'label'    => 'Bootstrap 3',
     'scclass'  => 'row',
     'equalize' => false,
@@ -89,7 +89,6 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3] = [
             ['col-xs-12 col-sm-12 col-md-3 col-lg-3', 'inside'],
             ['col-xs-12 col-sm-12 col-md-3 col-lg-3', 'inside']
         ],
-
         // six columns
         '2/2/2/2/2/2' => [
             ['col-xs-12 col-sm-2 col-md-2 col-lg-2', 'inside'],
@@ -111,7 +110,7 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3] = [
             ['col-xs-12 col-sm-12 col-md-4 col-lg-4 box', 'inside'],
             ['col-xs-12 col-sm-12 col-md-4 col-lg-4 box', 'inside'],
         ],
-        'box-4/4/4 first-red' => [
+        'box-4/4/4_first-red' => [
             ['col-xs-12 col-sm-12 col-md-4 col-lg-4 box red', 'inside'],
             ['col-xs-12 col-sm-12 col-md-4 col-lg-4 box', 'inside'],
             ['col-xs-12 col-sm-12 col-md-4 col-lg-4 box', 'inside'],
@@ -142,7 +141,7 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP3] = [
 ];
 
 // bootstrap 4
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4] = [
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4] = [
     'label'   => 'Bootstrap 4',
     'scclass' => 'row',
     'inside'  => false,
@@ -169,7 +168,7 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4] = [
 ];
 
 // bootstrap 5
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5] = $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4];
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5] = $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4];
 
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5]['label'] = 'Bootstrap 5';
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5]['sizes'][] = 'xxl';
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5]['label'] = 'Bootstrap 5';
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5]['sizes'][] = 'xxl';
