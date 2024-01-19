@@ -32,7 +32,7 @@ class ColsetEnd extends FelixPfeifferColsetEnd
         if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-            $title = $columnsetContainer->getTitle($this->sc_columnset);
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- not migrated --';
 
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $arrColor;
