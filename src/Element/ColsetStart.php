@@ -156,8 +156,8 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         $this->Template->useInside = $useInner;
         $this->Template->useOutside = false;
         $this->Template->scclass = '';
-        $this->Template->column = $columnset[0][0] . ' sc-col:1 first';
-        $this->Template->inside = $this->Template->useInside ? $columnset[0][1] : '';
+        $this->Template->column = ($columnset[0][0] ?? '') . ' sc-col:1 first';
+        $this->Template->inside = $this->Template->useInside ? ($columnset[0][1] ?? '') : '';
 
         /*** Altered Pfeiffer code above ***/
 
