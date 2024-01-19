@@ -180,7 +180,7 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
                 ' colcount_%s %s col-%s',
                 $colCount,
                 $this->strSet,
-                preg_replace('/[^a-z0-9-\s]+/', '-',
+                preg_replace('/[^a-z0-9-\s]+/i', '-',
                     str_replace('_', ' ', $identifier->getParam(-1) ?? '')
                 )
             );
