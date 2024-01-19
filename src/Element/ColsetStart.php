@@ -177,10 +177,12 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         {
             $identifier = ColumnsetIdentifier::deconstruct($this->sc_columnset ?? '');
             $rowClasses .= sprintf(
-                ' colcount_%s %s col_%s',
+                ' colcount_%s %s col-%s',
                 $colCount,
                 $this->strSet,
-                $identifier->getParam(-1)
+                preg_replace('/[^a-z0-9-\s]+/', '-',
+                    str_replace('_', ' ', $identifier->getParam(-1) ?? '')
+                )
             );
         }
 
