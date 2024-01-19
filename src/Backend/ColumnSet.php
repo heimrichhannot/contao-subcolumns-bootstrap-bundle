@@ -113,9 +113,11 @@ class ColumnSet extends Backend
      */
     public function appendColumnsetIdToPalette(DataContainer $dc)
     {
-        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
-
         $arrDca = &$GLOBALS['TL_DCA']['tl_content'];
+
+        $arrDca['palettes']['colsetStart'] = str_replace('{colset_legend}', '{colset_legend},sc_columnset', $arrDca['palettes']['colsetStart']);
+
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
 
         $content = ContentModel::findByPK($dc->id);
 
@@ -127,11 +129,10 @@ class ColumnSet extends Backend
             $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
         }
 
-        PaletteManipulator::create()
-            ->addField('sc_name', 'sc_type')
-            ->addField('sc_columnset', 'sc_type', PaletteManipulator::POSITION_BEFORE)
+        /*PaletteManipulator::create()
+            ->addField('sc_columnset', 'colset_legend')
             ->applyToPalette('colsetStart', 'tl_content')
-        ;
+        ;*/
     }
 
 

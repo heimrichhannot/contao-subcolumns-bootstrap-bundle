@@ -23,6 +23,14 @@ class ColumnsetIdentifier
         return $this->params;
     }
 
+    public function getParam(int $index): ?string
+    {
+        if ($index < 0) {
+            $index = count($this->params) + $index;
+        }
+        return $this->params[$index] ?? null;
+    }
+
     /**
      * @param self|string $identifier
      * @return self|null

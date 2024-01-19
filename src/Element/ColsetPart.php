@@ -49,11 +49,11 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
         if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- not migrated --';
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
 
             $this->Template              = new BackendTemplate('be_subcolumns');
             $this->Template->setColor    = $arrColor;
-            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px'>—————</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:60px;overflow:hidden;margin-right:1em;'>──────────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
             #$this->Template->visualSet = $strMiniset;
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $colID);
 
@@ -115,7 +115,14 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
 
         if (!empty($colset))
         {
-            $colClass = ' sc-col:' . ($this->sc_sortid + 1);
+            $colNumber = ($this->sc_sortid + 1);
+            $colClass = " sc-col--$colNumber";
+
+            if ($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false)
+            {
+                $colClass .= ' col_' . ($this->sc_sortid + 1);
+            }
+
             $lastClass = ($this->sc_sortid == count($colset) - 1) ? ' last' : '';
             $this->Template->column = $colset[$this->sc_sortid][0] . $colClass . $lastClass;
         }

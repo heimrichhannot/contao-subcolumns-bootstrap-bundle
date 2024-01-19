@@ -34,6 +34,7 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class,
 // bootstrap 3
 $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3] = [
     'label'    => 'Bootstrap 3',
+    'legacyInfoCSS' => true,
     'scclass'  => 'row',
     'equalize' => false,
     'inside'   => true,
@@ -143,6 +144,7 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3] =
 // bootstrap 4
 $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4] = [
     'label'   => 'Bootstrap 4',
+    'legacyInfoCSS' => false,
     'scclass' => 'row',
     'inside'  => false,
     'gap'     => false,

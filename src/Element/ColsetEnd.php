@@ -32,11 +32,11 @@ class ColsetEnd extends FelixPfeifferColsetEnd
         if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- not migrated --';
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
 
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $arrColor;
-            $this->Template->colsetTitle = "<span style='display:inline-block;width:100px'>└——————</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px;overflow:hidden;margin-right:1em;'>└─────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
 
             return $this->Template->parse();
         }

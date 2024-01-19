@@ -9,6 +9,7 @@ use Contao\System;
 use Exception;
 use FelixPfeiffer\Subcolumns\colsetStart as FelixPfeifferColsetStart;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
@@ -36,11 +37,11 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- not migrated --';
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
 
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $arrColor;
-            $this->Template->colsetTitle = "<span style='display:inline-block;width:100px'>┌——————</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px;overflow:hidden;margin-right:1em;'>┌─────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $GLOBALS['TL_LANG']['MSC']['sc_first']);
 
             return $this->Template->parse();
@@ -57,7 +58,7 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
 
         $strMiniset = '';
 
-        if($GLOBALS['TL_CSS']['subcolumns_set'])
+        if ($GLOBALS['TL_CSS']['subcolumns_set'] ?? false)
         {
             $strMiniset = '<div class="colsetexample '.$strSCClass.'">';
 
@@ -132,6 +133,7 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
 
         $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
         $useInner = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+        $legacyInfos = (bool)($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false);
 
         if ($this->sc_gapdefault != 1 || !$useGap)
         {
@@ -156,13 +158,13 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         $this->Template->useInside = $useInner;
         $this->Template->useOutside = false;
         $this->Template->scclass = '';
-        $this->Template->column = ($columnset[0][0] ?? '') . ' sc-col:1 first';
         $this->Template->inside = $this->Template->useInside ? ($columnset[0][1] ?? '') : '';
+        $this->Template->column = ($columnset[0][0] ?? '') . ($legacyInfos ? ' col_1' : '') . ' sc-col--1 first';;
 
         /*** Altered Pfeiffer code above ***/
 
-        $scclass = sprintf(
-            "%s%s sc-colcount:%s sc-profile:%s sc-colset:%s sc-type:%s",
+        $rowClasses = sprintf(
+            "%s%s sc-colcount--%s sc-profile--%s sc-colset--%s sc-type--%s",
             $equalize,
             $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] ?? '',
             $colCount,
@@ -170,6 +172,17 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
             preg_replace('/[^a-z0-9_.-\/]+/', '_', strtolower($this->sc_columnset)),
             $this->sc_type ?: 'deprecated'
         );
+
+        if ($legacyInfos)
+        {
+            $identifier = ColumnsetIdentifier::deconstruct($this->sc_columnset ?? '');
+            $rowClasses .= sprintf(
+                ' colcount_%s %s col_%s',
+                $colCount,
+                $this->strSet,
+                $identifier->getParam(-1)
+            );
+        }
 
         $this->Template->addContainer = $this->addContainer;
 
@@ -188,7 +201,7 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
             }
         }
         $cssID[1] = ($cssID[1] ?? false) ? ' ' . $cssID[1] : '';
-        $cssID[1] = trim("{$this->Template->class} $scclass$cssID[1]");
+        $cssID[1] = trim("{$this->Template->class} $rowClasses$cssID[1]");
         $this->cssID = $cssID;
 
         if ($columnsetModel === null)
