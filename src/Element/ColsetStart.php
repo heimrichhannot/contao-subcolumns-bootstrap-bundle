@@ -167,7 +167,7 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
             $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] ?? '',
             $colCount,
             $this->strSet,
-            preg_replace('/[^a-z0-9_-]+/', '_', strtolower($this->sc_columnset)),
+            preg_replace('/[^a-z0-9_.-\/]+/', '_', strtolower($this->sc_columnset)),
             $this->sc_type ?: 'deprecated'
         );
 
