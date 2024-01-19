@@ -535,9 +535,7 @@ class ColumnsetContainer
 
         $this->connection->createQueryBuilder()
             ->delete('tl_content')
-            ->where('id=:id')
-            ->orWhere('id=:parent_id')
-            ->orWhere('sc_parent=:parent_id')
+            ->where('sc_parent != "" AND sc_parent IS NOT NULL AND (id = :id OR sc_parent = :parent_id)')
             ->setParameter(':id', $delRecord['id'])
             ->setParameter(':parent_id', $delRecord['sc_parent'])
             ->execute()
