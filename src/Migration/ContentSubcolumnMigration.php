@@ -11,10 +11,12 @@ use Throwable;
 class ContentSubcolumnMigration implements MigrationInterface
 {
     private Connection $connection;
+    private string $projectDir;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, string $projectDir)
     {
         $this->connection = $connection;
+        $this->projectDir = $projectDir;
     }
 
     public function getName(): string
@@ -26,8 +28,7 @@ class ContentSubcolumnMigration implements MigrationInterface
     {
         try
         {
-            $kernel = System::getContainer()->get('kernel');
-            $fileName = $kernel->getProjectDir() . '/vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/.migrated';
+            $fileName = $this->projectDir . '/vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/.migrated';
 
             if (file_exists($fileName)) {
                 return false;
@@ -73,7 +74,7 @@ class ContentSubcolumnMigration implements MigrationInterface
             }
 
             $kernel = System::getContainer()->get('kernel');
-            $fileName = $kernel->getProjectDir() . '/vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/.migrated';
+            $fileName = $this->projectDir . '/vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/.migrated';
 
             file_put_contents($fileName, '');
 
