@@ -97,12 +97,19 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
 
     protected function compile()
     {
-        @parent::compile();
+        parent::compile();
 
         if (!SubColumnsBootstrapBundle::validProfile())
         {
             return;
         }
+
+        $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
+        $useInside = (($this->sc_gapdefault != 1 || !$useGap) ?? true)
+            ? false
+            : (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+
+        $this->Template->useInside = $useInside;
 
         /** @var ColumnsetContainer $colsetContainer */
         $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
