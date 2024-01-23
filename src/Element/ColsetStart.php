@@ -176,13 +176,21 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         if ($legacyInfos)
         {
             $identifier = ColumnsetIdentifier::deconstruct($this->sc_columnset ?? '');
+            $identifierLastParam = $identifier->getParam(-1) ?? '';
+
+            $colIdentifier = preg_replace('/[^a-z0-9\s-]+/i', '-',
+                str_replace('_', ' ', $identifierLastParam)
+            );
+
+            if ($identifier->getSource() === 'db') {
+                $colIdentifier = "db--$colIdentifier";
+            }
+
             $rowClasses .= sprintf(
                 ' colcount_%s %s col-%s',
                 $colCount,
                 $this->strSet,
-                preg_replace('/[^a-z0-9-\s]+/i', '-',
-                    str_replace('_', ' ', $identifier->getParam(-1) ?? '')
-                )
+                $colIdentifier
             );
         }
 
