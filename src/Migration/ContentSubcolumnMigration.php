@@ -39,8 +39,8 @@ class ContentSubcolumnMigration implements MigrationInterface
                 ->from('tl_content')
                 ->where('type IN (:types)')
                 ->andWhere('sc_columnset = "" OR sc_columnset IS NULL')
-                ->andWhere('sc_type != "" AND sc_type IS NOT NULL')
                 ->andWhere('sc_parent > "0" AND sc_parent != "" AND sc_parent IS NOT NULL')
+                ->andWhere('sc_type IS NOT NULL AND sc_type != "" AND sc_type != "deprecated"')
                 ->setParameter('types', ['colsetStart', 'colsetPart', 'colsetEnd'], Connection::PARAM_STR_ARRAY)
             ;
 
@@ -128,7 +128,6 @@ class ContentSubcolumnMigration implements MigrationInterface
             }
 
             $fileName = $this->projectDir . '/vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/.migrated';
-
             file_put_contents($fileName, '');
 
             return new MigrationResult(true, 'Migrated sc_columnset in content elements successfully.');
