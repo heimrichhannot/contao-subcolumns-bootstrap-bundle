@@ -252,10 +252,11 @@ class ColumnsetContainer
         }
 
         $types = [];
+        $dbLegend = $GLOBALS['TL_LANG']['tl_content']['db_legend'] ?? '[DB]';
 
         foreach ($columnSets as $columnSet)
         {
-            $types['[DB]']['db.tl_columnset.' . $columnSet['id']] =
+            $types[$dbLegend]['db.tl_columnset.' . $columnSet['id']] =
                 "[{$columnSet['columns']}] "
                 . $columnSet['title']
                 . (!empty($columnSet['description']) ? " ({$columnSet['description']})" : '');
@@ -267,15 +268,20 @@ class ColumnsetContainer
     private function getOptionsFromGlobals(): array
     {
         $types = [];
+        $dbLegend = $GLOBALS['TL_LANG']['tl_content']['globals_legend'] ?? '[GLOBALS]';
+        $dbLegend .= " ";
+
         foreach ($GLOBALS['TL_SUBCL'] as $subType => $config) {
             if (str_contains($subType, 'yaml')) {
                 continue;
             }
             foreach ($config['sets'] as $set => $columns) {
-                $types['[GLOBALS] ' . $config['label']]['globals.' . $subType . '.' . $set] = $set;
+                $types[$dbLegend . $config['label']]['globals.' . $subType . '.' . $set] = $set;
             }
         }
+
         ksort($types);
+
         return $types;
     }
 

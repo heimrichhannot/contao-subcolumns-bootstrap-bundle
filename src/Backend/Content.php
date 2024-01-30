@@ -4,6 +4,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
 
 use Contao\Backend;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\DataContainer;
 use Contao\System;
 
@@ -11,6 +12,11 @@ class Content extends Backend
 {
     public function createPalette(DataContainer $dc)
     {
+        PaletteManipulator::create()
+            ->removeField('sc_type', 'colset_legend')
+            ->removeField('columnset_id', 'colset_legend')
+            ->applyToPalette('colsetStart', 'tl_content');
+
         if (!class_exists('onemarshall\AosBundle\AosBundle')) {
             return;
         }
