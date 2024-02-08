@@ -359,14 +359,14 @@ class ColumnsetContainer
             return false;
         }
 
-        $type = class_exists(ArrayParameterType::class)
-            ? ArrayParameterType::INTEGER
-            : Connection::PARAM_INT_ARRAY;
+        $type = class_exists(ArrayParameterType::class) ? ArrayParameterType::INTEGER : null;
+        $type ??= defined(Connection::PARAM_INT_ARRAY) ? Connection::PARAM_INT_ARRAY : 101;
 
         $this->connection->createQueryBuilder()
             ->delete('tl_content')
             ->where('id IN (:ids)')
-            ->setParameter(':ids', $toDelete, $type)
+            ->setParameter('ids', $toDelete, $type)
+            // ->setParameter(':ids', $toDelete, $type)
             ->executeStatement()
         ;
 
