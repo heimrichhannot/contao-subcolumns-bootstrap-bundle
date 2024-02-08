@@ -12,6 +12,7 @@ use Contao\DataContainer;
 use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Exception;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
@@ -354,11 +355,19 @@ class ColumnsetContainer
 
         $toDelete = array_slice($children, count($colSettings) - 1, $diff);
 
+        if (empty($toDelete)) {
+            return false;
+        }
+
+        $type = class_exists(ArrayParameterType::class)
+            ? ArrayParameterType::INTEGER
+            : Connection::PARAM_INT_ARRAY;
+
         $this->connection->createQueryBuilder()
             ->delete('tl_content')
             ->where('id IN (:ids)')
-            ->setParameter(':ids', $toDelete, Connection::PARAM_INT_ARRAY)
-            ->execute()
+            ->setParameter(':ids', $toDelete, $type)
+            ->executeStatement()
         ;
 
         $remainingChildren = array_values(array_diff($children, $toDelete));
