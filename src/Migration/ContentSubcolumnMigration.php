@@ -4,7 +4,6 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Migration;
 
 use Contao\CoreBundle\Migration\MigrationInterface;
 use Contao\CoreBundle\Migration\MigrationResult;
-use Contao\System;
 use Doctrine\DBAL\Connection;
 use Throwable;
 
@@ -21,7 +20,7 @@ class ContentSubcolumnMigration implements MigrationInterface
 
     public function getName(): string
     {
-        return 'Migrate to new column set identifier column.';
+        return 'Migrate to new profile identifier.';
     }
 
     public function shouldRun(): bool
@@ -63,6 +62,8 @@ class ContentSubcolumnMigration implements MigrationInterface
 
             $count = (int)($qb->execute()->fetchOne() ?: 0);
 
+            $updates = [];
+
             if ($count > 0)
             {
                 /* ============================================================================================================ */
@@ -81,7 +82,8 @@ class ContentSubcolumnMigration implements MigrationInterface
                     ->addOrderBy('sc_parent', 'ASC')
                     ->setParameter('types', ['colsetStart', 'colsetPart', 'colsetEnd'], Connection::PARAM_STR_ARRAY);
 
-                $iterator = $qb->execute()->iterateAssociative();
+                $result = $qb->execute();
+                $iterator = $result->iterateAssociative();
 
                 $scParentsColumnsetMap = [];
 
@@ -97,8 +99,11 @@ class ContentSubcolumnMigration implements MigrationInterface
                     }
 
                     $scColumnset = "db.tl_columnset.$columnsetId";
-                    $this->connection->update('tl_content', ['sc_columnset' => $scColumnset], ['id' => $item['id']]);
+
+                    $updates[] = ['tl_content', ['sc_columnset' => $scColumnset], ['id' => $item['id']]];
                 }
+
+                $result->free();
             }
             else
             {
@@ -115,7 +120,8 @@ class ContentSubcolumnMigration implements MigrationInterface
                     ->andWhere('sc_type IS NOT NULL AND sc_type != "" AND sc_type != "deprecated"')
                     ->setParameter('types', ['colsetStart', 'colsetPart', 'colsetEnd'], Connection::PARAM_STR_ARRAY);
 
-                $iterator = $qb->execute()->iterateAssociative();
+                $result = $qb->execute();
+                $iterator = $result->iterateAssociative();
 
                 foreach ($iterator as $item) {
                     $scType = $item['sc_type'] ?? null;
@@ -123,8 +129,14 @@ class ContentSubcolumnMigration implements MigrationInterface
                         continue;
                     }
                     $scColumnset = "globals.bootstrap3.$scType";
-                    $this->connection->update('tl_content', ['sc_columnset' => $scColumnset], ['id' => $item['id']]);
+                    $updates[] = ['tl_content', ['sc_columnset' => $scColumnset], ['id' => $item['id']]];
                 }
+
+                $result->free();
+            }
+
+            foreach ($updates as $update) {
+                $this->connection->update(...$update);
             }
 
             $fileName = $this->projectDir . '/vendor/heimrichhannot/contao-subcolumns-bootstrap-bundle/.migrated';
