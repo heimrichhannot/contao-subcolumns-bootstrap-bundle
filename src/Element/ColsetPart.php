@@ -2,17 +2,22 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
+use Contao\BackendTemplate;
 use Contao\ContentModel;
+use Contao\StringUtil;
+use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetPart as FelixPfeifferColsetPart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
-class ColsetPart extends FelixPfeifferColsetPart
+class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInterface
 {
     public function generate()
     {
-        $this->strSet = SubColumnsBootstrapBundle::getSubType();
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
         if (TL_MODE !== 'BE')
         {
@@ -34,17 +39,21 @@ class ColsetPart extends FelixPfeifferColsetPart
                 break;
         }
 
-        $arrColor = unserialize($this->sc_color);
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
+        $arrColor = StringUtil::deserialize($this->sc_color);
+        if (is_countable($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
             $arrColor  = $this->compileColor($arrColor);
         }
 
-        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false)) {
-            $this->Template              = new \BackendTemplate('be_subcolumns');
+        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
+        {
+            $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
+
+            $this->Template              = new BackendTemplate('be_subcolumns');
             $this->Template->setColor    = $arrColor;
-            $this->Template->colsetTitle = '### COLUMNSET START ' . $this->sc_type . ' <strong>' . $this->sc_name . '</strong> ###';
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:60px;overflow:hidden;margin-right:1em;'>──────────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
             #$this->Template->visualSet = $strMiniset;
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $colID);
 
@@ -69,13 +78,13 @@ class ColsetPart extends FelixPfeifferColsetPart
 
         $strMiniset .= '</div>';
 
-        $this->Template           = new \BackendTemplate('be_subcolumns');
+        $this->Template           = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
 
         $parent = \ContentModel::findByPk($this->sc_parent);
 
         if ($parent !== null && ($columnSet = ColumnsetModel::findByPk($parent->columnset_id)) !== null) {
-            \System::loadLanguageFile('tl_columnset');
+            System::loadLanguageFile('tl_columnset');
 
             $this->Template->colsetTitle = $columnSet->title . ' (' . $this->sc_type . ' ' . $GLOBALS['TL_LANG']['tl_columnset']['columns' . ($this->sc_type > 1 ? 'Plural' : 'Singular')] . ')';
         }
@@ -88,35 +97,60 @@ class ColsetPart extends FelixPfeifferColsetPart
 
     protected function compile()
     {
-        @parent::compile();
+        parent::compile();
 
-        if (!SubColumnsBootstrapBundle::validSubType(SubColumnsBootstrapBundle::getSubType()))
+        if (!SubColumnsBootstrapBundle::validProfile())
         {
             return;
         }
 
-        $parent    = ContentModel::findByPk($this->sc_parent);
-        $container = ColumnSet::prepareContainer($parent->columnset_id);
+        $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
+        $useInside = (($this->sc_gapdefault != 1 || !$useGap) ?? true)
+            ? false
+            : (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
-        if ($container) {
-            $this->Template->column = $container[$this->sc_sortid][0] . ' col_' . ($this->sc_sortid + 1) . (($this->sc_sortid == count($container) - 1) ? ' last' : '');
-        }
+        $this->Template->useInside = $useInside;
 
-        $columnSet = ColumnsetModel::findByPk($parent->columnset_id);
-        if ($columnSet === null) {
+        /** @var ColumnsetContainer $colsetContainer */
+        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
+
+        if ($colset === null)
+        {
             return;
         }
 
-        $this->Template->useOutside = $columnSet->useOutside;
+        if (!empty($colset))
+        {
+            $colNumber = ($this->sc_sortid + 1);
+            $colClass = " sc-col--$colNumber";
 
-        if ($columnSet->useOutside) {
-            $this->Template->outside = $columnSet->outsideClass;
+            if ($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false)
+            {
+                $colClass .= ' col_' . ($this->sc_sortid + 1);
+            }
+
+            $lastClass = ($this->sc_sortid == count($colset) - 1) ? ' last' : '';
+            $this->Template->column = $colset[$this->sc_sortid][0] . $colClass . $lastClass;
         }
 
-        $this->Template->useInside = $columnSet->useInside;
-
-        if ($columnSet->useInside) {
-            $this->Template->inside = $columnSet->insideClass;
+        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
+        if ($columnsetModel === null)
+        {
+            return;
         }
+
+        if ($this->Template->useOutside = (bool)$columnsetModel->useOutside) {
+            $this->Template->outside = $columnsetModel->outsideClass ?: '';
+        }
+
+        if ($this->Template->useInside = (bool)$columnsetModel->useInside) {
+            $this->Template->inside = $columnsetModel->insideClass ?: '';
+        }
+    }
+
+    public static function getSubscribedServices(): array
+    {
+        return [ColumnsetContainer::class];
     }
 }

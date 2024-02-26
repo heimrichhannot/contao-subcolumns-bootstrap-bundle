@@ -4,8 +4,10 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
 use Contao\BackendTemplate;
 use Contao\ContentModel;
+use Contao\StringUtil;
 use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetEnd as FelixPfeifferColsetEnd;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
@@ -13,15 +15,15 @@ class ColsetEnd extends FelixPfeifferColsetEnd
 {
     public function generate()
     {
-        $this->strSet = SubColumnsBootstrapBundle::getSubType();
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
         if (TL_MODE !== 'BE')
         {
             return parent::generate();
         }
 
-        $arrColor = unserialize($this->sc_color);
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
+        $arrColor = StringUtil::deserialize($this->sc_color);
+        if (is_countable($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
             $arrColor  = $this->compileColor($arrColor);
@@ -29,9 +31,12 @@ class ColsetEnd extends FelixPfeifferColsetEnd
 
         if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
+            $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
+
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $arrColor;
-            $this->Template->colsetTitle = '### COLUMNSET START '.$this->sc_type.' <strong>'.$this->sc_name.'</strong> ###';
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px;overflow:hidden;margin-right:1em;'>└─────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
 
             return $this->Template->parse();
         }
@@ -75,30 +80,35 @@ class ColsetEnd extends FelixPfeifferColsetEnd
     {
         @parent::compile();
 
-        $content = ContentModel::findByPk($this->sc_parent);
-        if ($content === null) {
+        if (!SubColumnsBootstrapBundle::validProfile())
+        {
             return;
         }
 
-        $this->Template->addContainer = $content->addContainer;
+        /** @var ColumnsetContainer $colsetContainer */
+        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
 
-        $columnSet = ColumnsetModel::findByPk($content->columnset_id);
-        if ($columnSet === null) {
+        if ($colset === null)
+        {
             return;
         }
 
-        $this->Template->useOutside = $columnSet->useOutside;
-
-        if ($columnSet->useOutside) {
-            $this->Template->outside = $columnSet->outsideClass;
+        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
+        if ($columnsetModel === null)
+        {
+            return;
         }
 
-        $this->Template->useInside = $columnSet->useInside;
+        $this->Template->addContainer = (bool)$this->addContainer;
 
-        if ($columnSet->useInside) {
-            $this->Template->inside = $columnSet->insideClass;
+        if ($this->Template->useOutside = (bool)$columnsetModel->useOutside) {
+            $this->Template->outside = $columnsetModel->outsideClass;
+        }
+
+        if ($this->Template->useInside = (bool)$columnsetModel->useInside) {
+            $this->Template->inside = $columnsetModel->insideClass;
         }
     }
-
 
 }

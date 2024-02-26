@@ -4,6 +4,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
 use Contao\Backend;
 use Contao\ContentModel;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\DataContainer;
 use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
@@ -17,7 +18,6 @@ class ColumnSet extends Backend
      * @var array
      */
     protected static $container = [];
-
 
     /**
      * prepare the container which sub columns expects
@@ -109,13 +109,15 @@ class ColumnSet extends Backend
      * add column set field to the colsetStart content element. We need to do it dynamically because subcolumns
      * creates its palette dynamically
      *
-     * @param $dc
+     * @param DataContainer $dc
      */
-    public function appendColumnsetIdToPalette(\DataContainer $dc)
+    public function appendColumnsetIdToPalette(DataContainer $dc)
     {
-        if (!SubColumnsBootstrapBundle::validSubType($GLOBALS['TL_CONFIG']['subcolumns'])) return;
-
         $arrDca = &$GLOBALS['TL_DCA']['tl_content'];
+
+        $arrDca['palettes']['colsetStart'] = str_replace('{colset_legend}', '{colset_legend},sc_columnset', $arrDca['palettes']['colsetStart']);
+
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
 
         $content = ContentModel::findByPK($dc->id);
 
@@ -126,6 +128,11 @@ class ColumnSet extends Backend
             $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $arrDca['palettes']['colsetStart']);
             $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
         }
+
+        /*PaletteManipulator::create()
+            ->addField('sc_columnset', 'colset_legend')
+            ->applyToPalette('colsetStart', 'tl_content')
+        ;*/
     }
 
 
@@ -166,15 +173,14 @@ class ColumnSet extends Backend
 
 
     /**
-     * replace subcolumns getAllTypes method, to load all created columnsets. There is a fallback provided if not
-     * bootstra_customizable is used
+     * replace subcolumns getAllTypes method, to load all created columnsets.
      *
      * @param DataContainer $dc
      * @return array
      */
     public function getAllTypes($dc)
     {
-        if (!SubColumnsBootstrapBundle::validSubType($GLOBALS['TL_CONFIG']['subcolumns'])) {
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) {
             $sc = new \tl_content_sc();
             return @$sc->getAllTypes();
         }
@@ -187,6 +193,18 @@ class ColumnSet extends Backend
         while ($collection->next()) {
             $types[] = $collection->columns;
         }
+
+        /*while ($collection->next()) {
+            $types['Aus Datenbank'][] = $collection->columns;
+        }
+
+        foreach ($GLOBALS['TL_SUBCL'] as $subType => $config) {
+            foreach ($config['sets'] as $set => $columns) {
+                $types[$config['label']][$subType . '.' . $set] = $set;
+            }
+        }
+
+        ksort($types);*/
 
         return $types;
     }

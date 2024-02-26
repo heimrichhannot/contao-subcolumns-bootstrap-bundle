@@ -31,8 +31,23 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class,
 /**
  * Columset
  */
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4] = [
+// bootstrap 3
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3] = [
+    'label'    => 'Bootstrap 3',
+    'legacyInfoCSS' => true,
+    'scclass'  => 'row',
+    'equalize' => false,
+    'inside'   => true,
+    'gap'      => true,
+    'files'    => [],
+    'sizes'   => ['xs', 'sm', 'md', 'lg'],
+    'sets'     => [],
+];
+
+// bootstrap 4
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4] = [
     'label'   => 'Bootstrap 4',
+    'legacyInfoCSS' => false,
     'scclass' => 'row',
     'inside'  => false,
     'gap'     => false,
@@ -41,114 +56,24 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4] = [
             'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static' : ''),
     ],
     'sizes'   => ['xs', 'sm', 'md', 'lg', 'xl'],
-    'sets'    => [
-        '1'  => [
-            ['col-md-12'],
-        ],
-        '2'  => [
-            ['col-md-6'],
-            ['col-md-6'],
-        ],
-        '3'  => [
-            ['col-md-4'],
-            ['col-md-4'],
-            ['col-md-4'],
-        ],
-        '4'  => [
-            ['col-md-3'],
-            ['col-md-3'],
-            ['col-md-3'],
-            ['col-md-3'],
-        ],
-        '5'  => [
-            ['col-md-3'],
-            ['col-md-3'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-        ],
-        '6'  => [
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-        ],
-        '7'  => [
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-1'],
-            ['col-md-1'],
-        ],
-        '8'  => [
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-        ],
-        '9'  => [
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-        ],
-        '10' => [
-            ['col-md-2'],
-            ['col-md-2'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-        ],
-        '11' => [
-            ['col-md-2'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-        ],
-        '12' => [
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-            ['col-md-1'],
-        ],
-    ],
+    'sets'    => [/*
+        '1'  => [['col-md-12']],
+        '2'  => [['col-md-6'], ['col-md-6']],
+        '3'  => [['col-md-4'], ['col-md-4'], ['col-md-4']],
+        '4'  => [['col-md-3'], ['col-md-3'], ['col-md-3'], ['col-md-3']],
+        '5'  => [['col-md-3'], ['col-md-3'], ['col-md-2'], ['col-md-2'], ['col-md-2']],
+        '6'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2']],
+        '7'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1']],
+        '8'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
+        '9'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
+        '10' => [['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
+        '11' => [['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
+        '12' => [['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
+    */],
 ];
 
 // bootstrap 5
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5] = $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4];
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5] = $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4];
 
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5]['label'] = 'Bootstrap 5';
-$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5]['sizes'][] = 'xxl';
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5]['label'] = 'Bootstrap 5';
+$GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5]['sizes'][] = 'xxl';

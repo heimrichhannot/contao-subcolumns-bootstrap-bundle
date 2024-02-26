@@ -7,10 +7,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class SubColumnsBootstrapBundle extends Bundle
 {
-    public const SUBCOLUMNS_TYPE_BOOTSTRAP4 = 'bootstrap4';
-    public const SUBCOLUMNS_TYPE_BOOTSTRAP5 = 'bootstrap5';
+    public const SUBCOLUMNS_PROFILE_BOOTSTRAP3 = 'bootstrap3';
+    public const SUBCOLUMNS_PROFILE_BOOTSTRAP4 = 'bootstrap4';
+    public const SUBCOLUMNS_PROFILE_BOOTSTRAP5 = 'bootstrap5';
 
-    protected static string $subType;
+    protected static string $profile;
 
     /**
      * This is the overhead of a typo fix within the constants above.
@@ -23,13 +24,15 @@ class SubColumnsBootstrapBundle extends Bundle
      * @param string $scType
      * @return string|null
      */
-    public static function filterTypeString(string $scType): ?string
+    public static function filterProfile(string $scType): ?string
     {
         return $scType ? [
-            'boostrap4' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
-            'boostrap5' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5
+            'bootstrap' => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3,
+            'boostrap4' => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4,
+            'boostrap5' => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5,
+            SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3 => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3,
+            SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4 => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4,
+            SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5 => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5,
         ][$scType] ?? null : null;
     }
 
@@ -37,24 +40,25 @@ class SubColumnsBootstrapBundle extends Bundle
      * Checks, if a sub-column type string belongs to this package.
      * A specific Bootstrap version (4/5) MAY be supplied.
      *
-     * @param string $scType
+     * @param string|null $scType
      * @param int|null $bootstrapVersion
      * @return bool
      */
-    public static function validSubType(string $scType, ?int $bootstrapVersion = null): bool
+    public static function validProfile(string $scType = null, ?int $bootstrapVersion = null): bool
     {
-        return $scType === self::filterTypeString($scType) && ($bootstrapVersion === null || substr($scType, -1) === (string)$bootstrapVersion);
+        $scType ??= static::getProfile();
+        return $scType === static::filterProfile($scType) && ($bootstrapVersion === null || substr($scType, -1) === (string)$bootstrapVersion);
     }
 
     /**
      * Sets the current sub-column type to the given value.
      *
-     * @param string $subType The sub-column type string to set. Must be a valid sub-column type string.
+     * @param string $profile The sub-column type string to set. Must be a valid sub-column type string.
      * @return void
      */
-    public static function setSubType(string $subType): void
+    public static function setProfile(string $profile): void
     {
-        static::$subType = static::filterTypeString($subType);
+        static::$profile = static::filterProfile($profile);
     }
 
     /**
@@ -64,16 +68,16 @@ class SubColumnsBootstrapBundle extends Bundle
      *
      * @return string The current sub-column type.
      */
-    public static function getSubType(): string
+    public static function getProfile(): string
     {
-        if (isset(static::$subType)) {
-            return static::$subType;
+        if (isset(static::$profile)) {
+            return static::$profile;
         }
 
         $subcolumns = Config::get('subcolumns') ?: 'bootstrap4';
-        static::$subType = SubColumnsBootstrapBundle::filterTypeString($subcolumns) ?: $subcolumns;
+        static::$profile = SubColumnsBootstrapBundle::filterProfile($subcolumns) ?: $subcolumns;
 
-        return static::$subType;
+        return static::$profile;
     }
 
     public function getPath(): string

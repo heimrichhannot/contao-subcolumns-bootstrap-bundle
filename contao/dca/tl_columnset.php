@@ -1,7 +1,6 @@
 <?php
 
 use Contao\Config;
-use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 
 $GLOBALS['TL_DCA']['tl_columnset'] = [
     'config'      => [

@@ -6,16 +6,20 @@ use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\System;
+use Exception;
 use FelixPfeiffer\Subcolumns\colsetStart as FelixPfeifferColsetStart;
-use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
-class ColsetStart extends FelixPfeifferColsetStart
+class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberInterface
 {
+    /** @noinspection PhpUndefinedFieldInspection */
     public function generate(): string
     {
-        $this->strSet = SubColumnsBootstrapBundle::getSubType();
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
         if (TL_MODE !== 'BE')
         {
@@ -32,16 +36,19 @@ class ColsetStart extends FelixPfeifferColsetStart
 
         if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
+            $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
+
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $arrColor;
-            $this->Template->colsetTitle = '### COLUMNSET START '.$this->sc_type.' <strong>'.$this->sc_name.'</strong> ###';
-            $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$GLOBALS['TL_LANG']['MSC']['sc_first']);
+            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px;overflow:hidden;margin-right:1em;'>┌─────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
+            $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $GLOBALS['TL_LANG']['MSC']['sc_first']);
 
             return $this->Template->parse();
         }
 
         $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
-        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ? $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] : false;
+        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?: false;
 
         $arrColset = !empty($this->sc_type) ? ($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '') : '';
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
@@ -51,7 +58,7 @@ class ColsetStart extends FelixPfeifferColsetStart
 
         $strMiniset = '';
 
-        if($GLOBALS['TL_CSS']['subcolumns_set'])
+        if ($GLOBALS['TL_CSS']['subcolumns_set'] ?? false)
         {
             $strMiniset = '<div class="colsetexample '.$strSCClass.'">';
 
@@ -78,55 +85,151 @@ class ColsetStart extends FelixPfeifferColsetStart
         return $this->Template->parse();
     }
 
-    protected function compile()
+    /** @noinspection PhpUndefinedFieldInspection */
+    protected function compile(): void
     {
-        @parent::compile();
-
-        if (!SubColumnsBootstrapBundle::validSubType(SubColumnsBootstrapBundle::getSubType())) {
-            return;
-        }
-
-        $container = ColumnSet::prepareContainer($this->columnset_id);
-
-        if ($container) {
-            $equalize = (($GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] ?? false) && $this->sc_equalize) ? $GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] . ' ' : '';
-
-            $this->Template->column  = $container[$this->sc_sortid][0] . ' col_' . ($this->sc_sortid + 1) . (($this->sc_sortid == count($container) - 1) ? ' last' : '');
-            $this->Template->scclass = $equalize . $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' colcount_' . count($container) . ' ' . $this->strSet . ' col_' . $this->sc_type;
-        }else{
-            $this->Template->scclass =  $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' ' . $this->strSet . ' col_' . $this->sc_type;
-        }
-
-        $columnSet = ColumnsetModel::findByPk($this->columnset_id);
-        if ($columnSet === null) {
-            return;
-        }
-
-        $cssID = $this->cssID;
-
-        if ((!is_array($this->cssID) || empty(array_filter($this->cssID))) && $columnSet->cssID)
+        if (!SubColumnsBootstrapBundle::validProfile())
         {
-            $cssID = StringUtil::deserialize($columnSet->cssID, true);
+            throw new Exception("Could not find a valid sub-column profile.");
         }
 
-        $cssID[1] = $this->Template->class . ' ' . $this->Template->scclass.(($cssID[1] ?? false) ? ' '.$cssID[1] : '') ;
-        $this->cssID = $cssID;
+        $profile = $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
-        $this->Template->class = '';
+        if (!isset($GLOBALS['TL_SUBCL'][$profile])) {
+            throw new Exception(
+                "The requested column-set profile could not be found. "
+                . "Type \"$profile\" was requested, but no such profile is defined. "
+                . "Maybe your configuration is not correct?"
+            );
+        }
+
+        /**
+         * CSS Code in das Pagelayout einfügen
+         */
+        $mainCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['css'] ?? false;
+        $IEHacksCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['ie'] ?? false;
+
+        if ($mainCSS) {
+            $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
+        }
+
+        if ($IEHacksCSS) {
+            $GLOBALS['TL_HEAD']['subcolumns'] = '<!--[if lte IE 7]><link href="' . $IEHacksCSS . '" rel="stylesheet" type="text/css" /><![endif]--> ';
+        }
+
+        /** @var ColumnsetContainer $colsetContainer */
+        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+        $columnset = $colsetContainer->getColumnSettings($this->sc_columnset);
+        if ($columnset === null) {
+            throw new Exception("The requested column-set \"$this->sc_columnset\" could not be found.");
+        }
+
+        $colCount = count($columnset);
+
+        $equalize = '';
+        if ($GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] && $this->sc_equalize) {
+            $equalize = $GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] . ' ';
+        }
+
+        $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
+        $useInner = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+        $legacyInfos = (bool)($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false);
+
+        if ($this->sc_gapdefault != 1 || !$useGap)
+        {
+            $useInner = false;
+        }
+        else  # $this->sc_gapdefault == 1 && $useGap
+        {
+            $gap_value = $this->sc_gap ?: ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?? 12);
+
+            $factor = [
+                2 => 0.5,
+                3 => 0.666,
+                4 => 0.75,
+                5 => 0.8,
+            ][$colCount] ?? 0;
+
+            if ($factor > 0) {
+                $this->Template->gap = ['right' => ceil($factor * $gap_value) . 'px'];
+            }
+        }
+
+        $this->Template->useInside = $useInner;
+        $this->Template->useOutside = false;
         $this->Template->scclass = '';
+        $this->Template->inside = $this->Template->useInside ? ($columnset[0][1] ?? '') : '';
+        $this->Template->column = ($columnset[0][0] ?? '') . ($legacyInfos ? ' col_1' : '') . ' sc-col--1 first';;
+
+        /*** Altered Pfeiffer code above ***/
+
+        $rowClasses = sprintf(
+            "%s%s sc-colcount--%s sc-profile--%s sc-colset--%s sc-type--%s",
+            $equalize,
+            $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] ?? '',
+            $colCount,
+            $this->strSet,
+            preg_replace('/[^a-z0-9_.-\/]+/', '_', strtolower($this->sc_columnset)),
+            $this->sc_type ?: 'deprecated'
+        );
+
+        if ($legacyInfos)
+        {
+            $identifier = ColumnsetIdentifier::deconstruct($this->sc_columnset ?? '');
+            $identifierLastParam = $identifier->getParam(-1) ?? '';
+
+            $colIdentifier = preg_replace('/[^a-z0-9\s-]+/i', '-',
+                str_replace('_', ' ', $identifierLastParam)
+            );
+
+            if ($identifier->getSource() === 'db') {
+                $colIdentifier = "db--$colIdentifier";
+            }
+
+            $rowClasses .= sprintf(
+                ' colcount_%s %s col-%s',
+                $colCount,
+                $this->strSet,
+                $colIdentifier
+            );
+        }
 
         $this->Template->addContainer = $this->addContainer;
 
-        $this->Template->useOutside = $columnSet->useOutside;
+        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
 
-        if ($columnSet->useOutside) {
-            $this->Template->outside = $columnSet->outsideClass;
+        $cssID = ($this->cssID ?? []) ?: [];
+        if (!is_array($cssID) || empty(array_filter($cssID)))
+        {
+            if ($columnsetModel && $columnsetModel->hasCssID())
+            {
+                $cssID = $columnsetModel->getCssID();
+            }
+            else
+            {
+                $cssID = StringUtil::deserialize($cssID, true);
+            }
+        }
+        $cssID[1] = ($cssID[1] ?? false) ? ' ' . $cssID[1] : '';
+        $cssID[1] = trim("{$this->Template->class} $rowClasses$cssID[1]");
+        $this->cssID = $cssID;
+
+        if ($columnsetModel === null)
+        {
+            return;
         }
 
-        $this->Template->useInside = $columnSet->useInside;
-
-        if ($columnSet->useInside) {
-            $this->Template->inside = $columnSet->insideClass;
+        if ($this->Template->useOutside = (bool)$columnsetModel->useOutside) {
+            $this->Template->outside = $columnsetModel->outsideClass ?: '';
         }
+
+        if ($this->Template->useInside = (bool)$columnsetModel->useInside) {
+            $this->Template->inside = $columnsetModel->insideClass ?: '';
+        }
+    }
+
+    public static function getSubscribedServices(): array
+    {
+        return [ColumnsetContainer::class];
     }
 }
