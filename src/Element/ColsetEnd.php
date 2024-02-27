@@ -13,6 +13,8 @@ use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class ColsetEnd extends FelixPfeifferColsetEnd
 {
+    const TYPE = 'colsetEnd';
+
     public function generate()
     {
         $this->strSet = SubColumnsBootstrapBundle::getProfile();

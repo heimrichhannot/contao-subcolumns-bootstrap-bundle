@@ -1,10 +1,18 @@
 <?php
 
-use HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao\LoadDataContainerListener;
+use Contao\System;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd;
+use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart;
+use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart;
+use HeimrichHannot\SubColumnsBootstrapBundle\FormField\FormColEnd;
+use HeimrichHannot\SubColumnsBootstrapBundle\FormField\FormColPart;
+use HeimrichHannot\SubColumnsBootstrapBundle\FormField\FormColStart;
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 /**
- * Backend modules
+ * ## Backend modules
  */
 $GLOBALS['BE_MOD']['design']['columnset'] = [
     'icon'   => 'system/modules/subcolumns_bootstrap_customizable/assets/icon.png',
@@ -12,25 +20,45 @@ $GLOBALS['BE_MOD']['design']['columnset'] = [
 ];
 
 /**
- * Content elements
+ * ## Content elements
  */
-$GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart';
-$GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart';
-$GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd';
+$GLOBALS['TL_CTE']['subcolumn'] = [
+    ColsetStart::TYPE => ColsetStart::class,
+    ColsetPart::TYPE => ColsetPart::class,
+    ColsetEnd::TYPE => ColsetEnd::class
+];
 
 /**
- * Models
+ * ## Models
  */
-$GLOBALS['TL_MODELS']['tl_columnset'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnSetModel';
+$GLOBALS['TL_MODELS']['tl_columnset'] = ColumnSetModel::class;
 
 /**
- * Hooks
+ * ## Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class, '__invoke'];
+# $GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class, '__invoke'];
+$GLOBALS['TL_HOOKS']['clipboardCopy'][] = [ColumnsetContainer::class, 'clipboardCopy'];
+$GLOBALS['TL_HOOKS']['clipboardCopyAll'][] = [ColumnsetContainer::class, 'clipboardCopyAll'];
 
 /**
- * Columset
+ * ## Form fields
  */
+$GLOBALS['TL_FFL'][FormColStart::TYPE] = FormColStart::class;
+$GLOBALS['TL_FFL'][FormColPart::TYPE] = FormColPart::class;
+$GLOBALS['TL_FFL'][FormColEnd::TYPE] = FormColEnd::class;
+
+/**
+ * ## Einrücken von Elementen
+ */
+$GLOBALS['TL_WRAPPERS']['start'][] = ColsetStart::TYPE;
+$GLOBALS['TL_WRAPPERS']['separator'][] = ColsetPart::TYPE;
+$GLOBALS['TL_WRAPPERS']['stop'][] = ColsetEnd::TYPE;
+
+/**
+ * ## Spaltensatzprofile
+ */
+$GLOBALS['TL_SUBCL'] ??= [];
+
 // bootstrap 3
 $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3] = [
     'label'    => 'Bootstrap 3',
@@ -52,24 +80,19 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4] =
     'inside'  => false,
     'gap'     => false,
     'files'   => [
-        'css' => (System::getContainer()->get('huh.utils.container')->isBackend() ?
-            'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static' : ''),
+        'css' => (function() {
+            $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+            $requestStack = System::getContainer()->get('request_stack');
+
+            if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest())) {
+                return 'bundles/subcolumnsbootstrap/css/contao-subcolumns-bootstrap-bundle.be.css||static';
+            }
+
+            return '';
+        })()
     ],
     'sizes'   => ['xs', 'sm', 'md', 'lg', 'xl'],
-    'sets'    => [/*
-        '1'  => [['col-md-12']],
-        '2'  => [['col-md-6'], ['col-md-6']],
-        '3'  => [['col-md-4'], ['col-md-4'], ['col-md-4']],
-        '4'  => [['col-md-3'], ['col-md-3'], ['col-md-3'], ['col-md-3']],
-        '5'  => [['col-md-3'], ['col-md-3'], ['col-md-2'], ['col-md-2'], ['col-md-2']],
-        '6'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2']],
-        '7'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1']],
-        '8'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
-        '9'  => [['col-md-2'], ['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
-        '10' => [['col-md-2'], ['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
-        '11' => [['col-md-2'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
-        '12' => [['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1'], ['col-md-1']],
-    */],
+    'sets'    => [],
 ];
 
 // bootstrap 5

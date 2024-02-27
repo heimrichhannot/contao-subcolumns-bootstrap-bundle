@@ -12,12 +12,12 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
-        "contao/core-bundle": "^4.9",
+        "php": "^8.2",
+        "contao/core-bundle": "^4.13 || ^5.0",
         "heimrichhannot/contao-encore-contracts": "^1.0",
-        "heimrichhannot/contao-utils-bundle": "^2.16",
+        "heimrichhannot/contao-utils-bundle": "^2.16 || ^3.0",
         "heimrichhannot/subcolumns": "^4.3",
-        "symfony/http-kernel": "^4.0 || ^5.0",
+        "symfony/http-kernel": "^4.0 || ^5.0 || ^6.0",
         "symfony/service-contracts": "^1.0 || ^2.0 || ^3.0"
     },
     "require-dev": {

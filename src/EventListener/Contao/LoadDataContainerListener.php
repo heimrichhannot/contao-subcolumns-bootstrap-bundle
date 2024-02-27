@@ -13,9 +13,10 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao;
 
 
 use Contao\Config;
-use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
+#[AsHook("loadDataContainer")]
 class LoadDataContainerListener
 {
     // private ContaoFramework $contaoFramework;
@@ -30,9 +31,9 @@ class LoadDataContainerListener
         if ($table === 'tl_content')
         {
             SubColumnsBootstrapBundle::setProfile('bootstrap3');
-            //$ce = ContentModel::findByPk(Input::get('id'));
-            //$parentModel = $this->contaoFramework->getAdapter(Model::class)->getClassFromTable($ce->ptable);
-            //$parent = $parentModel::findByPk($ce->pid);
+            // $ce = ContentModel::findByPk(Input::get('id'));
+            // $parentModel = $this->contaoFramework->getAdapter(Model::class)->getClassFromTable($ce->ptable);
+            // $parent = $parentModel::findByPk($ce->pid);
             return;
         }
 
@@ -93,12 +94,12 @@ class LoadDataContainerListener
                             'order-11',
                             'order-12',
                         ],
-                        'eval'      => ['style' => 'width: 160px;', 'includeBlankOption' => true],
+                        'eval' => ['style' => 'width: 160px;', 'includeBlankOption' => true],
                     ],
                 ],
-                'buttons'            => ['copy' => false, 'delete' => false],
+                'buttons' => ['copy' => false, 'delete' => false],
             ],
-            'sql'           => "blob NULL",
+            'sql' => "blob NULL",
         ];
     }
 }

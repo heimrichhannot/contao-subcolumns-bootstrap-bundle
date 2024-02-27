@@ -4,7 +4,6 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Backend;
 
 use Contao\Backend;
 use Contao\ContentModel;
-use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\DataContainer;
 use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
@@ -12,7 +11,6 @@ use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class ColumnSet extends Backend
 {
-
     /**
      * store container so it has not be regenerated for every column set part
      * @var array

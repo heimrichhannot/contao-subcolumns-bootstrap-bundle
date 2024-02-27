@@ -7,11 +7,13 @@ use Contao\ContentModel;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
+use Contao\Database;
 use Contao\Database\Result;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
+use Contao\System;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Exception;
@@ -23,26 +25,18 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class ColumnsetContainer
 {
-    private Connection $connection;
-    private RequestStack $requestStack;
-    private ScopeMatcher $scopeMatcher;
-    private KernelInterface $kernel;
     private ?array $options = null;
 
     public function __construct(
-        Connection $connection,
-        RequestStack $requestStack,
-        ScopeMatcher $scopeMatcher,
-        KernelInterface $kernel
-    )
-    {
-        $this->connection = $connection;
-        $this->requestStack = $requestStack;
-        $this->scopeMatcher = $scopeMatcher;
-        $this->kernel = $kernel;
-    }
+        private Connection $connection,
+        private Database $database,
+        private RequestStack $requestStack,
+        private ScopeMatcher $scopeMatcher,
+        private KernelInterface $kernel
+    ) {}
 
     /**
+     * @throws \Doctrine\DBAL\Exception
      * @Callback(table="tl_columnset", target="config.onload")
      */
     public function onLoadCallback(DataContainer $dc = null): void
@@ -59,7 +53,7 @@ class ColumnsetContainer
             return;
         }
 
-        $tableColumns = $this->connection->getSchemaManager()->listTableColumns('tl_columnset');
+        $tableColumns = $this->connection->createSchemaManager()->listTableColumns('tl_columnset');
 
         foreach ($sizes as $size)
         {
@@ -89,7 +83,7 @@ class ColumnsetContainer
     /**
      * @param string|ColumnsetIdentifier $identifier
      */
-    public function getColumnSettings($identifier): ?array
+    public function getColumnSettings(string|ColumnsetIdentifier $identifier): ?array
     {
         $identifier = ColumnsetIdentifier::deconstruct($identifier);
 
@@ -97,14 +91,11 @@ class ColumnsetContainer
             return null;
         }
 
-        switch ($identifier->getSource()) {
-            case 'globals':
-                return $this->getGlobalColumnSettings(...$identifier->getParams());
-            case 'db':
-                return $this->getDBColumnSettings(...$identifier->getParams());
-        }
-
-        return null;
+        return match ($identifier->getSource()) {
+            'globals' => $this->getGlobalColumnSettings(...$identifier->getParams()),
+            'db' => $this->getDBColumnSettings(...$identifier->getParams()),
+            default => null,
+        };
     }
 
     private function getGlobalColumnSettings(string $profile, string $columnSet): ?array
@@ -257,7 +248,7 @@ class ColumnsetContainer
 
         foreach ($columnSets as $columnSet)
         {
-            $types[$dbLegend]['db.tl_columnset.' . $columnSet['id']] =
+            $types[$dbLegend]['db.tl_columnset.'.$columnSet['id']] =
                 "[{$columnSet['columns']}] "
                 . $columnSet['title']
                 . (!empty($columnSet['description']) ? " ({$columnSet['description']})" : '');
@@ -291,15 +282,16 @@ class ColumnsetContainer
      * @throws \Doctrine\DBAL\Driver\Exception
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      */
-    private function moveRows($pid, $ptable, $sorting, int $ammount = 128)
+    private function moveRows($pid, $ptable, $sorting, int $amount = 128): void
     {
         $this->connection
             ->prepare("UPDATE `tl_content` SET sorting = sorting + ? WHERE pid=? AND ptable=? AND sorting > ?")
-            ->executeQuery([$ammount, $pid, $ptable, $sorting]);
+            ->executeQuery([$amount, $pid, $ptable, $sorting]);
     }
 
     /**
      * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function onUpdate(DataContainer $dc): bool
     {
@@ -318,6 +310,9 @@ class ColumnsetContainer
         return $this->createOrUpdateColset($record, $colsetIdentifier, $colset, $children);
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     private function updateEqualColset($record, array $children): bool
     {
         foreach (array_values($children) as $i => $childId)
@@ -383,7 +378,7 @@ class ColumnsetContainer
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws \Doctrine\DBAL\Exception
      */
-    private function updateExpandColset($record, array $colSettings, array $children): bool
+    private function updateExpandColset(ContentModel|Result $record, array $colSettings, array $children): bool
     {
         $diff = count($colSettings) - count($children);
 
@@ -433,8 +428,9 @@ class ColumnsetContainer
      * @return bool
      * @throws \Doctrine\DBAL\Exception
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
-    private function createOrUpdateColset($record, string $colset, array $colSettings, array $children = null): bool
+    private function createOrUpdateColset(ContentModel|Result $record, string $colset, array $colSettings, array $children = null): bool
     {
         /* Neues Spaltenset anlegen */
         if (empty($children))
@@ -471,7 +467,7 @@ class ColumnsetContainer
      * @throws \Doctrine\DBAL\Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
-    private function setupColset($record, string $colset, array $colSettings): bool
+    private function setupColset(ContentModel|Result $record, string $colset, array $colSettings): bool
     {
         $children = [];
         $columnCount = count($colSettings);
@@ -536,7 +532,7 @@ class ColumnsetContainer
      * @throws Exception
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      */
-    public function onDelete(DataContainer $dc)
+    public function onDelete(DataContainer $dc): void
     {
         $delRecord = $this->connection->fetchAssociative(
             "SELECT * FROM tl_content WHERE id=? LIMIT 1",
@@ -553,7 +549,237 @@ class ColumnsetContainer
             ->where('sc_parent != "" AND sc_parent IS NOT NULL AND (id = :id OR sc_parent = :parent_id)')
             ->setParameter(':id', $delRecord['id'])
             ->setParameter(':parent_id', $delRecord['sc_parent'])
-            ->execute()
+            ->executeStatement()
         ;
     }
+
+    public function onCopy(int|string $id, DataContainer $dc): void
+    {
+        $dc->activeRecord = $this->connection
+            ->fetchAssociative("SELECT * FROM tl_content WHERE id=? LIMIT 1", [$id]);
+
+        if (!in_array($dc->activeRecord['type'], ['colsetStart', 'colsetPart', 'colsetEnd']))
+        {
+            return;
+        }
+
+        $act = Input::get('act');
+
+        if ($act === 'copy')
+        {
+            if ($dc->activeRecord['type'] === 'colsetStart')
+            {
+                $this->connection->update('tl_content', [
+                    'sc_parent' => 0,
+                    'sc_childs' => ''
+                ], ['id' => $id]);
+            }
+            return;
+        }
+
+        if ($act !== 'copyAll') {
+            return;
+        }
+
+        switch ($dc->activeRecord['type'])
+        {
+            case 'colsetStart':
+                $this->copyColsetStart($dc->activeRecord, $dc->id);
+                break;
+            case 'colsetPart':
+                $this->copyColsetPart($dc->activeRecord, $dc->id);
+                break;
+            case 'colsetEnd':
+                $this->copyColsetEnd($dc->activeRecord, $dc->id);
+                break;
+        }
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function copyColsetStart(array $record, int|string $pid): void
+    {
+        $session = [
+            'parentId' => $pid,
+            'count'    => 1,
+            'childs'   => []
+        ];
+
+        $GLOBALS['scglobal']['sc'.$record['sc_parent']] = $session;
+
+        $this->connection->update('tl_content', [
+            'sc_name'   => 'colset.' . $pid,
+            'sc_parent' => $pid
+        ], ['id' => $pid]);
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function copyColsetPart(mixed $activeRecord, int|string $id): void
+    {
+        $session = &$GLOBALS['scglobal']['sc'.$activeRecord['sc_parent']];
+
+        $newParent = $session['parentId'];
+        $count = $session['count'];
+
+        $this->connection->update('tl_content', [
+            'sc_name'   => 'colset.' . $newParent . '-Part-' . $count,
+            'sc_parent' => $newParent
+        ], ['id' => $id]);
+
+        $session['childs'][] = $id;
+        $session['count']++;
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function copyColsetEnd(mixed $activeRecord, int|string $id): void
+    {
+        $session = &$GLOBALS['scglobal']['sc'.$activeRecord['sc_parent']];
+
+        $newParent = $session['parentId'];
+
+        $this->connection->update('tl_content', [
+            'sc_name'   => 'colset.' . $newParent . '-End',
+            'sc_parent' => $newParent
+        ], ['id' => $id]);
+
+        $session['childs'][] = $id;
+    }
+
+    /**
+     * HOOK: $GLOBALS['TL_HOOKS']['clipboardCopy']
+     *
+     * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     */
+    public function clipboardCopy(int|string $id, DataContainer $dc, bool $isGrouped): void
+    {
+        if ($isGrouped) {
+            return;
+        }
+
+        $activeRecord = $this->connection->fetchAssociative("SELECT * FROM tl_content WHERE id=?", [$id]);
+
+        if ($activeRecord['type'] !== 'colsetStart') {
+            return;
+        }
+
+        $this->connection->update('tl_content', [
+            'sc_childs' => '',
+            'sc_parent' => '',
+            'sc_name' => 'colset.' . $activeRecord['id']
+        ], ['id' => $id]);
+
+        $stmt = $this->database->prepare("SELECT * FROM tl_content WHERE id=?");
+        $result = $stmt->execute([$id]);
+        $record = $result->next();
+        if (!$record) {
+            return;
+        }
+
+        $scType = $record->sc_type;
+
+        $colsetIdentifier = $record->sc_columnset ?? null;
+        $colset = $this->getColumnSettings($colsetIdentifier);
+
+        if (empty($colset)) {
+            return;
+        }
+
+        $logger = System::getContainer()->get('logger');
+        $logger->info("Values: sc_type=$scType, sc-colset-count=".count($colset).' :: SpaltensetHilfe clipboardCopy()');
+
+        $this->setupColset($record, $scType, $colset);
+    }
+
+    /**
+     * HOOK: $GLOBALS['TL_HOOKS']['clipboardCopyAll']
+     */
+    public function clipboardCopyAll(array $arrIds): void
+    {
+        // $arrIds = array_keys(array_flip($arrIds));
+        $arrIds = array_unique(array_values($arrIds));
+
+        $in = implode(',', $arrIds);
+        $result = $this->database->execute("SELECT DISTINCT pid FROM tl_content WHERE id IN ($in)");
+
+        if ($result->numRows > 0)
+        {
+            while ($result->next())
+            {
+                $this->copyCheck($result->pid);
+            }
+        }
+    }
+
+    /**
+     * Copy a colset
+     */
+    public function copyCheck(int|string $pid): void
+    {
+        $row = $this->database
+            ->prepare("SELECT id, sc_childs, sc_parent FROM tl_content WHERE pid=? AND type=? ORDER BY sorting")
+            ->execute($pid, 'colsetStart');
+
+        if ($row->numRows < 1) {
+            return;
+        }
+
+        $typeToNameMap = [
+            "colsetStart" => "Start",
+            "colsetPart" => "Part",
+            "colsetEnd" => "End"
+        ];
+
+        while ($row->next())
+        {
+            $parent = $row->id;
+            $oldParent = $row->sc_parent;
+            $newSCName = "colset.$row->id";
+            $oldChildren = unserialize($row->sc_childs);
+
+            if (!is_array($oldChildren)) {
+                continue;
+            }
+
+            $this->database
+                ->prepare("UPDATE tl_content SET %s WHERE pid=? AND sc_parent=?")
+                ->set(['sc_parent' => $parent])
+                ->execute($pid, $oldParent);
+
+            $child = $this->database
+                ->prepare("SELECT id, type FROM tl_content WHERE pid=? AND sc_parent=? AND id!=? ORDER BY sorting")
+                ->execute($pid, $parent, $parent);
+
+            if ($child->numRows < 1) {
+                continue;
+            }
+
+            $childIds = [];
+            while ($child->next()) {
+                $childIds[] = $child->id;
+                $childTypes[$child->id] = $child->type;
+            }
+            sort($childIds);
+
+            $this->database
+                ->prepare("UPDATE tl_content %s WHERE id=?")
+                ->set(['sc_name' => $newSCName, 'sc_childs' => $childIds])
+                ->execute($parent);
+
+            $partNum = 1;
+            foreach ($childTypes as $id => $type) {
+                $newChildSCName = $newSCName . "-$typeToNameMap[$type]" . ($type === "colsetPart" ? "-" . $partNum++ : '');
+                $this->database
+                    ->prepare("UPDATE tl_content %s WHERE id=?")
+                    ->set(['sc_name' => $newChildSCName])
+                    ->execute($id);
+            }
+        }
+    }
+
 }

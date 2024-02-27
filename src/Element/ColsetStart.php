@@ -7,21 +7,37 @@ use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\System;
 use Exception;
-use FelixPfeiffer\Subcolumns\colsetStart as FelixPfeifferColsetStart;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
-class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberInterface
+class ColsetStart extends ContentElement implements ServiceSubscriberInterface
 {
+    const TYPE = 'colsetStart';
+
+    /**
+     * Template
+     * @var string
+     */
+    protected $strTemplate = 'ce_colsetStart';
+
+    /**
+     * Set-Type
+     */
+    protected $strSet;
+
     /** @noinspection PhpUndefinedFieldInspection */
     public function generate(): string
     {
         $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
-        if (TL_MODE !== 'BE')
+        $scopeMatcher = static::getContainer()->get('contao.routing.scope_matcher');
+        $requestStack = static::getContainer()->get('request_stack');
+
+        if (!$scopeMatcher->isBackendRequest($requestStack->getCurrentRequest()))
         {
             return ContentElement::generate();
         }
@@ -31,10 +47,11 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         if (is_array($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
-            $arrColor  = $this->compileColor($arrColor);
+            $arrColor = ColorUtil::compileColor($arrColor);
         }
 
-        if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        if (!$css)
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
             $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
@@ -48,28 +65,22 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         }
 
         $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
-        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?: false;
+        $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
         $arrColset = !empty($this->sc_type) ? ($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '') : '';
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
         $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
         $intCountContainers = isset($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type]) ? count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type]) : 0;
+        $strMiniset = '<div class="colsetexample '.$strSCClass.'">';
 
-        $strMiniset = '';
-
-        if ($GLOBALS['TL_CSS']['subcolumns_set'] ?? false)
+        for ($i = 0; $i < $intCountContainers; $i++)
         {
-            $strMiniset = '<div class="colsetexample '.$strSCClass.'">';
-
-            for($i=0;$i<$intCountContainers;$i++)
-            {
-                $arrPresentColset = $arrColset[$i];
-                $strMiniset .= '<div class="'.$arrPresentColset[0].($i==0 ? ' active' : '').'">'.($blnInside ? '<div class="'.$arrPresentColset[1].'">' : '').($i+1).($blnInside ? '</div>' : '').'</div>';
-            }
-
-            $strMiniset .= '</div>';
+            $arrPresentColset = $arrColset[$i];
+            $strMiniset .= '<div class="'.$arrPresentColset[0].($i==0 ? ' active' : '').'">'.($blnInside ? '<div class="'.$arrPresentColset[1].'">' : '').($i+1).($blnInside ? '</div>' : '').'</div>';
         }
+
+        $strMiniset .= '</div>';
 
         $this->Template = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
