@@ -18,7 +18,7 @@ class SubColumnsBootstrapBundle extends Bundle
      * In order to ensure backward compatibility, any sub-column type string that is read from db should be run through
      * this method.
      *
-     * It takes a subtype string, either of the correct options or the legacy typo ones.
+     * It takes a profile string, either of the correct options or the legacy typo ones.
      * Returns its refactored version.
      *
      * @param string $scType
@@ -26,18 +26,16 @@ class SubColumnsBootstrapBundle extends Bundle
      */
     public static function filterProfile(string $scType): ?string
     {
-        return $scType ? [
-            'bootstrap' => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3,
-            'boostrap4' => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4,
-            'boostrap5' => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3 => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP3,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4 => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5 => SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP5,
-        ][$scType] ?? null : null;
+        return match ($scType) {
+            static::SUBCOLUMNS_PROFILE_BOOTSTRAP3, 'bootstrap' => static::SUBCOLUMNS_PROFILE_BOOTSTRAP3,
+            static::SUBCOLUMNS_PROFILE_BOOTSTRAP4, 'boostrap4' => static::SUBCOLUMNS_PROFILE_BOOTSTRAP4,
+            static::SUBCOLUMNS_PROFILE_BOOTSTRAP5, 'boostrap5' => static::SUBCOLUMNS_PROFILE_BOOTSTRAP5,
+            default => null,
+        };
     }
 
     /**
-     * Checks, if a sub-column type string belongs to this package.
+     * Checks if a sub-column type string belongs to this package.
      * A specific Bootstrap version (4/5) MAY be supplied.
      *
      * @param string|null $scType

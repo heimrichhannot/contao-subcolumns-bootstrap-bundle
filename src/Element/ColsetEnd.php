@@ -3,6 +3,7 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
 use Contao\BackendTemplate;
+use Contao\ContentElement;
 use Contao\ContentModel;
 use Contao\StringUtil;
 use Contao\System;
@@ -10,28 +11,33 @@ use FelixPfeiffer\Subcolumns\colsetEnd as FelixPfeifferColsetEnd;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
 
-class ColsetEnd extends FelixPfeifferColsetEnd
+class ColsetEnd extends ContentElement
 {
     const TYPE = 'colsetEnd';
 
-    public function generate()
+    public function generate(): string
     {
         $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
-        if (TL_MODE !== 'BE')
+        $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+        $requestStack = System::getContainer()->get('request_stack');
+
+        if (!$scopeMatcher->isBackendRequest($requestStack->getCurrentRequest()))
         {
-            return parent::generate();
+            return ContentElement::generate();
         }
 
         $arrColor = StringUtil::deserialize($this->sc_color);
         if (is_countable($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
-            $arrColor  = $this->compileColor($arrColor);
+            $arrColor  = ColorUtil::compileColor($arrColor);
         }
 
-        if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        if (!$css)
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
             $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
@@ -44,13 +50,13 @@ class ColsetEnd extends FelixPfeifferColsetEnd
         }
 
         $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
-        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
+        $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
-        $arrColset = ($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '');
+        $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '';
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
         $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
-        $intCountContainers = count(($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? []));
+        $intCountContainers = count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? []);
 
         $strMiniset = '<div class="colsetexample final '.$strSCClass.'">';
 
@@ -66,10 +72,10 @@ class ColsetEnd extends FelixPfeifferColsetEnd
         $this->Template->setColor = $arrColor;
 
         $parent = ContentModel::findByPk($this->sc_parent);
-
-        if ($parent !== null && ($columnSet = ColumnsetModel::findByPk($parent->columnset_id)) !== null) {
+        $columnSet = $parent !== null ? ColumnsetModel::findByPk($parent->columnset_id) : null;
+        if ($columnSet !== null)
+        {
             System::loadLanguageFile('tl_columnset');
-
             $this->Template->colsetTitle = $columnSet->title . ' (' . $this->sc_type . ' ' . $GLOBALS['TL_LANG']['tl_columnset']['columns' . ($this->sc_type > 1 ? 'Plural' : 'Singular')] . ')';
         }
 
@@ -78,10 +84,8 @@ class ColsetEnd extends FelixPfeifferColsetEnd
         return $this->Template->parse();
     }
 
-    protected function compile()
+    protected function compile(): void
     {
-        @parent::compile();
-
         if (!SubColumnsBootstrapBundle::validProfile())
         {
             return;
@@ -99,6 +103,12 @@ class ColsetEnd extends FelixPfeifferColsetEnd
         $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
         if ($columnsetModel === null)
         {
+            $useGap = $GLOBALS['TL_SUBCL'][$this->strSet]['gap'] ?? null;
+            $blnUseInner = $useGap
+                && $this->sc_gapdefault == 1
+                && ($GLOBALS['TL_SUBCL'][$this->strSet]['inside'] ?? false);
+
+            $this->Template->useInside = $blnUseInner;
             return;
         }
 

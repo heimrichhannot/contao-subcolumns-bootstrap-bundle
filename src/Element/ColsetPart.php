@@ -7,15 +7,13 @@ use Contao\ContentElement;
 use Contao\ContentModel;
 use Contao\StringUtil;
 use Contao\System;
-use FelixPfeiffer\Subcolumns\colsetPart as FelixPfeifferColsetPart;
-use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
-class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInterface
+class ColsetPart extends ContentElement implements ServiceSubscriberInterface
 {
     const TYPE = 'colsetPart';
 
@@ -114,7 +112,60 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
         return $this->Template->parse();
     }
 
-    protected function compileWithGlobalIdentifier()
+    protected function compile(): void
+    {
+        $this->compileWithGlobalIdentifier();
+
+        if (!SubColumnsBootstrapBundle::validProfile())
+        {
+            return;
+        }
+
+        $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
+        $useInside = !(($this->sc_gapdefault != 1 || !$useGap) ?? true)
+            && $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+
+        $this->Template->useInside = $useInside;
+
+        /** @var ColumnsetContainer $colsetContainer */
+        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
+
+        if ($colset === null)
+        {
+            return;
+        }
+
+        if (!empty($colset))
+        {
+            $colNumber = ($this->sc_sortid + 1);
+            $colClass = " sc-col--$colNumber";
+
+            if ($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false)
+            {
+                $colClass .= ' col_' . ($this->sc_sortid + 1);
+            }
+
+            $lastClass = ($this->sc_sortid == count($colset) - 1) ? ' last' : '';
+            $this->Template->column = $colset[$this->sc_sortid][0] . $colClass . $lastClass;
+        }
+
+        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
+        if ($columnsetModel === null)
+        {
+            return;
+        }
+
+        if ($this->Template->useOutside = (bool) $columnsetModel->useOutside) {
+            $this->Template->outside = $columnsetModel->outsideClass ?: '';
+        }
+
+        if ($this->Template->useInside = (bool) $columnsetModel->useInside) {
+            $this->Template->inside = $columnsetModel->insideClass ?: '';
+        }
+    }
+
+    protected function compileWithGlobalIdentifier(): void
     {
         $arrCounts = ['1' => 'second', '2' => 'third', '3' => 'fourth', '4' => 'fifth'];
         $container = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? null;
@@ -126,13 +177,17 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
         }
 
         $this->Template->colID = $arrCounts[$this->sc_sortid] ?? '';
-        $this->Template->column = $container[$this->sc_sortid][0]
-            . ' col_' . ($this->sc_sortid+1)
-            . (($this->sc_sortid == count($container) - 1) ? ' last' : '');
+        $this->Template->column = trim(sprintf(
+            '%s col_%s %s',
+            $container[$this->sc_sortid][0] ?? '',
+            $this->sc_sortid + 1,
+            $this->sc_sortid == count($container) - 1 ? 'last' : ''
+        ));
         $this->Template->inside = $this->Template->useInside ? $container[$this->sc_sortid][1] : '';
         $this->Template->useInside = $blnUseInner;
 
-        if ($this->sc_gapdefault != 1 || !$useGap) {
+        if ($this->sc_gapdefault != 1 || !$useGap)
+        {
             $this->Template->useInside = false;
             return;
         }
@@ -144,7 +199,7 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
 
         if ($containerCount === 2)
         {
-            $this->Template->gap = ['left' => floor(0.5*$gap_value).$gap_unit];
+            $this->Template->gap = ['left' => floor(0.5 * $gap_value) . $gap_unit];
         }
         elseif ($containerCount === 3)
         {
@@ -193,59 +248,6 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
                     $this->Template->gap = ['left' => ceil(0.8 * $gap_value) . $gap_unit];
                     break;
             }
-        }
-    }
-
-    protected function compile(): void
-    {
-        $this->compileWithGlobalIdentifier();
-
-        if (!SubColumnsBootstrapBundle::validProfile())
-        {
-            return;
-        }
-
-        $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
-        $useInside = !(($this->sc_gapdefault != 1 || !$useGap) ?? true)
-            && $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
-
-        $this->Template->useInside = $useInside;
-
-        /** @var ColumnsetContainer $colsetContainer */
-        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
-
-        if ($colset === null)
-        {
-            return;
-        }
-
-        if (!empty($colset))
-        {
-            $colNumber = ($this->sc_sortid + 1);
-            $colClass = " sc-col--$colNumber";
-
-            if ($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false)
-            {
-                $colClass .= ' col_' . ($this->sc_sortid + 1);
-            }
-
-            $lastClass = ($this->sc_sortid == count($colset) - 1) ? ' last' : '';
-            $this->Template->column = $colset[$this->sc_sortid][0] . $colClass . $lastClass;
-        }
-
-        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
-        if ($columnsetModel === null)
-        {
-            return;
-        }
-
-        if ($this->Template->useOutside = (bool)$columnsetModel->useOutside) {
-            $this->Template->outside = $columnsetModel->outsideClass ?: '';
-        }
-
-        if ($this->Template->useInside = (bool)$columnsetModel->useInside) {
-            $this->Template->inside = $columnsetModel->insideClass ?: '';
         }
     }
 

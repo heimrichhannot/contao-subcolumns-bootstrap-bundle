@@ -67,7 +67,7 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
         $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
         $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
-        $arrColset = !empty($this->sc_type) ? ($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '') : '';
+        $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '';
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
         $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
@@ -85,7 +85,9 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
         $this->Template = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
 
-        if (($columnSet = ColumnsetModel::findByPk($this->columnset_id)) !== null) {
+        $columnSet = ColumnsetModel::findByPk($this->columnset_id);
+        if ($columnSet !== null)
+        {
             System::loadLanguageFile('tl_columnset');
             $this->Template->colsetTitle = $columnSet->title . ' (' . $this->sc_type . ' ' . $GLOBALS['TL_LANG']['tl_columnset']['columns' . ($this->sc_type > 1 ? 'Plural' : 'Singular')] . ')';
         }
@@ -110,7 +112,7 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
             throw new Exception(
                 "The requested column-set profile could not be found. "
                 . "Type \"$profile\" was requested, but no such profile is defined. "
-                . "Maybe your configuration is not correct?"
+                . "Check your configuration."
             );
         }
 

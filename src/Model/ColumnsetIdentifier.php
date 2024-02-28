@@ -31,11 +31,7 @@ class ColumnsetIdentifier
         return $this->params[$index] ?? null;
     }
 
-    /**
-     * @param self|string $identifier
-     * @return self|null
-     */
-    public static function deconstruct($identifier): ?self
+    public static function deconstruct(string|ColumnsetIdentifier $identifier): ?self
     {
         if ($identifier instanceof self) {
             return $identifier;
