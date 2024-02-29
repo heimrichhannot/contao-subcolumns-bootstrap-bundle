@@ -49,7 +49,7 @@ class ColsetEnd extends ContentElement
             return $this->Template->parse();
         }
 
-        $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
+        $GLOBALS['TL_CSS']['subcolumns'] = 'bundles/subcolumnsbootstrap/css/be_style.css';
         $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
         $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '';

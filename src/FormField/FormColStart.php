@@ -30,10 +30,12 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\FormField;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
+use Contao\StringUtil;
 use Contao\System;
 use Contao\Widget;
-use HeimrichHannot\Subcolumns\SubcolumnTypes;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
+use const HeimrichHannot\SubColumnsBootstrapBundle\Util\px;
 
 /**
  * Class FormColStart
@@ -47,33 +49,34 @@ class FormColStart extends Widget
 {
     const TYPE = 'formcolstart';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'form_colset';
-	protected $strColTemplate = 'ce_colsetStart';
+    /**
+     * Template
+     *
+     * @var string
+     */
+    protected $strTemplate = 'form_colset';
+    protected $strColTemplate = 'ce_colsetStart';
 
-
-	/**
-	 * Do not validate
-	 */
-	public function validate(): void
+    /**
+     * Do not validate
+     */
+    public function validate(): void
     {
-		return;
-	}
+        return;
+    }
 
     protected function generateBackend(): string
     {
-        $arrColor = unserialize($this->fsc_color);
+        $arrColor = StringUtil::deserialize($this->fsc_color);
 
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
+        if (count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
-            $arrColor  = $this->compileColor($arrColor);
+            $arrColor  = ColorUtil::compileColor($arrColor);
         }
 
-        if(!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'])
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
+        if (!$css)
         {
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $this->compileColor($arrColor);
@@ -83,8 +86,8 @@ class FormColStart extends Widget
             return $this->Template->parse();
         }
 
-        $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
-        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ? $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] : false;
+        $GLOBALS['TL_CSS']['subcolumns'] = 'bundles/subcolumnsbootstrap/css/be_style.css';
+        $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
         $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
@@ -94,165 +97,83 @@ class FormColStart extends Widget
 
         $strMiniset = '';
 
-        if($GLOBALS['TL_CSS']['subcolumns_set'])
+        for ($i = 0; $i < $intCountContainers; $i++)
         {
-            $strMiniset = '<div class="colsetexample '.$strSCClass.'">';
-
-            for($i=0;$i<$intCountContainers;$i++)
-            {
-                $arrPresentColset = $arrColset[$i];
-                $strMiniset .= '<div class="'.$arrPresentColset[0].($i==0 ? ' active' : '').'">'.($blnInside ? '<div class="'.$arrPresentColset[1].'">' : '').($i+1).($blnInside ? '</div>' : '').'</div>';
-            }
-
-            $strMiniset .= '</div>';
+            $strMiniset .= sprintf('<div class="%s">%s</div>',
+                $arrColset[$i][0] . ($i === 0 ? ' active' : ''),
+                $blnInside
+                    ? sprintf('<div class="%s">%s</div>', $arrColset[$i][1], $i + 1)
+                    : $i + 1
+            );
         }
+
+        $strMiniset = "<div class=\"colsetexample $strSCClass\">$strMiniset</div>";
 
         $this->Template = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
         $this->Template->colsetTitle = '### COLUMNSET START '.$this->fsc_type.' <strong>'.$this->fsc_name.'</strong> ###';
         $this->Template->visualSet = $strMiniset;
-        $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$GLOBALS['TL_LANG']['MSC']['sc_first']);
+        $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $GLOBALS['TL_LANG']['MSC']['sc_first']);
 
         return $this->Template->parse();
     }
 
-	/**
-	 * Generate the widget and return it as string
-	 * @return string
-	 */
-	public function generate()
-	{
-        $this->strSet = SubcolumnTypes::compatSetType();
+    /**
+     * Generate the widget and return it as string
+     *
+     * @return string
+     */
+    public function generate(): string
+    {
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
         $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
         $requestStack = System::getContainer()->get('request_stack');
 
-        if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest()))
-        {
+        if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest())) {
             return $this->generateBackend();
         }
 
-		/**
-		 * CSS Code in das Pagelayout einfügen
-		 */
-        $mainCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ? $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] : '';
-		$IEHacksCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['ie'] ?? false;
-		
-		$GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
-		$GLOBALS['TL_HEAD']['subcolumns'] = $IEHacksCSS ? '<!--[if lte IE 7]><link href="'.$IEHacksCSS.'" rel="stylesheet" type="text/css" /><![endif]--> ' : '';
-		
-		$container = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
-		$useGap = $GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
-		
-		$objTemplate = new FrontendTemplate($this->strColTemplate);
-		
-		if($this->fsc_gapuse == 1 && $useGap)
-		{
-            $gap_value = $this->fsc_gap != "" ? $this->fsc_gap : ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ? $GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] : 12);
-			$gap_unit = 'px';
-			
-			if(count($container) == 2)
-			{
-				$objTemplate->gap = array('right'=>ceil(0.5*$gap_value).$gap_unit);
-			}
-			elseif (count($container) == 3)
-			{
-				$objTemplate->gap = array('right'=>ceil(0.666*$gap_value).$gap_unit);
+        /**
+         * CSS Code in das Pagelayout einfügen
+         */
+        $mainCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null ?: '';
+        $IEHacksCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['ie'] ?? false;
 
-			}
-			elseif (count($container) == 4)
-			{
-				$objTemplate->gap = array('right'=>ceil(0.75*$gap_value).$gap_unit);
-			}
-			elseif (count($container) == 5)
-			{
-				$objTemplate->gap = array('right'=>ceil(0.8*$gap_value).$gap_unit);
-			}
-		}
-		
-		#$container = unserialize($this->sc_container);
-		$objTemplate->column = $container[0][0] . ' col_1' . ' first';
-		$objTemplate->inside = $container[0][1] ?? '';
-		$objTemplate->useInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+        $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
+        $GLOBALS['TL_HEAD']['subcolumns'] = $IEHacksCSS ? '<!--[if lte IE 7]><link href="' . $IEHacksCSS . '" rel="stylesheet" type="text/css" /><![endif]--> ' : '';
 
-        $scTypeClass = ' col-' . $this->fsc_type;
+        $container = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
+        $useGap = $GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
 
-        if (class_exists(SubColumnsBootstrapBundle::class)
-            && SubColumnsBootstrapBundle::validProfile($this->strSet))
+        $objTemplate = new FrontendTemplate($this->strColTemplate);
+
+        if ($this->fsc_gapuse && $useGap)
         {
-            $scTypeClass = '';
+            $gap_value = $this->fsc_gap != "" ? $this->fsc_gap : ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?: 12);
+
+            $objTemplate->gap = match (count($container)) {
+                2 => ['right' => ceil(0.5 * $gap_value) . px],
+                3 => ['right' => ceil(0.666 * $gap_value) . px],
+                4 => ['right' => ceil(0.75 * $gap_value) . px],
+                5 => ['right' => ceil(0.8 * $gap_value) . px]
+            };
         }
 
-		$objTemplate->scclass = ($this->fsc_equalize ? 'equalize ' : '') . $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' colcount_' . count($container) . ' ' . $this->strSet . $scTypeClass . (' sc-type-' . $this->sc_type) . ($this->class ? ' ' . $this->class : '');
-		return $objTemplate->parse();
-	}
+        #$container = unserialize($this->sc_container);
+        $objTemplate->column = $container[0][0] . ' col_1 first';
+        $objTemplate->inside = $container[0][1] ?? '';
+        $objTemplate->useInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
-    /**
-     * Compile a color value and return a hex or rgba color
-     * @param mixed
-     * @param boolean
-     * @param array
-     * @return string
-     */
-    protected function compileColor($color)
-    {
-        if (!is_array($color))
-        {
-            return "#$color";
-        }
-        elseif (!isset($color[1]) || empty($color[1]))
-        {
-            return "#$color[0]";
-        }
-        else
-        {
-            return 'rgba(' . implode(',', $this->convertHexColor($color[0], $blnWriteToFile, $vars)) . ','. ($color[1] / 100) .')';
-        }
+        $objTemplate->scclass = trim(sprintf('%s %s colcount_%s %s sc-type-%s',
+            $this->fsc_equalize ? 'equalize ' : '',
+            $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'],
+            count($container),
+            $this->strSet,
+            $this->sc_type
+        ));
+        $objTemplate->scclass .= $this->class ? ' ' . $this->class : '';
+
+        return $objTemplate->parse();
     }
-
-    /**
-     * Convert hex colors to rgb
-     * @param string
-     * @param boolean
-     * @param array
-     * @return array
-     * @see http://de3.php.net/manual/de/function.hexdec.php#99478
-     */
-    protected function convertHexColor($color, $blnWriteToFile=false, $vars=array()): array
-    {
-        // Support global variables
-        if (strncmp($color, '$', 1) === 0)
-        {
-            if (!$blnWriteToFile)
-            {
-                return [$color];
-            }
-            else
-            {
-                $color = str_replace(array_keys($vars), array_values($vars), $color);
-            }
-        }
-
-        $rgb = [];
-
-        // Try to convert using bitwise operation
-        if (strlen($color) == 6)
-        {
-            $dec = hexdec($color);
-            $rgb['red'] = 0xFF & ($dec >> 0x10);
-            $rgb['green'] = 0xFF & ($dec >> 0x8);
-            $rgb['blue'] = 0xFF & $dec;
-        }
-
-        // Shorthand notation
-        elseif (strlen($color) == 3)
-        {
-            $rgb['red'] = hexdec(str_repeat(substr($color, 0, 1), 2));
-            $rgb['green'] = hexdec(str_repeat(substr($color, 1, 1), 2));
-            $rgb['blue'] = hexdec(str_repeat(substr($color, 2, 1), 2));
-        }
-
-        return $rgb;
-    }
-
 }

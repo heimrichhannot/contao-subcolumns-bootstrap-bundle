@@ -13,6 +13,7 @@ use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
+use const HeimrichHannot\SubColumnsBootstrapBundle\Util\px;
 
 class ColsetStart extends ContentElement implements ServiceSubscriberInterface
 {
@@ -64,7 +65,7 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
             return $this->Template->parse();
         }
 
-        $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
+        $GLOBALS['TL_CSS']['subcolumns'] = 'bundles/subcolumnsbootstrap/css/be_style.css';
         $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
         $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->sc_type] ?? '';
@@ -154,17 +155,12 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
         }
         else  # $this->sc_gapdefault == 1 && $useGap
         {
-            $gap_value = $this->sc_gap ?: ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?? 12);
+            $gap_value = (int) ($this->sc_gap ?: ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?? 12));
 
-            $factor = [
-                2 => 0.5,
-                3 => 0.666,
-                4 => 0.75,
-                5 => 0.8,
-            ][$colCount] ?? 0;
+            $factor = [2 => 0.5, 3 => 0.666, 4 => 0.75, 5 => 0.8][$colCount] ?? 0;
 
             if ($factor > 0) {
-                $this->Template->gap = ['right' => ceil($factor * $gap_value) . 'px'];
+                $this->Template->gap = ['right' => ceil($factor * $gap_value) . px];
             }
         }
 

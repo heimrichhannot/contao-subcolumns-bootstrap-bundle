@@ -30,9 +30,11 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\FormField;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
+use Contao\StringUtil;
 use Contao\System;
 use Contao\Widget;
-use HeimrichHannot\Subcolumns\SubcolumnTypes;
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
 
 /**
  * Class FormColPart
@@ -46,58 +48,84 @@ class FormColEnd extends Widget
 {
     const TYPE = 'formcolend';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'form_colset';
-	protected string $strColTemplate = 'ce_colsetEnd';
+    /**
+     * Template
+     *
+     * @var string
+     */
+    protected $strTemplate = 'form_colset';
+    protected string $strColTemplate = 'ce_colsetEnd';
 
-	/**
-	 * Do not validate
-	 */
-	public function validate(): void
+    /**
+     * Do not validate
+     */
+    public function validate(): void
     {
-		return;
-	}
+        return;
+    }
+
+    /**
+     * Generate the widget and return it as string
+     *
+     * @return string
+     */
+    public function generate(): string
+    {
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
+
+        $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+        $requestStack = System::getContainer()->get('request_stack');
+
+        if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest())) {
+            return $this->generateBackend();
+        }
+
+        $template = new FrontendTemplate($this->strColTemplate);
+        $template->useInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'] ?? false;
+
+        return $template->parse();
+    }
 
     protected function generateBackend(): string
     {
-        $arrColor = unserialize($this->fsc_color);
+        $arrColor = StringUtil::deserialize($this->fsc_color);
 
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
+        if (count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
-            $arrColor  = $this->compileColor($arrColor);
+            $arrColor  = ColorUtil::compileColor($arrColor);
         }
 
-        if(!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'])
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        if (!$css)
         {
             $this->Template = new BackendTemplate('be_subcolumns');
-            $this->Template->setColor = $this->compileColor($arrColor);
-            $this->Template->colsetTitle = '### COLUMNSET START '.$this->fsc_type.' <strong>'.$this->fsc_name.'</strong> ###';
+            $this->Template->setColor = ColorUtil::compileColor($arrColor);
+            $this->Template->colsetTitle = "### COLUMNSET START {$this->fsc_type}<strong>{$this->fsc_name}</strong> ###";
 
             return $this->Template->parse();
         }
 
-        $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
+        $GLOBALS['TL_CSS']['subcolumns'] = 'bundles/subcolumnsbootstrap/css/be_style.css';
         $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
 
         $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
-        $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+        $blnInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'] ?? false;
 
         $intCountContainers = count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type]);
 
-        $strMiniset = '<div class="colsetexample final '.$strSCClass.'">';
-
-        for($i=0;$i<$intCountContainers;$i++)
+        $strMiniset = "";
+        for ($i = 0; $i < $intCountContainers; $i++)
         {
-            $arrPresentColset = $arrColset[$i];
-            $strMiniset .= '<div class="'.$arrPresentColset[0].'">'.($blnInside ? '<div class="'.$arrPresentColset[1].'">' : '').($i+1).($blnInside ? '</div>' : '').'</div>';
+            $strMiniset .= sprintf('<div class="%s">%s</div>',
+                $arrColset[$i][0],
+                $blnInside
+                    ? sprintf('<div class="%s">%s</div>', $arrColset[$i][1], $i + 1)
+                    : $i + 1
+            );
         }
-
-        $strMiniset .= '</div>';
+        $strMiniset = "<div class=\"colsetexample final $strSCClass\"/>$strMiniset</div>";
 
         $this->Template = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
@@ -105,94 +133,5 @@ class FormColEnd extends Widget
         $this->Template->visualSet = $strMiniset;
 
         return $this->Template->parse();
-    }
-
-	/**
-	 * Generate the widget and return it as string
-	 * @return string
-	 */
-	public function generate(): string
-    {
-		$this->strSet = SubcolumnTypes::compatSetType();
-
-        $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
-        $requestStack = System::getContainer()->get('request_stack');
-
-        if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest()))
-        {
-            return $this->generateBackend();
-        }
-		
-		$objTemplate = new FrontendTemplate($this->strColTemplate);
-		$objTemplate->useInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
-		return $objTemplate->parse();
-	}
-
-    /**
-     * Compile a color value and return a hex or rgba color
-     * @param mixed
-     * @param boolean
-     * @param array
-     * @return string
-     */
-    protected function compileColor($color): string
-    {
-        if (!is_array($color))
-        {
-            return "#$color";
-        }
-        elseif (!isset($color[1]) || empty($color[1]))
-        {
-            return "#$color[0]";
-        }
-        else
-        {
-            return 'rgba(' . implode(',', $this->convertHexColor($color[0], $blnWriteToFile ?? false, $vars ?? [])) . ','. ($color[1] / 100) .')';
-        }
-    }
-
-    /**
-     * Convert hex colors to rgb
-     * @param string
-     * @param boolean
-     * @param array
-     * @return array
-     * @see http://de3.php.net/manual/de/function.hexdec.php#99478
-     */
-    protected function convertHexColor($color, bool $blnWriteToFile = false, array $vars = []): array
-    {
-        // Support global variables
-        if (strncmp($color, '$', 1) === 0)
-        {
-            if (!$blnWriteToFile)
-            {
-                return [$color];
-            }
-            else
-            {
-                $color = str_replace(array_keys($vars), array_values($vars), $color);
-            }
-        }
-
-        $rgb = [];
-
-        // Try to convert using bitwise operation
-        if (strlen($color) == 6)
-        {
-            $dec = hexdec($color);
-            $rgb['red'] = 0xFF & ($dec >> 0x10);
-            $rgb['green'] = 0xFF & ($dec >> 0x8);
-            $rgb['blue'] = 0xFF & $dec;
-        }
-
-        // Shorthand notation
-        elseif (strlen($color) == 3)
-        {
-            $rgb['red'] = hexdec(str_repeat(substr($color, 0, 1), 2));
-            $rgb['green'] = hexdec(str_repeat(substr($color, 1, 1), 2));
-            $rgb['blue'] = hexdec(str_repeat(substr($color, 2, 1), 2));
-        }
-
-        return $rgb;
     }
 }

@@ -30,9 +30,12 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\FormField;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
+use Contao\StringUtil;
 use Contao\System;
 use Contao\Widget;
-use HeimrichHannot\Subcolumns\SubcolumnTypes;
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
+use const HeimrichHannot\SubColumnsBootstrapBundle\Util\px;
 
 /**
  * Class FormColPart
@@ -46,60 +49,55 @@ class FormColPart extends Widget
 {
     const TYPE = 'formcolpart';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'form_colset';
-	protected $strColTemplate = 'ce_colsetPart';
+    /**
+     * Template
+     *
+     * @var string
+     */
+    protected $strTemplate = 'form_colset';
+    protected string $strColTemplate = 'ce_colsetPart';
 
-	/**
-	 * Do not validate
-	 */
-	public function validate(): void
+    /**
+     * Do not validate
+     */
+    public function validate(): void
     {
-		return;
-	}
+        return;
+    }
 
     protected function generateBackend(): string
     {
-        switch ($this->fsc_sortid)
-        {
-            case 1:
-                $colID = $GLOBALS['TL_LANG']['MSC']['sc_second'];
-                break;
-            case 2:
-                $colID = $GLOBALS['TL_LANG']['MSC']['sc_third'];
-                break;
-            case 3:
-                $colID = $GLOBALS['TL_LANG']['MSC']['sc_fourth'];
-                break;
-            case 4:
-                $colID = $GLOBALS['TL_LANG']['MSC']['sc_fifth'];
-                break;
-        }
+        $msc = &$GLOBALS['TL_LANG']['MSC'];
 
-        $arrColor = unserialize($this->fsc_color);
+        $colID = match ($this->fsc_sortid) {
+            1 => $msc['sc_second'],
+            2 => $msc['sc_third'],
+            3 => $msc['sc_fourth'],
+            4 => $msc['sc_fifth'],
+            default => ''
+        };
+
+        $arrColor = StringUtil::deserialize($this->fsc_color);
 
         if (count($arrColor) === 2 && empty($arrColor[1])) {
             $arrColor = '';
         } else {
-            $arrColor = $this->compileColor($arrColor);
+            $arrColor = ColorUtil::compileColor($arrColor);
         }
 
-        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null))
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
+        if (!$css)
         {
             $this->Template = new BackendTemplate('be_subcolumns');
             $this->Template->setColor = $this->compileColor($arrColor);
             $this->Template->colsetTitle = '### COLUMNSET START '.$this->fsc_type.' <strong>'.$this->fsc_name.'</strong> ###';
-            #$this->Template->visualSet = $strMiniset;
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$colID);
 
             return $this->Template->parse();
         }
 
-        $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
-        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
+        $GLOBALS['TL_CSS']['subcolumns'] = 'bundles/subcolumnsbootstrap/css/be_style.css';
+        $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
 
         $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];
@@ -107,108 +105,80 @@ class FormColPart extends Widget
 
         $intCountContainers = count($GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type]);
 
-        $strMiniset = '<div class="colsetexample '.$strSCClass.'">';
-
+        $strMiniset = '';
         for ($i = 0; $i < $intCountContainers; $i++)
         {
-            $arrPresentColset = $arrColset[$i];
-            $strMiniset .= '<div class="'.$arrPresentColset[0].($i==$this->fsc_sortid ? ' active' : '').'">'.($blnInside ? '<div class="'.$arrPresentColset[1].'">' : '').($i+1).($blnInside ? '</div>' : '').'</div>';
+            $strMiniset .= sprintf('<div class="%s">%s</div>',
+                $arrColset[$i][0] . ($i == $this->fsc_sortid ? ' active' : ''),
+                $blnInside
+                    ? sprintf('<div class="%s">%s</div>', $arrColset[$i][1], $i + 1)
+                    : $i + 1
+            );
         }
-
-        $strMiniset .= '</div>';
+        $strMiniset = "<div class=\"colsetexample $strSCClass\">$strMiniset</div>";
 
         $this->Template = new BackendTemplate('be_subcolumns');
         $this->Template->setColor = $arrColor;
         $this->Template->colsetTitle = '### COLUMNSET START '.$this->fsc_type.' <strong>'.$this->fsc_name.'</strong> ###';
         $this->Template->visualSet = $strMiniset;
-        $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$colID);
+        $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $colID);
 
         return $this->Template->parse();
     }
 
-	/**
-	 * Generate the widget and return it as string
-	 * @return string
-	 */
-	public function generate()
-	{
-		$this->strSet = SubcolumnTypes::compatSetType();
+    /**
+     * Generate the widget and return it as string
+     *
+     * @return string
+     */
+    public function generate()
+    {
+        $this->strSet = SubColumnsBootstrapBundle::getProfile();
 
         $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
         $requestStack = System::getContainer()->get('request_stack');
 
-        if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest()))
-        {
+        if ($scopeMatcher->isBackendRequest($requestStack->getCurrentRequest())) {
             return $this->generateBackend();
         }
-		
-		$arrCounts = array('1'=>'second','2'=>'third','3'=>'fourth','4'=>'fifth');
-		$container = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
-		
-		$objTemplate = new FrontendTemplate($this->strColTemplate);
-		
-		if ($this->fsc_gapuse == 1)
-		{
-            $gap_value = $this->fsc_gap != "" ? $this->fsc_gap : ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ? $GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] : 12);
-			$gap_unit = 'px';
-			
-			if(count($container) == 2)
-			{
-				$objTemplate->gap = array('left'=>floor(0.5*$gap_value).$gap_unit);
-			}
-			elseif (count($container) == 3)
-			{
-				switch($this->fsc_sortid)
-				{
-					case 1:
-						$objTemplate->gap = array('right'=>floor(0.333*$gap_value).$gap_unit,'left'=>floor(0.333*$gap_value).$gap_unit);
-						break;
-					case 2:
-						$objTemplate->gap = array('left'=>ceil(0.666*$gap_value).$gap_unit);
-						break;
-				}
-			}
-			elseif (count($container) == 4)
-			{
-				switch($this->fsc_sortid)
-				{
-					case 1:
-						$objTemplate->gap = array('right'=>floor(0.5*$gap_value).$gap_unit,'left'=>floor(0.25*$gap_value).$gap_unit);
-						break;
-					case 2:
-						$objTemplate->gap = array('right'=>floor(0.25*$gap_value).$gap_unit,'left'=>ceil(0.5*$gap_value).$gap_unit);
-						break;
-					case 3:
-						$objTemplate->gap = array('left'=>ceil(0.75*$gap_value).$gap_unit);
-						break;
-				}
-			}
-			elseif (count($container) == 5)
-			{
-				switch($this->fsc_sortid)
-				{
-					case 1:
-						$objTemplate->gap = array('right'=>floor(0.6*$gap_value).$gap_unit,'left'=>floor(0.2*$gap_value).$gap_unit);
-						break;
-					case 2:
-						$objTemplate->gap = array('right'=>floor(0.4*$gap_value).$gap_unit,'left'=>ceil(0.4*$gap_value).$gap_unit);
-						break;
-					case 3:
-						$objTemplate->gap = array('right'=>floor(0.2*$gap_value).$gap_unit,'left'=>ceil(0.6*$gap_value).$gap_unit);
-						break;
-					case 4:
-						$objTemplate->gap = array('left'=>ceil(0.8*$gap_value).$gap_unit);
-						break;
-				}
-			}
-		}
-		
-		$objTemplate->column = $container[$this->fsc_sortid][0] . ' col_' . ($this->fsc_sortid+1) . (($this->fsc_sortid == count($container)-1) ? ' last' : '');
-		$objTemplate->inside = $container[$this->fsc_sortid][1] ?? '';
-		$objTemplate->useInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
 
-		return $objTemplate->parse();
-	}
+        $container = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
+
+        $objTemplate = new FrontendTemplate($this->strColTemplate);
+
+        $objTemplate->column = $container[$this->fsc_sortid][0] . ' col_' . ($this->fsc_sortid + 1) . (($this->fsc_sortid == count($container) - 1) ? ' last' : '');
+        $objTemplate->inside = $container[$this->fsc_sortid][1] ?? '';
+        $objTemplate->useInside = $GLOBALS['TL_SUBCL'][$this->strSet]['inside'] ?? false;
+
+        if ($this->fsc_gapuse == 1) {
+            return $objTemplate->parse();
+        }
+
+        $gap_value = $this->fsc_gap != "" ? $this->fsc_gap : ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?: 12);
+
+        $intSortId = (int) $this->fsc_sortid;
+
+        $objTemplate->gap = match (count($container)) {
+            2 => ['left' => floor(0.5 * $gap_value) . px],
+            3 => match ($intSortId) {
+                1 => ['right' => floor(0.333 * $gap_value) . px, 'left' => floor(0.333 * $gap_value) . px],
+                2 => ['left' => ceil(0.666 * $gap_value) . px]
+            },
+            4 => match ($intSortId) {
+                1 => ['right' => floor(0.5 * $gap_value) . px, 'left' => floor(0.25 * $gap_value) . px],
+                2 => ['right' => floor(0.25 * $gap_value) . px, 'left' => ceil(0.5 * $gap_value) . px],
+                3 => ['left' => ceil(0.75 * $gap_value) . px]
+            },
+            5 => match ($intSortId) {
+                1 => ['right' => floor(0.6 * $gap_value) . px, 'left' => floor(0.2 * $gap_value) . px],
+                2 => ['right' => floor(0.4 * $gap_value) . px, 'left' => ceil(0.4 * $gap_value) . px],
+                3 => ['right' => floor(0.2 * $gap_value) . px, 'left' => ceil(0.6 * $gap_value) . px],
+                4 => ['left' => ceil(0.8 * $gap_value) . px]
+            }
+        };
+
+        return $objTemplate->parse();
+    }
 
     /**
      * Compile a color value and return a hex or rgba color
