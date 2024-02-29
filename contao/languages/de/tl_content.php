@@ -16,5 +16,3 @@ $lang['addContainer'][0] = 'DIV mit der Klasse "container" hinzufügen';
 $lang['addContainer'][1] = 'Wählen Sie diese Option, um das Spaltenset in ein DIV-Element mit der Klasse "container" einzuschließen.';
 
 $lang['sc_columnset'] = ['Spaltensatz', 'Wählen Sie hier den Spaltensatz aus, den Sie verwenden möchten.'];
-$lang['db_legend'] = 'Backend-Spaltensätze';
-$lang['globals_legend'] = 'Datei-Profil:';

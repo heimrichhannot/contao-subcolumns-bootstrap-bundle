@@ -15,7 +15,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
     'list'        => [
         'label'             => [
             'fields' => ['title', 'columns'],
-            'format' => '%s <span style="color:#ccc;">[%s '.($GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] ?? null).']</span>',
+            'format' => '%s <span style="color:#ccc;">[%s '.($GLOBALS['TL_LANG']['tl_columnset']['formatColumns'] ?? '').']</span>',
         ],
         'sorting'           => [
             'mode'        => 2,

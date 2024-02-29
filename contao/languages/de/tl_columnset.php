@@ -9,6 +9,8 @@ $lang['general_legend']   = 'Allgemeines';
 $lang['columnset_legend'] = 'Spaltendefinition';
 $lang['expert_legend']    = 'Experten-Einstellungen';
 $lang['published_legend'] = 'Veröffentlichung';
+$lang['db_legend']        = 'Backend-Spaltensätze';
+$lang['globals_legend']   = 'Datei-Profil:';
 
 /**
  * Fields
@@ -58,6 +60,7 @@ $lang['order'][1] = 'Bestimmen Sie, ob die Spalten in der Anzeigereihenfolge ver
 
 $lang['cssID'][0] = 'CSS-ID/Klasse';
 $lang['cssID'][1] = 'Hier können Sie eine ID und beliebig viele Klassen eingeben.';
+
 
 /**
  * Values

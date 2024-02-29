@@ -104,37 +104,6 @@ class ColumnSet extends Backend
 
 
     /**
-     * add column set field to the colsetStart content element. We need to do it dynamically because subcolumns
-     * creates its palette dynamically
-     *
-     * @param DataContainer $dc
-     */
-    public function appendColumnsetIdToPalette(DataContainer $dc)
-    {
-        $arrDca = &$GLOBALS['TL_DCA']['tl_content'];
-
-        $arrDca['palettes']['colsetStart'] = str_replace('{colset_legend}', '{colset_legend},sc_columnset', $arrDca['palettes']['colsetStart']);
-
-        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
-
-        $content = ContentModel::findByPK($dc->id);
-
-        $arrDca['palettes']['colsetStart'] = str_replace('sc_name', '', $arrDca['palettes']['colsetStart']);
-        $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,sc_name', $arrDca['palettes']['colsetStart']);
-
-        if ($content && isset($content->sc_type) && $content->sc_type > 0) {
-            $arrDca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $arrDca['palettes']['colsetStart']);
-            $arrDca['palettes']['colsetStart'] = str_replace('sc_color', '', $arrDca['palettes']['colsetStart']);
-        }
-
-        /*PaletteManipulator::create()
-            ->addField('sc_columnset', 'colset_legend')
-            ->applyToPalette('colsetStart', 'tl_content')
-        ;*/
-    }
-
-
-    /**
      * create a MCW row for each column
      *
      * @param string $value deseriazable value, for getting an array
@@ -171,16 +140,13 @@ class ColumnSet extends Backend
 
 
     /**
-     * replace subcolumns getAllTypes method, to load all created columnsets.
-     *
-     * @param DataContainer $dc
-     * @return array
+     * replace subcolumns getAllTypes method, to load all created column sets.
      */
-    public function getAllTypes($dc)
+    public function getAllTypes(DataContainer $dc): array
     {
         if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) {
-            $sc = new \tl_content_sc();
-            return @$sc->getAllTypes();
+            $strSet = SubColumnsBootstrapBundle::getProfile();
+            return array_keys($GLOBALS['TL_SUBCL'][$strSet]['sets']);
         }
 
         $this->import('Database');
@@ -192,7 +158,8 @@ class ColumnSet extends Backend
             $types[] = $collection->columns;
         }
 
-        /*while ($collection->next()) {
+        /*
+        while ($collection->next()) {
             $types['Aus Datenbank'][] = $collection->columns;
         }
 
@@ -202,7 +169,8 @@ class ColumnSet extends Backend
             }
         }
 
-        ksort($types);*/
+        ksort($types);
+        */
 
         return $types;
     }
