@@ -4,8 +4,8 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 
 use Contao\DataContainer;
 use Contao\StringUtil;
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 
 abstract class AbstractColsetParentContainer
 {
@@ -53,7 +53,7 @@ abstract class AbstractColsetParentContainer
         $stmt->bindValue('children', static::DB_COL_SC_CHILDREN);
         $stmt->bindValue('parent', static::DB_COL_SC_PARENT);
         $stmt->bindValue('table', $colsetContainer->getTable());
-        $result = $stmt->execute([$pid, $colsetContainer::COLSET_TYPE_START]);
+        $result = $stmt->executeQuery([$pid, $colsetContainer::COLSET_TYPE_START]);
 
         if ($result->columnCount() < 1) {
             return;
@@ -86,13 +86,13 @@ abstract class AbstractColsetParentContainer
         $stmt->bindValue('parent', static::DB_COL_SC_PARENT);
         $stmt->bindValue('table', $cTable);
         $stmt->bindValue('scParent', $parent);
-        $stmt->execute([$pid, $oldParent]);
+        $stmt->executeStatement([$pid, $oldParent]);
 
         $stmt = $this->connection->prepare("SELECT id, type FROM :table WHERE pid = ? AND :parent = ? AND id != ? ORDER BY :sorting");
         $stmt->bindValue('parent', static::DB_COL_SC_PARENT);
         $stmt->bindValue('table', $cTable);
         $stmt->bindValue('sorting', static::DB_COL_SORTING);
-        $children = $stmt->execute([$pid, $parent, $parent]);
+        $children = $stmt->executeQuery([$pid, $parent, $parent]);
 
         if ($children->columnCount() < 1) {
             return;
@@ -114,7 +114,7 @@ abstract class AbstractColsetParentContainer
         $stmt->bindValue('children', static::DB_COL_SC_CHILDREN);
         $stmt->bindValue('scName', $newSCName);
         $stmt->bindValue('scChilds', serialize($childIds));
-        $stmt->execute($parent);
+        $stmt->executeStatement([$parent]);
 
         $colsetTypeNames = $colsetContainer::getColsetTypeNames();
 
@@ -127,7 +127,7 @@ abstract class AbstractColsetParentContainer
             $stmt->bindValue('table', $cTable);
             $stmt->bindValue('name', static::DB_COL_SC_NAME);
             $stmt->bindValue('scName', $newChildSCName);
-            $stmt->execute($id);
+            $stmt->executeStatement([$id]);
         }
     }
 }

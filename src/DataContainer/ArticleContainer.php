@@ -2,7 +2,7 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 
 class ArticleContainer extends AbstractColsetParentContainer
 {

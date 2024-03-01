@@ -97,6 +97,11 @@ class FormColEnd extends Widget
         }
 
         $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $css = call_user_func($cssCallback);
+        }
         if (!$css)
         {
             $this->Template = new BackendTemplate('be_subcolumns');
@@ -107,7 +112,16 @@ class FormColEnd extends Widget
         }
 
         $GLOBALS['TL_CSS']['subcolumns'] = 'bundles/subcolumnsbootstrap/css/be_style.css';
-        $GLOBALS['TL_CSS']['subcolumns_set'] = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $css = call_user_func($cssCallback);
+        }
+        if ($css)
+        {
+            $GLOBALS['TL_CSS']['subcolumns_set'] = $css;
+        }
 
         $arrColset = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];
         $strSCClass = $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'];

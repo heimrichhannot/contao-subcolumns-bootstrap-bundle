@@ -16,9 +16,9 @@ class ColumnSetPartElementController extends AbstractContentElementController
 {
     public const TYPE = 'columnset_part';
 
-    protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
+    protected function getResponse(Template $template, ContentModel $model, Request $request): Response
     {
         // TODO: Implement getResponse() method.
-        return null;
+        return new Response();
     }
 }

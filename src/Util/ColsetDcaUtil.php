@@ -15,6 +15,7 @@ class ColsetDcaUtil
     {
         static::attachCallbacks($dca, $colsetContainerClass);
         static::attachFields($dca, $colsetContainerClass);
+        static::attachPalettes($dca);
     }
 
     /**
@@ -31,17 +32,19 @@ class ColsetDcaUtil
         $dca['config']['onsubmit_callback'][] = [$colsetContainerClass, 'setElementProperties'];
         $dca['config']['ondelete_callback'][] = [$colsetContainerClass, 'onDelete'];
         $dca['config']['oncopy_callback'][] = [$colsetContainerClass, 'onCopy'];
-
         $dca['fields']['invisible']['save_callback'][] = [$colsetContainerClass, 'toggleAdditionalElements'];
+        $dca['fields']['sc_type']['options_callback'] = [$colsetContainerClass, 'getAllTypes'];
+    }
 
+    public static function attachPalettes(array &$dca): void
+    {
+        $dca['palettes']['colsetStart'] = '{type_legend},type;'
+            . '{colset_legend},sc_name,sc_type,sc_color,sc_gapdefault,sc_gap;'  # todo: remove gap? + remove sc_type
+            . '{colheight_legend:hide},sc_equalize;'  # equalize // todo: remove?
+            . '{protected_legend:hide},protected;'
+            . '{expert_legend:hide},guests,invisible,cssID,space';
         $dca['palettes']['colsetPart'] = 'cssID';
         $dca['palettes']['colsetEnd'] = $dca['palettes']['default'];
-
-        $dca['fields']['sc_name']['eval']['tl_class'] = 'w50';
-
-        $dca['fields']['sc_type']['options_callback'] = [$colsetContainerClass, 'getAllTypes'];
-        $dca['fields']['sc_type']['eval']['submitOnChange'] = true;
-        $dca['fields']['sc_type']['eval']['mandatory'] = false;
     }
 
     /**
@@ -52,6 +55,10 @@ class ColsetDcaUtil
     public static function attachFields(array &$dca, string $colsetContainerClass): void
     {
         $dca['fields'] = array_merge($dca['fields'], static::createDataContainerFields($colsetContainerClass));
+
+        $dca['fields']['sc_name']['eval']['tl_class'] = 'w50';
+        $dca['fields']['sc_type']['eval']['submitOnChange'] = true;
+        $dca['fields']['sc_type']['eval']['mandatory'] = false;
     }
 
     /**

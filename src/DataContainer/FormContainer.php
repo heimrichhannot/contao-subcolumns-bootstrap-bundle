@@ -3,8 +3,8 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 
 use Contao\DataContainer;
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 
 class FormContainer extends AbstractColsetParentContainer
 {

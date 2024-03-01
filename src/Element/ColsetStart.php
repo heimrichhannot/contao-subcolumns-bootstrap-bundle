@@ -53,6 +53,11 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
         }
 
         $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $css = call_user_func($cssCallback);
+        }
         if (!$css)
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
@@ -121,14 +126,19 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
         /**
          * CSS Code in das Pagelayout einfügen
          */
-        $mainCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['css'] ?? false;
+        $mainCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['css'] ?? null;
         $IEHacksCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['ie'] ?? false;
-
-        if ($mainCSS) {
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $mainCSS = call_user_func($cssCallback);
+        }
+        if ($mainCSS)
+        {
             $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
         }
-
-        if ($IEHacksCSS) {
+        if ($IEHacksCSS)
+        {
             $GLOBALS['TL_HEAD']['subcolumns'] = '<!--[if lte IE 7]><link href="' . $IEHacksCSS . '" rel="stylesheet" type="text/css" /><![endif]--> ';
         }
 

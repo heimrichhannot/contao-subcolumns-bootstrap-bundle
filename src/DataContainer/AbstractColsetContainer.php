@@ -5,6 +5,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 use Contao\ContentModel;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\Exception\InternalServerErrorHttpException;
 use Contao\Database;
 use Contao\Database\Result;
 use Contao\DataContainer;
@@ -20,6 +21,7 @@ use HeimrichHannot\SubColumnsBootstrapBundle\Controller\ColsetIdentifierControll
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use InvalidArgumentException;
+use stdClass;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractColsetContainer
@@ -54,7 +56,6 @@ abstract class AbstractColsetContainer
         private ColsetIdentifierController $colIdController,
         private Connection                 $connection,
         private ContaoCsrfTokenManager     $tokenManager,
-        private Database                   $database,
         private KernelInterface            $kernel
     ) {}
 
@@ -157,17 +158,17 @@ abstract class AbstractColsetContainer
     {
         /** @var Result $record */
         $record = $dc->activeRecord;
-        $colsetIdentifier = $record->sc_columnset ?? null;
-        $colset = $this->colIdController->getColumnSettings($colsetIdentifier);
 
-        if (empty($colset))
-        {
-            return false;
+        $colsetIdentifier = $record->sc_columnset ?? null;
+        if ($colsetIdentifier === null) {
+            throw new InternalServerErrorHttpException("No columnset identifier found. Perhaps you need to update your database.");
         }
+
+        $columnSettings = $this->colIdController->getColumnSettings($colsetIdentifier);
 
         $children = StringUtil::deserialize($record->sc_childs ?? null) ?: null;
 
-        return $this->createOrUpdateColset($record, $colsetIdentifier, $colset, $children);
+        return $this->createOrUpdateColset($record, $columnSettings, $children);
     }
 
     /**
@@ -286,15 +287,15 @@ abstract class AbstractColsetContainer
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
-    private function createOrUpdateColset(ContentModel|Result $record, string $colset, array $colSettings, ?array $children = null): bool
+    private function createOrUpdateColset(ContentModel|Result|stdClass $record, ?array $columnSettings, ?array $children = null): bool
     {
         /* Neues Spaltenset anlegen */
         if (empty($children))
         {
-            return $this->setupColset($record, $colset, $colSettings);
+            return $this->setupColset($record, $columnSettings);
         }
 
-        $newColCount = count($colSettings);
+        $newColCount = count($columnSettings);
         $oldColCount = count($children);
 
         /* Gleiche Spaltenzahl */
@@ -306,12 +307,12 @@ abstract class AbstractColsetContainer
         /* Weniger Spalten */
         if ($newColCount < $oldColCount)
         {
-            return $this->updateReduceColset($record, $colSettings, $children);
+            return $this->updateReduceColset($record, $columnSettings, $children);
         }
 
         /* Mehr Spalten */
         if ($newColCount > $oldColCount) {
-            return $this->updateExpandColset($record, $colSettings, $children);
+            return $this->updateExpandColset($record, $columnSettings, $children);
         }
 
         return false;
@@ -321,10 +322,10 @@ abstract class AbstractColsetContainer
      * @return true
      * @throws Exception
      */
-    private function setupColset(ContentModel|Result $record, string $colset, array $colSettings): bool
+    private function setupColset(ContentModel|Result|stdClass $record, ?array $columnSettings): bool
     {
         $children = [];
-        $columnCount = count($colSettings);
+        $columnCount = count($columnSettings);
 
         $this->moveRows($record->pid, $record->ptable, $record->sorting, 128 * ($columnCount + 1));
 
@@ -531,7 +532,9 @@ abstract class AbstractColsetContainer
             'sc_name' => 'colset.' . $activeRecord['id']
         ], ['id' => $id]);
 
-        $stmt = $this->database->prepare("SELECT * FROM `" . static::getTable() . "` WHERE id=?");
+        $database = Database::getInstance();
+
+        $stmt = $database->prepare("SELECT * FROM `" . static::getTable() . "` WHERE id=?");
         $result = $stmt->execute([$id]);
         $record = $result->next();
         if (!$record) {
@@ -550,7 +553,7 @@ abstract class AbstractColsetContainer
         $logger = System::getContainer()->get('logger');
         $logger->info("Values: sc_type=$scType, sc-colset-count=".count($colset).' :: SpaltensetHilfe clipboardCopy()');
 
-        $this->setupColset($record, $scType, $colset);
+        $this->setupColset($record, $colset);
     }
 
     /**
@@ -562,7 +565,8 @@ abstract class AbstractColsetContainer
         $arrIds = array_unique(array_values($arrIds));
 
         $in = implode(',', $arrIds);
-        $result = $this->database->execute("SELECT DISTINCT pid FROM `" . static::getTable() . "` WHERE id IN ($in)");
+        $result = Database::getInstance()
+            ->execute("SELECT DISTINCT pid FROM `" . static::getTable() . "` WHERE id IN ($in)");
 
         if ($result->numRows > 0)
         {
@@ -578,7 +582,7 @@ abstract class AbstractColsetContainer
      */
     public function copyCheck(int|string $pid): void
     {
-        $row = $this->database
+        $row = Database::getInstance()
             ->prepare("SELECT id, sc_childs, sc_parent FROM " . static::getTable() . " WHERE pid=? AND type=? ORDER BY sorting")
             ->execute($pid, static::COLSET_TYPE_START);
 
@@ -599,12 +603,13 @@ abstract class AbstractColsetContainer
                 continue;
             }
 
-            $this->database
-                ->prepare("UPDATE `" . static::getTable() . "` SET %s WHERE pid=? AND sc_parent=?")
+            $database = Database::getInstance();
+
+            $database->prepare("UPDATE `" . static::getTable() . "` SET %s WHERE pid=? AND sc_parent=?")
                 ->set(['sc_parent' => $parent])
                 ->execute($pid, $oldParent);
 
-            $child = $this->database
+            $child = $database
                 ->prepare("SELECT id, type FROM `" . static::getTable() . "` WHERE pid=? AND sc_parent=? AND id!=? ORDER BY sorting")
                 ->execute($pid, $parent, $parent);
 
@@ -619,16 +624,14 @@ abstract class AbstractColsetContainer
             }
             sort($childIds);
 
-            $this->database
-                ->prepare("UPDATE `" . static::getTable() . "` %s WHERE id=?")
+            $database->prepare("UPDATE `" . static::getTable() . "` %s WHERE id=?")
                 ->set(['sc_name' => $newSCName, 'sc_childs' => $childIds])
                 ->execute($parent);
 
             $partNum = 1;
             foreach ($childTypes as $id => $type) {
                 $newChildSCName = $newSCName . "-$typeToNameMap[$type]" . ($type === "colsetPart" ? "-" . $partNum++ : '');
-                $this->database
-                    ->prepare("UPDATE `" . static::getTable() . "` %s WHERE id=?")
+                $database->prepare("UPDATE `" . static::getTable() . "` %s WHERE id=?")
                     ->set(['sc_name' => $newChildSCName])
                     ->execute($id);
             }

@@ -75,7 +75,12 @@ class FormColStart extends Widget
             $arrColor  = ColorUtil::compileColor($arrColor);
         }
 
-        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'];
+        $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $css = call_user_func($cssCallback);
+        }
         if (!$css)
         {
             $this->Template = new BackendTemplate('be_subcolumns');
@@ -137,10 +142,17 @@ class FormColStart extends Widget
         /**
          * CSS Code in das Pagelayout einfügen
          */
-        $mainCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null ?: '';
+        $mainCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
         $IEHacksCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['ie'] ?? false;
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $mainCSS = call_user_func($cssCallback);
+        }
+        if ($mainCSS) {
+            $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
+        }
 
-        $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
         $GLOBALS['TL_HEAD']['subcolumns'] = $IEHacksCSS ? '<!--[if lte IE 7]><link href="' . $IEHacksCSS . '" rel="stylesheet" type="text/css" /><![endif]--> ' : '';
 
         $container = $GLOBALS['TL_SUBCL'][$this->strSet]['sets'][$this->fsc_type];

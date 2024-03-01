@@ -80,7 +80,7 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4] =
     'inside'  => false,
     'gap'     => false,
     'files'   => [
-        'css' => (function() {
+        'css_callback' => function() {
             $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
             $requestStack = System::getContainer()->get('request_stack');
 
@@ -89,7 +89,7 @@ $GLOBALS['TL_SUBCL'][SubColumnsBootstrapBundle::SUBCOLUMNS_PROFILE_BOOTSTRAP4] =
             }
 
             return '';
-        })()
+        }
     ],
     'sizes'   => ['xs', 'sm', 'md', 'lg', 'xl'],
     'sets'    => [],

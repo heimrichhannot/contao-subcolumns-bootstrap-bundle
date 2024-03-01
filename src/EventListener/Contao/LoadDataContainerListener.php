@@ -90,7 +90,7 @@ class LoadDataContainerListener
      * @param DataContainer $mcw multi column wizard or DC_Table
      * @return mixed
      */
-    public static function createColumns(string $value, DataContainer $mcw): mixed
+    public static function createColumns(?string $value, DataContainer $mcw): mixed
     {
         $columns = (int) $mcw->activeRecord->columns;
         $value   = StringUtil::deserialize($value, true);

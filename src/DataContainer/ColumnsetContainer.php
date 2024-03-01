@@ -63,4 +63,16 @@ class ColumnsetContainer
 
         $pm->applyToPalette('default', 'tl_columnset');
     }
+
+    public function getAllProfileOptions(): array
+    {
+        $profiles = [];
+
+        foreach ($GLOBALS['TL_SUBCL'] as $k => $v)
+        {
+            $profiles[$k] = $v['label'] ?? $k;
+        }
+
+        return $profiles;
+    }
 }

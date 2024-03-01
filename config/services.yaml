@@ -6,5 +6,5 @@ services:
       $projectDir: '%kernel.project_dir%'
 
   HeimrichHannot\SubColumnsBootstrapBundle\:
-    resource: '../src/{Asset,DataContainer,EventListener,FormField,Migration}/*'
+    resource: '../src/{Asset,Controller,DataContainer,EventListener,FormField,Migration}/*'
     public: true

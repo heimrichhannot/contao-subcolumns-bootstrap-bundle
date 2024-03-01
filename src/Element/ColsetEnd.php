@@ -38,6 +38,11 @@ class ColsetEnd extends ContentElement
         }
 
         $css = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? null;
+        $cssCallback = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css_callback'] ?? null;
+        if ($cssCallback && is_callable($cssCallback))
+        {
+            $css = call_user_func($cssCallback);
+        }
         if (!$css)
         {
             $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
