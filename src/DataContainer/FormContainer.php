@@ -6,16 +6,31 @@ use Contao\DataContainer;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Exception;
 
-class FormContainer
+class FormContainer extends AbstractColsetParentContainer
 {
+    const DB_COL_SC_PARENT = 'fsc_parent';
+    const DB_COL_SC_CHILDREN = 'fsc_childs';
+    const DB_COL_SC_NAME = 'fsc_name';
+    const DB_COL_SORTING = 'fsc_sortid';
+
     public function __construct(
-        private Connection $connection
-    ) {}
+        private Connection $connection,
+        private FormFieldContainer $formFieldContainer
+    ) {
+        parent::__construct($connection);
+    }
+
+    public function getColsetContainer(): AbstractColsetContainer
+    {
+        return $this->formFieldContainer;
+    }
 
     /**
+     * @deprecated This is kept here only for debugging reasons
+     * @internal
      * @throws Exception
      */
-    public function onCopyCallback(int|string $intId, DataContainer $dc): void
+    private function _onCopyCallback(int|string $intId, DataContainer $dc): void
     {
         if (is_string($intId)) {
             $intId = intval($intId);
@@ -26,7 +41,7 @@ class FormContainer
         }
 
         $result = $this->connection
-            ->prepare("SELECT id,fsc_parent FROM tl_form_field WHERE pid=? AND type=?")
+            ->prepare("SELECT id, fsc_parent FROM tl_form_field WHERE pid=? AND type=?")
             ->execute([$intId, 'formcolstart']);
 
         if ($result->columnCount() < 1) {
@@ -45,7 +60,7 @@ class FormContainer
 
             $parts = $this->connection
                 ->prepare("SELECT * FROM tl_form_field WHERE fsc_parent=? AND type!=? ORDER BY fsc_sortid")
-                ->execute([$result->id, 'formcolstart']);
+                ->execute([$result['id'], 'formcolstart']);
 
             $children = [];
 

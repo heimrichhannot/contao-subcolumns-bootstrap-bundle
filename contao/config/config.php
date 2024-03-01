@@ -1,7 +1,7 @@
 <?php
 
 use Contao\System;
-use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ContentContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd;
 use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart;
@@ -37,8 +37,8 @@ $GLOBALS['TL_MODELS']['tl_columnset'] = ColumnSetModel::class;
  * ## Hooks
  */
 # $GLOBALS['TL_HOOKS']['loadDataContainer'][] = [LoadDataContainerListener::class, '__invoke'];
-$GLOBALS['TL_HOOKS']['clipboardCopy'][] = [ColumnsetContainer::class, 'clipboardCopy'];
-$GLOBALS['TL_HOOKS']['clipboardCopyAll'][] = [ColumnsetContainer::class, 'clipboardCopyAll'];
+$GLOBALS['TL_HOOKS']['clipboardCopy'][] = [ContentContainer::class, 'clipboardCopy'];
+$GLOBALS['TL_HOOKS']['clipboardCopyAll'][] = [ContentContainer::class, 'clipboardCopyAll'];
 
 /**
  * ## Form fields

@@ -18,7 +18,7 @@ class ColsetDcaUtil
     }
 
     /**
-     * @param array $dca
+     * @param array &$dca
      * @param class-string<AbstractColsetContainer> $colsetContainerClass
      * @return void
      */
@@ -60,6 +60,7 @@ class ColsetDcaUtil
      */
     public static function createDataContainerFields(string $colsetContainerClass): array
     {
+        /** @var AbstractColsetContainer $colsetContainerClass IDE support */
         return [
             'sc_name' => [
                 'inputType' => 'text',

@@ -5,7 +5,6 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 use Contao\ContentModel;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
-use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Database;
 use Contao\Database\Result;
 use Contao\DataContainer;
@@ -17,24 +16,46 @@ use Contao\System;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use HeimrichHannot\SubColumnsBootstrapBundle\Controller\ColsetIdentifierController;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use InvalidArgumentException;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractColsetContainer
 {
-    protected ?array $options = null;
+    const COLSET_TYPE_START = 'colsetStart';
+    const COLSET_TYPE_PART = 'colsetPart';
+    const COLSET_TYPE_END = 'colsetEnd';
+
+    public static function getColsetTypes(): array
+    {
+        return [
+            static::COLSET_TYPE_START,
+            static::COLSET_TYPE_PART,
+            static::COLSET_TYPE_END
+        ];
+    }
+
+    public static function getColsetTypeNames(): array
+    {
+        return [
+            static::COLSET_TYPE_START => "Start",
+            static::COLSET_TYPE_PART => "Part",
+            static::COLSET_TYPE_END => "End"
+        ];
+    }
 
     public static abstract function getTable(): string;
 
+    protected ?array $options = null;
+
     public function __construct(
-        private ColumnsetContainer $columnsetContainer,
-        private Connection $connection,
-        private ContaoCsrfTokenManager $tokenManager,
-        private Database $database,
-        private KernelInterface $kernel
+        private ColsetIdentifierController $colIdController,
+        private Connection                 $connection,
+        private ContaoCsrfTokenManager     $tokenManager,
+        private Database                   $database,
+        private KernelInterface            $kernel
     ) {}
 
     public function createPalette(DataContainer $dc): void
@@ -42,19 +63,19 @@ abstract class AbstractColsetContainer
         PaletteManipulator::create()
             ->removeField('sc_type', 'colset_legend')
             ->removeField('columnset_id', 'colset_legend')
-            ->applyToPalette('colsetStart', static::getTable());
+            ->applyToPalette(static::COLSET_TYPE_START, static::getTable());
 
         if (!class_exists('onemarshall\AosBundle\AosBundle')) {
             return;
         }
 
-        $palette = $GLOBALS['TL_DCA'][static::getTable()]['palettes']['colsetStart'];
+        $palette = $GLOBALS['TL_DCA'][static::getTable()]['palettes'][static::COLSET_TYPE_START];
 
         $palette = str_replace('invisible,', '', $palette) . ';{invisible_legend:hide},invisible;'
         . '{aos_legend:hide},aosAnimation,aosEasing,aosDuration,aosDelay,aosAnchor,aosAnchorPlacement,aosOffset,aosOnce'
         . '{invisible_legend:hide}';
 
-        $GLOBALS['TL_DCA'][static::getTable()]['palettes']['colsetStart'] = $palette;
+        $GLOBALS['TL_DCA'][static::getTable()]['palettes'][static::COLSET_TYPE_START] = $palette;
     }
 
     public function getColsetOptions(): array
@@ -115,7 +136,7 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      * @noinspection PhpUnnecessaryFullyQualifiedNameInspection
      */
@@ -128,7 +149,7 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      * @noinspection PhpUnnecessaryFullyQualifiedNameInspection
      */
@@ -137,7 +158,7 @@ abstract class AbstractColsetContainer
         /** @var Result $record */
         $record = $dc->activeRecord;
         $colsetIdentifier = $record->sc_columnset ?? null;
-        $colset = $this->columnsetContainer->getColumnSettings($colsetIdentifier);
+        $colset = $this->colIdController->getColumnSettings($colsetIdentifier);
 
         if (empty($colset))
         {
@@ -150,7 +171,7 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     private function updateEqualColset($record, array $children): bool
@@ -182,7 +203,7 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     private function updateReduceColset($record, array $colSettings, array $children): bool
@@ -217,7 +238,7 @@ abstract class AbstractColsetContainer
 
     /**
      * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     private function updateExpandColset(ContentModel|Result $record, array $colSettings, array $children): bool
     {
@@ -262,9 +283,8 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
-     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     private function createOrUpdateColset(ContentModel|Result $record, string $colset, array $colSettings, ?array $children = null): bool
     {
@@ -299,8 +319,7 @@ abstract class AbstractColsetContainer
 
     /**
      * @return true
-     * @throws \Doctrine\DBAL\Exception
-     * @noinspection PhpFullyQualifiedNameUsageInspection
+     * @throws Exception
      */
     private function setupColset(ContentModel|Result $record, string $colset, array $colSettings): bool
     {
@@ -347,7 +366,7 @@ abstract class AbstractColsetContainer
         }
 
         $insert['sorting'] = $record->sorting + ($i + 1) * 64;
-        $insert['type'] = 'colsetEnd';
+        $insert['type'] = static::COLSET_TYPE_END;
         $insert['sc_name'] = "{$record->sc_name}-End";
         $insert['sc_sortid'] = $columnCount;
 
@@ -374,7 +393,7 @@ abstract class AbstractColsetContainer
             [$dc->id]
         );
 
-        if (!in_array($delRecord['type'], ['colsetStart', 'colsetPart', 'colsetEnd']))
+        if (!in_array($delRecord['type'], static::getColsetTypes()))
         {
             return;
         }
@@ -396,7 +415,7 @@ abstract class AbstractColsetContainer
         $dc->activeRecord = $this->connection
             ->fetchAssociative("SELECT * FROM `" . static::getTable() . "` WHERE id=? LIMIT 1", [$id]);
 
-        if (!in_array($dc->activeRecord['type'], ['colsetStart', 'colsetPart', 'colsetEnd']))
+        if (!in_array($dc->activeRecord['type'], static::getColsetTypes()))
         {
             return;
         }
@@ -405,7 +424,7 @@ abstract class AbstractColsetContainer
 
         if ($act === 'copy')
         {
-            if ($dc->activeRecord['type'] === 'colsetStart')
+            if ($dc->activeRecord['type'] === static::COLSET_TYPE_START)
             {
                 $this->connection->update(static::getTable(), [
                     'sc_parent' => 0,
@@ -421,20 +440,20 @@ abstract class AbstractColsetContainer
 
         switch ($dc->activeRecord['type'])
         {
-            case 'colsetStart':
+            case static::COLSET_TYPE_START:
                 $this->copyColsetStart($dc->activeRecord, $dc->id);
                 break;
-            case 'colsetPart':
+            case static::COLSET_TYPE_PART:
                 $this->copyColsetPart($dc->activeRecord, $dc->id);
                 break;
-            case 'colsetEnd':
+            case static::COLSET_TYPE_END:
                 $this->copyColsetEnd($dc->activeRecord, $dc->id);
                 break;
         }
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     private function copyColsetStart(array $record, int|string $pid): void
     {
@@ -453,7 +472,7 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     private function copyColsetPart(mixed $activeRecord, int|string $id): void
     {
@@ -472,7 +491,7 @@ abstract class AbstractColsetContainer
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     private function copyColsetEnd(mixed $activeRecord, int|string $id): void
     {
@@ -491,7 +510,7 @@ abstract class AbstractColsetContainer
     /**
      * HOOK: $GLOBALS['TL_HOOKS']['clipboardCopy']
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function clipboardCopy(int|string $id, DataContainer $dc, bool $isGrouped): void
@@ -502,7 +521,7 @@ abstract class AbstractColsetContainer
 
         $activeRecord = $this->connection->fetchAssociative("SELECT * FROM `" . static::getTable() . "` WHERE id=?", [$id]);
 
-        if ($activeRecord['type'] !== 'colsetStart') {
+        if ($activeRecord['type'] !== static::COLSET_TYPE_START) {
             return;
         }
 
@@ -522,7 +541,7 @@ abstract class AbstractColsetContainer
         $scType = $record->sc_type;
 
         $colsetIdentifier = $record->sc_columnset ?? null;
-        $colset = $this->columnsetContainer->getColumnSettings($colsetIdentifier);
+        $colset = $this->colIdController->getColumnSettings($colsetIdentifier);
 
         if (empty($colset)) {
             return;
@@ -561,17 +580,13 @@ abstract class AbstractColsetContainer
     {
         $row = $this->database
             ->prepare("SELECT id, sc_childs, sc_parent FROM " . static::getTable() . " WHERE pid=? AND type=? ORDER BY sorting")
-            ->execute($pid, 'colsetStart');
+            ->execute($pid, static::COLSET_TYPE_START);
 
         if ($row->numRows < 1) {
             return;
         }
 
-        $typeToNameMap = [
-            "colsetStart" => "Start",
-            "colsetPart" => "Part",
-            "colsetEnd" => "End"
-        ];
+        $typeToNameMap = static::getColsetTypeNames();
 
         while ($row->next())
         {
@@ -629,7 +644,7 @@ abstract class AbstractColsetContainer
             $stmt->bindValue('table', static::getTable());
             $stmt->bindValue('tstamp', time());
             $stmt->bindValue('inv', $varValue ? 1 : '');
-            $stmt->executeStatement([$dc->id, 'colsetStart']);
+            $stmt->executeStatement([$dc->id, static::COLSET_TYPE_START]);
         }
         return $varValue;
     }
@@ -644,18 +659,18 @@ abstract class AbstractColsetContainer
     {
         $dca = &$GLOBALS['TL_DCA'][static::getTable()];
 
-        $dca['palettes']['colsetStart'] = str_replace('{colset_legend}', '{colset_legend},sc_columnset', $dca['palettes']['colsetStart']);
+        $dca['palettes'][static::COLSET_TYPE_START] = str_replace('{colset_legend}', '{colset_legend},sc_columnset', $dca['palettes'][static::COLSET_TYPE_START]);
 
         if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
 
         $content = ContentModel::findByPK($dc->id);
 
-        $dca['palettes']['colsetStart'] = str_replace('sc_name', '', $dca['palettes']['colsetStart']);
-        $dca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,sc_name', $dca['palettes']['colsetStart']);
+        $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_name', '', $dca['palettes'][static::COLSET_TYPE_START]);
+        $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_type', 'sc_type,sc_name', $dca['palettes'][static::COLSET_TYPE_START]);
 
         if ($content && isset($content->sc_type) && $content->sc_type > 0) {
-            $dca['palettes']['colsetStart'] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $dca['palettes']['colsetStart']);
-            $dca['palettes']['colsetStart'] = str_replace('sc_color', '', $dca['palettes']['colsetStart']);
+            $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $dca['palettes'][static::COLSET_TYPE_START]);
+            $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_color', '', $dca['palettes'][static::COLSET_TYPE_START]);
         }
     }
 
@@ -665,7 +680,7 @@ abstract class AbstractColsetContainer
      * */
     public function setElementProperties(DataContainer $dc): void
     {
-        if ($dc->activeRecord->type !== 'colsetStart'
+        if ($dc->activeRecord->type !== static::COLSET_TYPE_START
             || $dc->activeRecord->sc_type === "")
         {
             return;
@@ -793,5 +808,84 @@ abstract class AbstractColsetContainer
         */
 
         return $types;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function onCopyCallback(int|string $id = 0): void
+    {
+        if (is_string($id)) {
+            $id = intval($id);
+        }
+
+        if ($id < 1) {
+            return;
+        }
+
+        $this->copyColset($id);
+    }
+
+    /**
+     * Copy a colset
+     *
+     * @throws Exception
+     */
+    public function copyColset(int|string $pid): void
+    {
+        $result = $this->connection
+            ->prepare("SELECT id, sc_childs, sc_parent FROM tl_content WHERE pid=? AND type=? ORDER BY sorting")
+            ->execute([$pid, 'colsetStart']);
+
+        if ($result->columnCount() < 1) {
+            return;
+        }
+
+        while ($row = $result->fetchAssociative())
+        {
+            $parent = $row['id'];
+            $oldParent = $row['sc_parent'];
+            $newSCName = "colset.{$row['id']}";
+            $oldChildren = StringUtil::deserialize($row['sc_childs']);
+
+            if (!is_array($oldChildren)) {
+                continue;
+            }
+
+            $stmt = $this->connection->prepare("UPDATE tl_content SET sc_parent=:scParent WHERE pid=? AND sc_parent=?");
+            $stmt->bindValue('scParent', $parent);
+            $stmt->execute([$pid, $oldParent]);
+
+            $stmt = $this->connection->prepare("SELECT id, type FROM tl_content WHERE pid=? AND sc_parent=? AND id!=? ORDER BY sorting");
+            $children = $stmt->execute([$pid, $parent, $parent]);
+
+            if ($children->columnCount() < 1) {
+                continue;
+            }
+
+            $childIds = [];
+            while ($child = $children->fetchAssociative())
+            {
+                $childId = $child['id'];
+                $childIds[] = $childId;
+                $childTypes[$childId] = $child['type'];
+            }
+            sort($childIds);
+
+            $stmt = $this->connection->prepare("UPDATE tl_content SET sc_name=:scName, sc_childs=:scChilds WHERE id=?");
+            $stmt->bindValue('scName', $newSCName);
+            $stmt->bindValue('scChilds', serialize($childIds));
+            $stmt->execute($parent);
+
+            $partNum = 1;
+            foreach ($childTypes as $id => $type) {
+                $typeName = ContentContainer::getColsetTypeNames()[$type];
+                $partName = $type === "colsetPart" ? "-" . $partNum++ : '';
+                $newChildSCName = "$newSCName-$typeName$partName";
+                $stmt = $this->connection->prepare("UPDATE tl_content SET sc_name=:scName WHERE id=?");
+                $stmt->bindValue('scName', $newChildSCName);
+                $stmt->execute($id);
+            }
+        }
     }
 }
