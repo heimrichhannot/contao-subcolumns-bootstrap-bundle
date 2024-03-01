@@ -45,7 +45,8 @@ class SubColumnsBootstrapBundle extends Bundle
     public static function validProfile(string $scType = null, ?int $bootstrapVersion = null): bool
     {
         $scType ??= static::getProfile();
-        return $scType === static::filterProfile($scType) && ($bootstrapVersion === null || substr($scType, -1) === (string)$bootstrapVersion);
+        return $scType === static::filterProfile($scType)
+            and $bootstrapVersion === null || substr($scType, -1) === (string)$bootstrapVersion;
     }
 
     /**

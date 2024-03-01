@@ -7,6 +7,7 @@ use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\System;
 use Exception;
+use HeimrichHannot\SubColumnsBootstrapBundle\Controller\ColsetIdentifierController;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
@@ -131,8 +132,8 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
             $GLOBALS['TL_HEAD']['subcolumns'] = '<!--[if lte IE 7]><link href="' . $IEHacksCSS . '" rel="stylesheet" type="text/css" /><![endif]--> ';
         }
 
-        /** @var ColumnsetContainer $colsetContainer */
-        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
+        /** @var ColsetIdentifierController $colsetContainer */
+        $colsetContainer = static::getContainer()->get(ColsetIdentifierController::class);
         $columnset = $colsetContainer->getColumnSettings($this->sc_columnset);
         if ($columnset === null) {
             throw new Exception("The requested column-set \"$this->sc_columnset\" could not be found.");

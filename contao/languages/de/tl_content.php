@@ -1,13 +1,9 @@
 <?php
 
-use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
-
 $lang = &$GLOBALS['TL_LANG']['tl_content'];
 
-if (SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'] ?? '', 4)) {
-    $lang['sc_type'][0] = 'Spaltenanzahl';
-    $lang['sc_type'][1] = 'Wählen Sie die Spaltenanzahl aus, die der Spaltensatz besitzen soll.';
-}
+$lang['sc_type'][0] = 'Spaltenanzahl';
+$lang['sc_type'][1] = 'Wählen Sie die Spaltenanzahl aus, die der Spaltensatz besitzen soll.';
 
 $lang['columnset_id'][0] = 'Spaltensatz';
 $lang['columnset_id'][1] = 'Wählen Sie einen der verfügbaren Spaltensätze.';

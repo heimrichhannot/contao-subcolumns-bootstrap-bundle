@@ -8,6 +8,7 @@ use Contao\ContentModel;
 use Contao\StringUtil;
 use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetEnd as FelixPfeifferColsetEnd;
+use HeimrichHannot\SubColumnsBootstrapBundle\Controller\ColsetIdentifierController;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -91,16 +92,16 @@ class ColsetEnd extends ContentElement
             return;
         }
 
-        /** @var ColumnsetContainer $colsetContainer */
-        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
+        /** @var ColsetIdentifierController $colsetIdController */
+        $colsetIdController = static::getContainer()->get(ColsetIdentifierController::class);
+        $colset = $colsetIdController->getColumnSettings($this->sc_columnset);
 
         if ($colset === null)
         {
             return;
         }
 
-        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
+        $columnsetModel = $colsetIdController->tryColumnsetModelByIdentifier($this->sc_columnset);
         if ($columnsetModel === null)
         {
             $useGap = $GLOBALS['TL_SUBCL'][$this->strSet]['gap'] ?? null;

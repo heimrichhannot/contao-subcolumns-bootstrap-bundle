@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\SubColumnsBootstrapBundle\DataContainer;
 
+use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\Database;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
@@ -17,12 +18,13 @@ class ContentContainer extends AbstractColsetContainer
         return static::TABLE;
     }
 
-    public function __construct(
-        ColumnsetContainer $columnsetContainer,
-        Connection $connection,
-        Database $database,
-        KernelInterface $kernel
-    ) {
-        parent::__construct($columnsetContainer, $connection, $database, $kernel);
-    }
+    // public function __construct(
+    //     ColumnsetContainer $columnsetContainer,
+    //     Connection $connection,
+    //     ContaoCsrfTokenManager $tokenManager,
+    //     Database $database,
+    //     KernelInterface $kernel
+    // ) {
+    //     parent::__construct($columnsetContainer, $connection, $tokenManager, $database, $kernel);
+    // }
 }

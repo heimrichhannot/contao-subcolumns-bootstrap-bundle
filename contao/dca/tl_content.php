@@ -1,13 +1,11 @@
 <?php
 
-use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
-use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ContentContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColsetDcaUtil;
 
 $dca = &$GLOBALS['TL_DCA']['tl_content'];
 
-ColumnsetContainer::attachCallbacks($dca, ContentContainer::class);
-ColumnsetContainer::attachFields($dca);
+ColsetDcaUtil::attachToDCA($dca, ContentContainer::class);
 
 // $dca['config']['onload_callback'][] = [ContentContainer::class, 'appendColumnsetIdToPalette'];
 // $dca['config']['onload_callback'][] = [ContentContainer::class, 'createPalette'];
@@ -114,11 +112,11 @@ ColumnsetContainer::attachFields($dca);
 
 // $dca['fields']['invisible']['save_callback'][] = [ContentContainer::class, 'toggleAdditionalElements'];
 
-$dca['palettes']['colsetPart'] = 'cssID';
-$dca['palettes']['colsetEnd'] = $GLOBALS['TL_DCA']['tl_content']['palettes']['default'];
-
-$dca['fields']['sc_name']['eval']['tl_class'] = 'w50';
-
-$dca['fields']['sc_type']['options_callback'] = [ColumnSet::class, 'getAllTypes'];
-$dca['fields']['sc_type']['eval']['submitOnChange'] = true;
-$dca['fields']['sc_type']['eval']['mandatory'] = false;
+// $dca['palettes']['colsetPart'] = 'cssID';
+// $dca['palettes']['colsetEnd'] = $dca['palettes']['default'];
+//
+// $dca['fields']['sc_name']['eval']['tl_class'] = 'w50';
+//
+// $dca['fields']['sc_type']['options_callback'] = [ContentContainer::class, 'getAllTypes'];
+// $dca['fields']['sc_type']['eval']['submitOnChange'] = true;
+// $dca['fields']['sc_type']['eval']['mandatory'] = false;

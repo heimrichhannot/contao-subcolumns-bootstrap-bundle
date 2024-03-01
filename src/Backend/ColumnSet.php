@@ -9,6 +9,9 @@ use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
+/**
+ * @deprecated
+ */
 class ColumnSet extends Backend
 {
     /**
@@ -22,6 +25,7 @@ class ColumnSet extends Backend
      *
      * @param int $id id of the columnset
      * @return array
+     * @deprecated I guess this won't be need in the future. -- Eric.
      */
     public static function prepareContainer($id)
     {
@@ -66,132 +70,29 @@ class ColumnSet extends Backend
      * @param array $definition the column definition
      * @return string
      */
-    protected static function prepareSize($size, array $definition)
+    protected static function prepareSize(string $size, array $definition): string
     {
-        if ($size === 'xs')
+        $css = match($size) {
+            'xs' => sprintf('col-%s', $definition['width']),
+            default => sprintf('col-%s-%s', $size, $definition['width'])
+        };
+
+        if ($definition['offset'])
         {
-            $css = sprintf('col-%s', $definition['width']);
-        }
-        else
-        {
-            $css = sprintf('col-%s-%s', $size, $definition['width']);
+            $css .= match($size) {
+                'xs' => sprintf(' offset-%s', $definition['offset']),
+                default => sprintf(' offset-%s-%s', $size, $definition['offset'])
+            };
         }
 
-        if ($definition['offset']) {
-            if ($size === 'xs')
-            {
-                $css .= sprintf(' offset-%s', $definition['offset']);
-            }
-            else
-            {
-                $css .= sprintf(' offset-%s-%s', $size, $definition['offset']);
-            }
-        }
-
-        if ($definition['order']) {
-            if ($size === 'xs')
-            {
-                $css .= sprintf(' %s', $definition['order']);
-            }
-            else
-            {
-                $css .= ' ' . str_replace('-', '-' . $size . '-', $definition['order']);
-            }
+        if ($definition['order'])
+        {
+            $css .= match($size) {
+                'xs' => sprintf(' %s', $definition['order']),
+                default => ' ' . str_replace('-', '-' . $size . '-', $definition['order'])
+            };
         }
 
         return $css;
-    }
-
-
-    /**
-     * create a MCW row for each column
-     *
-     * @param string $value deseriazable value, for getting an array
-     * @param DataContainer $mcw multi column wizard or DC_Table
-     * @return mixed
-     */
-    public function createColumns($value, $mcw)
-    {
-        $columns = (int)$mcw->activeRecord->columns;
-        $value   = StringUtil::deserialize($value, true);
-        $count   = count($value);
-
-        // initialize columns
-        if ($count == 0) {
-            for ($i = 0; $i < $columns; $i++) {
-                $value[$i]['width'] = floor(12 / $columns);
-            }
-        } // reduce columns if necessary
-        elseif ($count > $columns) {
-            $count = count($value) - $columns;
-
-            for ($i = 0; $i < $count; $i++) {
-                array_pop($value);
-            }
-        } // make sure that column numbers has not changed
-        else {
-            for ($i = 0; $i < ($columns - $count); $i++) {
-                $value[$i + $count]['width'] = floor(12 / $columns);
-            }
-        }
-
-        return $value;
-    }
-
-
-    /**
-     * replace subcolumns getAllTypes method, to load all created column sets.
-     */
-    public function getAllTypes(DataContainer $dc): array
-    {
-        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) {
-            $strSet = SubColumnsBootstrapBundle::getProfile();
-            return array_keys($GLOBALS['TL_SUBCL'][$strSet]['sets']);
-        }
-
-        $this->import('Database');
-        $collection = $this->Database->execute('SELECT columns FROM tl_columnset GROUP BY columns ORDER BY columns');
-
-        $types = [];
-
-        while ($collection->next()) {
-            $types[] = $collection->columns;
-        }
-
-        /*
-        while ($collection->next()) {
-            $types['Aus Datenbank'][] = $collection->columns;
-        }
-
-        foreach ($GLOBALS['TL_SUBCL'] as $subType => $config) {
-            foreach ($config['sets'] as $set => $columns) {
-                $types[$config['label']][$subType . '.' . $set] = $set;
-            }
-        }
-
-        ksort($types);
-        */
-
-        return $types;
-    }
-
-
-    /**
-     * get all columnsets which fits to the selected type
-     * @param $dc
-     * @return array
-     */
-    public function getAllColumnsets($dc)
-    {
-        $collection = ColumnsetModel::findBy('published=1 AND columns', $dc->activeRecord->sc_type, ['order' => 'title']);
-        $set        = [];
-
-        if ($collection !== null) {
-            while ($collection->next()) {
-                $set[$collection->id] = $collection->title;
-            }
-        }
-
-        return $set;
     }
 }

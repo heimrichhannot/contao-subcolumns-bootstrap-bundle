@@ -17,6 +17,7 @@ use Contao\System;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -31,6 +32,7 @@ abstract class AbstractColsetContainer
     public function __construct(
         private ColumnsetContainer $columnsetContainer,
         private Connection $connection,
+        private ContaoCsrfTokenManager $tokenManager,
         private Database $database,
         private KernelInterface $kernel
     ) {}
@@ -55,21 +57,21 @@ abstract class AbstractColsetContainer
         $GLOBALS['TL_DCA'][static::getTable()]['palettes']['colsetStart'] = $palette;
     }
 
-    public function getOptions(): array
+    public function getColsetOptions(): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
         return $this->options = array_merge(
-            $this->getOptionsFromDatabase(),
-            $this->getOptionsFromGlobals()
+            $this->getColsetOptionsFromDatabase(),
+            $this->getColsetOptionsFromGlobals()
         );
     }
 
     /**
      * @noinspection SqlResolve, SqlNoDataSourceInspection
      */
-    protected function getOptionsFromDatabase(): array
+    protected function getColsetOptionsFromDatabase(): array
     {
         try {
             $columnSets = $this->connection
@@ -92,7 +94,7 @@ abstract class AbstractColsetContainer
         return $types;
     }
 
-    protected function getOptionsFromGlobals(): array
+    protected function getColsetOptionsFromGlobals(): array
     {
         $types = [];
         $dbLegend = $GLOBALS['TL_LANG'][static::getTable()]['globals_legend'] ?? '[GLOBALS]';
@@ -685,5 +687,111 @@ abstract class AbstractColsetContainer
             $dc->activeRecord->sorting,
             $endPart['sorting']
         ]);
+    }
+
+    /**
+     * Autogenerate a name for the colset if it has not yet been set
+     */
+    public function onNameSaveCallback(mixed $varValue, DataContainer $dc): string
+    {
+        // Generate alias if there is none
+        return strlen($varValue) ? $varValue : ('colset.' . $dc->id);
+    }
+
+    /**
+     * Get the col-sets depending on the selection from the settings
+     */
+    public function getAllTypes(): array
+    {
+        $strSet = SubColumnsBootstrapBundle::getProfile();
+        return array_keys($GLOBALS['TL_SUBCL'][$strSet]['sets'] ?? []);
+    }
+
+    /**
+     * get all column-sets
+     */
+    public function getColumnsetIdOptions(DataContainer $dc): array
+    {
+        $collection = ColumnsetModel::findBy(
+            'published=1 AND columns',
+            $dc->activeRecord->sc_type,
+            ['order' => 'title']
+        );
+
+        $set = [];
+
+        if ($collection !== null) {
+            while ($collection->next()) {
+                $set[$collection->id] = $collection->title;
+            }
+        }
+
+        return $set;
+    }
+
+    public function getColumnsetIdWizard(DataContainer $dc): string
+    {
+        $id = (int)$dc->value;
+
+        if ($id < 1) {
+            return '';
+        }
+
+        $module = 'columnset';
+
+        $url = Environment::get('url')
+            . parse_url(Environment::get('uri'), PHP_URL_PATH);
+
+        if (!$id) {
+            return '';
+        }
+
+        $label = sprintf(StringUtil::specialchars($GLOBALS['TL_LANG']['tl_columnset']['editalias'][1] ?? 'wizard'), $id);
+
+        return sprintf(
+            ' <a href="'.$url.'?do=%s&amp;act=edit&amp;id=%s&amp;popup=1&amp;nb=1&amp;rt=%s" title="%s" '
+            . 'style="padding-left: 5px; padding-top: 2px; display: inline-block;" onclick="%s;return false">%s</a>',
+            $module,
+            $id,
+            $this->tokenManager->getDefaultTokenValue(),
+            $label,
+            1024,
+            $label,
+            "Backend.openModalIframe({'width':%s,'title':'%s','url':this.href})",
+            Image::getHtml('alias.svg', $label, 'style="vertical-align:top"')
+        );
+    }
+
+    public function getAllSubcolumnTypeOptions(DataContainer $dc): array
+    {
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) {
+            $strSet = SubColumnsBootstrapBundle::getProfile();
+            return array_keys($GLOBALS['TL_SUBCL'][$strSet]['sets']);
+        }
+
+        $collection = $this->database
+            ->execute('SELECT columns FROM tl_columnset GROUP BY columns ORDER BY columns');
+
+        $types = [];
+
+        while ($collection->next()) {
+            $types[] = $collection->columns;
+        }
+
+        /*
+        while ($collection->next()) {
+            $types['Aus Datenbank'][] = $collection->columns;
+        }
+
+        foreach ($GLOBALS['TL_SUBCL'] as $subType => $config) {
+            foreach ($config['sets'] as $set => $columns) {
+                $types[$config['label']][$subType . '.' . $set] = $set;
+            }
+        }
+
+        ksort($types);
+        */
+
+        return $types;
     }
 }

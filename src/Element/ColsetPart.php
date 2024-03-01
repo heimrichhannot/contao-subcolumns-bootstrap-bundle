@@ -7,11 +7,13 @@ use Contao\ContentElement;
 use Contao\ContentModel;
 use Contao\StringUtil;
 use Contao\System;
+use HeimrichHannot\SubColumnsBootstrapBundle\Controller\ColsetIdentifierController;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use HeimrichHannot\SubColumnsBootstrapBundle\Util\ColorUtil;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
+use const HeimrichHannot\SubColumnsBootstrapBundle\Util\px;
 
 class ColsetPart extends ContentElement implements ServiceSubscriberInterface
 {
@@ -127,9 +129,9 @@ class ColsetPart extends ContentElement implements ServiceSubscriberInterface
 
         $this->Template->useInside = $useInside;
 
-        /** @var ColumnsetContainer $colsetContainer */
-        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-        $colset = $colsetContainer->getColumnSettings($this->sc_columnset);
+        /** @var ColsetIdentifierController $colsetIdController */
+        $colsetIdController = static::getContainer()->get(ColsetIdentifierController::class);
+        $colset = $colsetIdController->getColumnSettings($this->sc_columnset);
 
         if ($colset === null)
         {
@@ -150,7 +152,7 @@ class ColsetPart extends ContentElement implements ServiceSubscriberInterface
             $this->Template->column = $colset[$this->sc_sortid][0] . $colClass . $lastClass;
         }
 
-        $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
+        $columnsetModel = $colsetIdController->tryColumnsetModelByIdentifier($this->sc_columnset);
         if ($columnsetModel === null)
         {
             return;
@@ -193,62 +195,28 @@ class ColsetPart extends ContentElement implements ServiceSubscriberInterface
         }
 
         $gap_value = $this->sc_gap != "" ? $this->sc_gap : ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?? 12);
-        $gap_unit = 'px';
 
         $containerCount = count($container);
+        $sortId = (int) $this->sc_sortid;
 
-        if ($containerCount === 2)
-        {
-            $this->Template->gap = ['left' => floor(0.5 * $gap_value) . $gap_unit];
-        }
-        elseif ($containerCount === 3)
-        {
-            switch ($this->sc_sortid) {
-                case 1:
-                    $this->Template->gap = ['right' => floor(0.333 * $gap_value) . $gap_unit,
-                                            'left' => floor(0.333 * $gap_value) . $gap_unit];
-                    break;
-                case 2:
-                    $this->Template->gap = ['left' => ceil(0.666 * $gap_value) . $gap_unit];
-                    break;
-            }
-        }
-        elseif ($containerCount === 4)
-        {
-            switch ($this->sc_sortid) {
-                case 1:
-                    $this->Template->gap = ['right' => floor(0.5 * $gap_value) . $gap_unit,
-                                            'left' => floor(0.25 * $gap_value) . $gap_unit];
-                    break;
-                case 2:
-                    $this->Template->gap = ['right' => floor(0.25 * $gap_value) . $gap_unit,
-                                            'left' => ceil(0.5 * $gap_value) . $gap_unit];
-                    break;
-                case 3:
-                    $this->Template->gap = ['left' => ceil(0.75 * $gap_value) . $gap_unit];
-                    break;
-            }
-        }
-        elseif ($containerCount == 5)
-        {
-            switch($this->sc_sortid) {
-                case 1:
-                    $this->Template->gap = ['right' => floor(0.6 * $gap_value) . $gap_unit,
-                                            'left' => floor(0.2 * $gap_value) . $gap_unit];
-                    break;
-                case 2:
-                    $this->Template->gap = ['right' => floor(0.4 * $gap_value) . $gap_unit,
-                                            'left' => ceil(0.4 * $gap_value) . $gap_unit];
-                    break;
-                case 3:
-                    $this->Template->gap = ['right' => floor(0.2 * $gap_value) . $gap_unit,
-                                            'left' => ceil(0.6 * $gap_value) . $gap_unit];
-                    break;
-                case 4:
-                    $this->Template->gap = ['left' => ceil(0.8 * $gap_value) . $gap_unit];
-                    break;
-            }
-        }
+        $this->Template->gap = match ($containerCount) {
+            2 => ['left' => floor(0.5 * $gap_value) . px],
+            3 => match ($sortId) {
+                1 => ['right' => floor(0.333 * $gap_value) . px, 'left' => floor(0.333 * $gap_value) . px],
+                2 => ['left' => ceil(0.666 * $gap_value) . px],
+            },
+            4 => match ($sortId) {
+                1 => ['right' => floor(0.5 * $gap_value) . px, 'left' => floor(0.25 * $gap_value) . px],
+                2 => ['right' => floor(0.25 * $gap_value) . px, 'left' => ceil(0.5 * $gap_value) . px],
+                3 => ['left' => ceil(0.75 * $gap_value) . px],
+            },
+            5 => match ($sortId) {
+                1 => ['right' => floor(0.6 * $gap_value) . px, 'left' => floor(0.2 * $gap_value) . px],
+                2 => ['right' => floor(0.4 * $gap_value) . px, 'left' => ceil(0.4 * $gap_value) . px],
+                3 => ['right' => floor(0.2 * $gap_value) . px, 'left' => ceil(0.6 * $gap_value) . px],
+                4 => ['left' => ceil(0.8 * $gap_value) . px],
+            },
+        };
     }
 
     public static function getSubscribedServices(): array
