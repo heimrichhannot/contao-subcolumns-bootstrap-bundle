@@ -7,6 +7,7 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
+use Contao\Input;
 use Contao\Message;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
@@ -28,7 +29,7 @@ class ColumnsetContainer
     public function onLoadCallback(DataContainer $dc = null): void
     {
         $request = $this->requestStack->getCurrentRequest();
-        if (!$request || !$this->scopeMatcher->isBackendRequest($request) || 'edit' !== $request->get('act')) {
+        if (!$request || !$this->scopeMatcher->isBackendRequest($request) || 'edit' !== Input::get('act')) {
             return;
         }
 
