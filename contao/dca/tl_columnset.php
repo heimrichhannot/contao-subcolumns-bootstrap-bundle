@@ -98,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'eval'      => ['tl_class' => 'w50'],
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'columns'      => [
+        'numCols'      => [
             'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['columns'],
             'exclude'   => true,
             'sorting'   => true,
@@ -166,5 +166,40 @@ $GLOBALS['TL_DCA']['tl_columnset'] = [
             'eval'      => ['multiple' => true, 'size' => 2, 'tl_class' => 'w50 clr'],
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
+       /* 'colConf' => [
+            'exclude'       => true,
+            'inputTye'      => 'multiColumnWizard',
+            'eval'          => [
+                'includeBlankOption' => true,
+                'columnFields'       => [
+                    'width'  => [
+                        'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['width'],
+                        'inputType' => 'select',
+                        'options'   => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                        'eval'      => ['style' => 'width: 100px;'],
+                    ],
+                    'offset' => [
+                        'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['offset'],
+                        'inputType' => 'select',
+                        'options'   => ['reset', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                        'eval'      => [
+                            'style' => 'width: 100px;',
+                            'includeBlankOption' => true
+                        ],
+                    ],
+                    'order'  => [
+                        'label'     => &$GLOBALS['TL_LANG']['tl_columnset']['order'],
+                        'inputType' => 'select',
+                        'options'   => [
+                            'order-1', 'order-2', 'order-3', 'order-4',  'order-5',  'order-6',
+                            'order-7', 'order-8', 'order-9', 'order-10', 'order-11', 'order-12',
+                        ],
+                        'eval' => ['style' => 'width: 160px;', 'includeBlankOption' => true],
+                    ],
+                ],
+                'buttons' => ['copy' => false, 'delete' => false],
+            ],
+            'sql' => "blob NULL",
+        ]*/
     ],
 ];

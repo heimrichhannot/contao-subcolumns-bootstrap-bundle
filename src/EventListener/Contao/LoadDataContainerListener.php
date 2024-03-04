@@ -14,6 +14,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao;
 
 use Contao\Config;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\DataContainer;
 use Contao\StringUtil;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -92,11 +93,12 @@ class LoadDataContainerListener
      */
     public static function createColumns(?string $value, DataContainer $mcw): mixed
     {
-        $columns = (int) $mcw->activeRecord->columns;
+        $columns = (int) $mcw->activeRecord->numCols;
         $value   = StringUtil::deserialize($value, true);
         $count   = count($value);
 
-        if ($count == 0) { // initialize columns
+        if ($count == 0) // initialize columns
+        {
             for ($i = 0; $i < $columns; $i++) {
                 $value[$i]['width'] = floor(12 / $columns);
             }

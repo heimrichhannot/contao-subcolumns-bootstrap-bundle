@@ -12,5 +12,5 @@ if (SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'] 
 $lang['columnset_id'][0] = 'Column set';
 $lang['columnset_id'][1] = 'Please choose a defined column set.';
 
-$lang['addContainer'][0] = 'Add DIV with CSS-class "container"';
-$lang['addContainer'][1] = 'Choose this option to wrap the column set into an DIV-element with CSS-class "container"';
+$lang['sc_addContainer'][0] = 'Add DIV with CSS-class "container"';
+$lang['sc_addContainer'][1] = 'Choose this option to wrap the column set into an DIV-element with CSS-class "container"';

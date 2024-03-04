@@ -3,6 +3,7 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Util;
 
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\AbstractColsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\AbstractColsetParentContainer;
 
 class ColsetDcaUtil
 {
@@ -26,7 +27,7 @@ class ColsetDcaUtil
     public static function attachCallbacks(array &$dca, string $colsetContainerClass): void
     {
         /** @var AbstractColsetContainer $colsetContainerClass IDE support */
-        $dca['config']['onload_callback'][] = [$colsetContainerClass, 'appendColumnsetIdToPalette'];
+        // $dca['config']['onload_callback'][] = [$colsetContainerClass, 'appendColumnsetIdToPalette'];
         $dca['config']['onload_callback'][] = [$colsetContainerClass, 'createPalette'];
         $dca['config']['onsubmit_callback'][] = [$colsetContainerClass, 'onUpdate'];
         $dca['config']['onsubmit_callback'][] = [$colsetContainerClass, 'setElementProperties'];
@@ -65,9 +66,12 @@ class ColsetDcaUtil
      * @param class-string<AbstractColsetContainer> $colsetContainerClass
      * @return array
      */
-    public static function createDataContainerFields(string $colsetContainerClass): array
+    public static function createDataContainerFields(string $colsetContainerClass, string $colsetParentClass = null): array
     {
-        /** @var AbstractColsetContainer $colsetContainerClass IDE support */
+        /**
+         * @var AbstractColsetContainer $colsetContainerClass IDE support
+         * @var AbstractColsetParentContainer $colsetParentClass IDE support
+         */
         return [
             'sc_name' => [
                 'inputType' => 'text',
@@ -79,13 +83,13 @@ class ColsetDcaUtil
                 ],
                 'sql' => "varchar(255) NOT NULL default ''",
             ],
-            'sc_gap' => [
+            /*'sc_gap' => [
                 'default' => ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?? 0),
                 'inputType' => 'text',
                 'eval' => ['maxlength' => '4', 'regxp' => 'digit', 'tl_class' => 'w50'],
                 'sql' => "varchar(255) NOT NULL default ''",
-            ],
-            'sc_type' => [
+            ],*/
+            /*'sc_type' => [
                 'inputType' => 'select',
                 'options_callback' => [$colsetContainerClass, 'getAllSubcolumnTypeOptions'],
                 'eval' => [
@@ -94,19 +98,19 @@ class ColsetDcaUtil
                     'tl_class' => 'w50',
                 ],
                 'sql' => "varchar(64) NOT NULL default ''",
-            ],
-            'sc_gapdefault' => [
+            ],*/
+            /*'sc_gapdefault' => [
                 'default' => 1,
                 'inputType' => 'checkbox',
                 'eval' => ['tl_class' => 'clr m12 w50'],
                 'sql' => "char(1) NOT NULL default '1'",
-            ],
+            ],*/
             'sc_equalize' => [
                 'inputType' => 'checkbox',
                 'eval' => [],
                 'sql' => "char(1) NOT NULL default ''",
             ],
-            'sc_color' => [
+            /*'sc_color' => [
                 'inputType' => 'text',
                 'eval' => [
                     'maxlength' => 6,
@@ -118,7 +122,7 @@ class ColsetDcaUtil
                     'tl_class' => 'w50 wizard',
                 ],
                 'sql' => "varchar(64) NOT NULL default ''",
-            ],
+            ],*/
             'sc_parent' => [
                 'sql' => "int(10) unsigned NOT NULL default '0'",
             ],
@@ -129,7 +133,7 @@ class ColsetDcaUtil
                 'sql' => "int(2) unsigned NOT NULL default '0'",
             ],
 
-            'columnset_id'         => [
+            /*'columnset_id'         => [
                 'exclude'          => true,
                 'inputType'        => 'select',
                 'options_callback' => [$colsetContainerClass, 'getColumnsetIdOptions'],
@@ -140,8 +144,8 @@ class ColsetDcaUtil
                 ],
                 'wizard'           => [[$colsetContainerClass, 'getColumnsetIdWizard']],
                 'sql'              => "varchar(10) NOT NULL default ''",
-            ],
-            'addContainer' => [
+            ],*/
+            'sc_addContainer' => [
                 'exclude'   => true,
                 'inputType' => 'checkbox',
                 'eval'      => ['tl_class' => 'w50'],

@@ -11,6 +11,7 @@ class FormContainer extends AbstractColsetParentContainer
     const DB_COL_SC_PARENT = 'fsc_parent';
     const DB_COL_SC_CHILDREN = 'fsc_childs';
     const DB_COL_SC_NAME = 'fsc_name';
+    const DB_COL_SC_TYPE = 'fsc_type';
     const DB_COL_SORTING = 'fsc_sortid';
 
     public function __construct(

@@ -118,7 +118,7 @@ class ColsetEnd extends ContentElement
             return;
         }
 
-        $this->Template->addContainer = (bool)$this->addContainer;
+        $this->Template->addContainer = (bool)$this->sc_addContainer;
 
         if ($this->Template->useOutside = (bool)$columnsetModel->useOutside) {
             $this->Template->outside = $columnsetModel->outsideClass;

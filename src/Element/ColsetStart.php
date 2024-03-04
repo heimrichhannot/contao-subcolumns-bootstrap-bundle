@@ -214,7 +214,7 @@ class ColsetStart extends ContentElement implements ServiceSubscriberInterface
             );
         }
 
-        $this->Template->addContainer = $this->addContainer;
+        $this->Template->addContainer = $this->sc_addContainer;
 
         $columnsetModel = $colsetContainer->tryColumnsetModelByIdentifier($this->sc_columnset);
 
