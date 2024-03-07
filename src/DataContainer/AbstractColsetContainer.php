@@ -97,7 +97,7 @@ abstract class AbstractColsetContainer
     {
         try {
             $columnSets = $this->connection
-                ->fetchAllAssociative('SELECT id, title, columns, description FROM `tl_columnset` ORDER BY columns');
+                ->fetchAllAssociative('SELECT id, title, numCols AS columns, description FROM `tl_columnset` ORDER BY numCols');
         } catch (\Exception $e) {
             return [];
         }
@@ -780,7 +780,7 @@ abstract class AbstractColsetContainer
         }
 
         $collection = Database::getInstance()
-            ->execute('SELECT columns FROM tl_columnset GROUP BY columns ORDER BY columns');
+            ->execute('SELECT numCols FROM tl_columnset GROUP BY numCols ORDER BY numCols');
 
         $types = [];
 
