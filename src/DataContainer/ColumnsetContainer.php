@@ -44,7 +44,7 @@ class ColumnsetContainer
 
         foreach ($sizes as $size)
         {
-            if (!array_key_exists('columnset_' . strtolower($size), $tableColumns)) {
+            if (!array_key_exists('columnset_'.strtolower($size), $tableColumns)) {
                 Message::addError($GLOBALS['TL_LANG']['ERR']['huhSubColMissingTableRow']);
                 return;
             }
@@ -59,12 +59,10 @@ class ColumnsetContainer
         $pm = PaletteManipulator::create();
 
         foreach ($sizes as $size) {
-            $pm->addField('columnset_' . strtolower($size), 'columnset_legend', PaletteManipulator::POSITION_APPEND);
+            $pm->addField('columnset_' . $size, 'columnset_legend', PaletteManipulator::POSITION_APPEND);
         }
 
         $pm->applyToPalette('default', 'tl_columnset');
-
-        $x = $GLOBALS['TL_DCA']['tl_columnset']['palettes']['default'];
     }
 
     public function getAllProfileOptions(): array

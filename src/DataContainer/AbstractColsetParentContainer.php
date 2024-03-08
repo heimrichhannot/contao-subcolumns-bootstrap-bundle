@@ -12,7 +12,6 @@ abstract class AbstractColsetParentContainer
     const DB_COL_SC_PARENT = 'sc_parent';
     const DB_COL_SC_CHILDREN = 'sc_children';
     const DB_COL_SC_NAME = 'sc_name';
-    const DB_COL_SC_TYPE = 'sc_type';
     const DB_COL_SORTING = 'sc_sorting';
 
     public function __construct(

@@ -183,13 +183,13 @@ abstract class AbstractColsetContainer
             $scName = $record->sc_name . ($i === count($children) ? '-End' : ("-Part-$i"));
 
             $update = [
-                /*'sc_gap' => $record->sc_gap,*/
-                /*'sc_gapdefault' => $record->sc_gapdefault,*/
+                'sc_gap' => $record->sc_gap,
+                'sc_gapdefault' => $record->sc_gapdefault,
                 'sc_sortid' => $i,
                 'sc_name' => $scName,
-                /*'sc_color' => StringUtil::deserialize($record->sc_color)
+                'sc_color' => StringUtil::deserialize($record->sc_color)
                     ? $record->sc_color
-                    : serialize($record->sc_color),*/
+                    : serialize($record->sc_color),
                 'sc_columnset' => $record->sc_columnset
             ];
 
@@ -256,12 +256,12 @@ abstract class AbstractColsetContainer
             'tstamp' => time(),
             'sorting' => 0,
             'sc_name' => '',
-            // 'sc_type' => 'deprecated',
+            'sc_type' => 'deprecated',
             'sc_parent' => $record->id,
             'sc_sortid' => 0,
-            // 'sc_gap' => $record->sc_gap,
-            // 'sc_gapdefault' => $record->sc_gapdefault,
-            // 'sc_color' => $record->sc_color,
+            'sc_gap' => $record->sc_gap,
+            'sc_gapdefault' => $record->sc_gapdefault,
+            'sc_color' => $record->sc_color,
             'sc_columnset' => $record->sc_columnset
         ];
 
@@ -336,12 +336,12 @@ abstract class AbstractColsetContainer
             'sorting' => 0,
             'type' => 'colsetPart',
             'sc_name' => '',
-            // 'sc_type' => 'deprecated',
+            'sc_type' => 'deprecated',
             'sc_parent' => $record->id,
             'sc_sortid' => 0,
-            // 'sc_gap' => $record->sc_gap,
-            // 'sc_gapdefault' => $record->sc_gapdefault,
-            // 'sc_color' => serialize($record->sc_color ?? []),
+            'sc_gap' => $record->sc_gap,
+            'sc_gapdefault' => $record->sc_gapdefault,
+            'sc_color' => serialize($record->sc_color ?? []),
             'sc_columnset' => $record->sc_columnset
         ];
 
@@ -618,7 +618,6 @@ abstract class AbstractColsetContainer
             }
 
             $childIds = [];
-            $childTypes = [];
             while ($child->next()) {
                 $childIds[] = $child->id;
                 $childTypes[$child->id] = $child->type;
@@ -639,9 +638,6 @@ abstract class AbstractColsetContainer
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function toggleAdditionalElements($varValue, DataContainer $dc)
     {
         if ($dc->id)
@@ -667,6 +663,18 @@ abstract class AbstractColsetContainer
         $dca = &$GLOBALS['TL_DCA'][static::getTable()];
 
         $dca['palettes'][static::COLSET_TYPE_START] = str_replace('{colset_legend}', '{colset_legend},sc_columnset', $dca['palettes'][static::COLSET_TYPE_START]);
+
+        if (!SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'])) return;
+
+        $content = ContentModel::findByPK($dc->id);
+
+        $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_name', '', $dca['palettes'][static::COLSET_TYPE_START]);
+        $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_type', 'sc_type,sc_name', $dca['palettes'][static::COLSET_TYPE_START]);
+
+        if ($content && isset($content->sc_type) && $content->sc_type > 0) {
+            $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_type', 'sc_type,columnset_id,addContainer', $dca['palettes'][static::COLSET_TYPE_START]);
+            $dca['palettes'][static::COLSET_TYPE_START] = str_replace('sc_color', '', $dca['palettes'][static::COLSET_TYPE_START]);
+        }
     }
 
     /**
@@ -785,7 +793,7 @@ abstract class AbstractColsetContainer
         $types = [];
 
         while ($collection->next()) {
-            $types[] = $collection->numCols;
+            $types[] = $collection->columns;
         }
 
         /*
@@ -830,7 +838,7 @@ abstract class AbstractColsetContainer
     {
         $result = $this->connection
             ->prepare("SELECT id, sc_childs, sc_parent FROM tl_content WHERE pid=? AND type=? ORDER BY sorting")
-            ->executeQuery([$pid, 'colsetStart']);
+            ->execute([$pid, 'colsetStart']);
 
         if ($result->columnCount() < 1) {
             return;
@@ -849,10 +857,10 @@ abstract class AbstractColsetContainer
 
             $stmt = $this->connection->prepare("UPDATE tl_content SET sc_parent=:scParent WHERE pid=? AND sc_parent=?");
             $stmt->bindValue('scParent', $parent);
-            $stmt->executeStatement([$pid, $oldParent]);
+            $stmt->execute([$pid, $oldParent]);
 
             $stmt = $this->connection->prepare("SELECT id, type FROM tl_content WHERE pid=? AND sc_parent=? AND id!=? ORDER BY sorting");
-            $children = $stmt->executeQuery([$pid, $parent, $parent]);
+            $children = $stmt->execute([$pid, $parent, $parent]);
 
             if ($children->columnCount() < 1) {
                 continue;
@@ -870,7 +878,7 @@ abstract class AbstractColsetContainer
             $stmt = $this->connection->prepare("UPDATE tl_content SET sc_name=:scName, sc_childs=:scChilds WHERE id=?");
             $stmt->bindValue('scName', $newSCName);
             $stmt->bindValue('scChilds', serialize($childIds));
-            $stmt->executeStatement([$parent]);
+            $stmt->execute($parent);
 
             $partNum = 1;
             foreach ($childTypes as $id => $type) {
@@ -879,7 +887,7 @@ abstract class AbstractColsetContainer
                 $newChildSCName = "$newSCName-$typeName$partName";
                 $stmt = $this->connection->prepare("UPDATE tl_content SET sc_name=:scName WHERE id=?");
                 $stmt->bindValue('scName', $newChildSCName);
-                $stmt->executeStatement([$id]);
+                $stmt->execute($id);
             }
         }
     }
