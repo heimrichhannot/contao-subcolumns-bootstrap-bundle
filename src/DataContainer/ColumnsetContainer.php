@@ -366,7 +366,6 @@ class ColumnsetContainer
             ->delete('tl_content')
             ->where('id IN (:ids)')
             ->setParameter('ids', $toDelete, $type)
-            // ->setParameter(':ids', $toDelete, $type)
             ->executeStatement()
         ;
 
@@ -551,9 +550,9 @@ class ColumnsetContainer
         $this->connection->createQueryBuilder()
             ->delete('tl_content')
             ->where('sc_parent != "" AND sc_parent IS NOT NULL AND (id = :id OR sc_parent = :parent_id)')
-            ->setParameter(':id', $delRecord['id'])
-            ->setParameter(':parent_id', $delRecord['sc_parent'])
-            ->execute()
+            ->setParameter('id', $delRecord['id'])
+            ->setParameter('parent_id', $delRecord['sc_parent'])
+            ->executeStatement()
         ;
     }
 }
