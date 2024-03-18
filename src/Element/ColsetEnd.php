@@ -78,7 +78,10 @@ class ColsetEnd extends FelixPfeifferColsetEnd
 
     protected function compile()
     {
-        @parent::compile();
+        if ($this->sc_type && $this->sc_type !== 'deprecated')
+        {
+            @parent::compile();
+        }
 
         if (!SubColumnsBootstrapBundle::validProfile())
         {

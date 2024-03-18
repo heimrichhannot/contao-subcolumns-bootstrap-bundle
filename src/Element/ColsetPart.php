@@ -97,7 +97,10 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
 
     protected function compile()
     {
-        parent::compile();
+        if ($this->sc_type && $this->sc_type !== 'deprecated')
+        {
+            @parent::compile();
+        }
 
         if (!SubColumnsBootstrapBundle::validProfile())
         {
@@ -108,8 +111,10 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
         $useInside = (($this->sc_gapdefault != 1 || !$useGap) ?? true)
             ? false
             : (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
+        $insideClass = $useInside ? $GLOBALS['TL_SUBCL'][$this->strSet]['insideClass'] ?? 'inside' : '';
 
         $this->Template->useInside = $useInside;
+        $this->Template->inside = $insideClass;
 
         /** @var ColumnsetContainer $colsetContainer */
         $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
@@ -144,7 +149,7 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
             $this->Template->outside = $columnsetModel->outsideClass ?: '';
         }
 
-        if ($this->Template->useInside = (bool)$columnsetModel->useInside) {
+        if ($this->Template->useInside = $columnsetModel->useInside) {
             $this->Template->inside = $columnsetModel->insideClass ?: '';
         }
     }
