@@ -3,12 +3,11 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
 use Contao\BackendTemplate;
-use Contao\ContentModel;
 use Contao\StringUtil;
 use Contao\System;
 use FelixPfeiffer\Subcolumns\colsetPart as FelixPfeifferColsetPart;
-use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Helper\ElementHelper;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
@@ -39,12 +38,7 @@ class ColsetPart extends FelixPfeifferColsetPart implements ServiceSubscriberInt
                 break;
         }
 
-        $arrColor = StringUtil::deserialize($this->sc_color);
-        if (is_countable($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
-            $arrColor = '';
-        } else {
-            $arrColor  = $this->compileColor($arrColor);
-        }
+        $arrColor = ElementHelper::getColor($this->sc_color);
 
         if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {

@@ -20,7 +20,7 @@ class GetPageLayoutListener
     public function __invoke(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular)
     {
         $theme = $layout->getRelated('pid');
-        if ($theme->subcolumns !== null) {
+        if ($theme && $theme->subcolumns) {
             SubColumnsBootstrapBundle::setProfile($theme->subcolumns);
         }
     }

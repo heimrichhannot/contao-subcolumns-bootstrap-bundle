@@ -9,6 +9,7 @@ use Contao\System;
 use Exception;
 use FelixPfeiffer\Subcolumns\colsetStart as FelixPfeifferColsetStart;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Helper\ElementHelper;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
@@ -26,25 +27,18 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
             return ContentElement::generate();
         }
 
-        $arrColor = unserialize($this->sc_color);
-        // avoid firing compileColor for php8 compatibility
-        if (is_array($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
-            $arrColor = '';
-        } else {
-            $arrColor  = $this->compileColor($arrColor);
-        }
+        $arrColor = ElementHelper::getColor($this->sc_color);
 
-        if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
-        {
-            $columnsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-            $title = $this->sc_columnset ? $columnsetContainer->getTitle($this->sc_columnset) : '-- undefined --';
+        /** @var ElementHelper $helper */
+        $helper = System::getContainer()->get(ElementHelper::class);
 
-            $this->Template = new BackendTemplate('be_subcolumns');
-            $this->Template->setColor = $arrColor;
-            $this->Template->colsetTitle = "<span style='display:inline-block;width:80px;overflow:hidden;margin-right:1em;'>┌─────────</span><strong>$title</strong>&emsp;<small>$this->sc_name</small>";
-            $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $GLOBALS['TL_LANG']['MSC']['sc_first']);
-
-            return $this->Template->parse();
+        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false)) {
+            return $helper->renderBackendTemplate(
+                $helper->generateTitle($this->sc_columnset, $this->sc_name, ElementHelper::POSITION_START),
+                $arrColor,
+                null,
+                sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $GLOBALS['TL_LANG']['MSC']['sc_first'])
+            );
         }
 
         $GLOBALS['TL_CSS']['subcolumns'] = 'system/modules/Subcolumns/assets/be_style.css';
@@ -85,7 +79,6 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         return $this->Template->parse();
     }
 
-    /** @noinspection PhpUndefinedFieldInspection */
     protected function compile(): void
     {
         if (!SubColumnsBootstrapBundle::validProfile())
@@ -118,11 +111,12 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         }
 
         /** @var ColumnsetContainer $colsetContainer */
-        $colsetContainer = static::getContainer()->get(ColumnsetContainer::class);
-        $columnset = $colsetContainer->getColumnSettings($this->sc_columnset);
-        if ($columnset === null) {
-            throw new Exception("The requested column-set \"$this->sc_columnset\" could not be found.");
-        }
+        $colsetContainer = System::getContainer()->get(ColumnsetContainer::class);
+        /** @var ElementHelper $helper */
+        $helper = System::getContainer()->get(ElementHelper::class);
+        $columnset = $helper->getColumnset($this->sc_columnset);
+
+        $helper->legacyGridFormatting($this->Template, $columnset, $this->sc_columnset, $this->sc_gapdefault, $this->sc_gap);
 
         $colCount = count($columnset);
 
@@ -131,31 +125,8 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
             $equalize = $GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] . ' ';
         }
 
-        $useGap = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['gap'];
-        $useInner = (bool)$GLOBALS['TL_SUBCL'][$this->strSet]['inside'];
         $legacyInfos = (bool)($GLOBALS['TL_SUBCL'][$this->strSet]['legacyInfoCSS'] ?? false);
 
-        if ($this->sc_gapdefault != 1 || !$useGap)
-        {
-            $useInner = false;
-        }
-        else  # $this->sc_gapdefault == 1 && $useGap
-        {
-            $gap_value = $this->sc_gap ?: ($GLOBALS['TL_CONFIG']['subcolumns_gapdefault'] ?? 12);
-
-            $factor = [
-                2 => 0.5,
-                3 => 0.666,
-                4 => 0.75,
-                5 => 0.8,
-            ][$colCount] ?? 0;
-
-            if ($factor > 0) {
-                $this->Template->gap = ['right' => ceil($factor * $gap_value) . 'px'];
-            }
-        }
-
-        $this->Template->useInside = $useInner;
         $this->Template->useOutside = false;
         $this->Template->scclass = '';
         $this->Template->inside = $this->Template->useInside ? ($columnset[0][1] ?? '') : '';

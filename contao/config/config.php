@@ -2,6 +2,9 @@
 
 use HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao\LoadDataContainerListener;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Widget\ColsetEndWidget;
+use HeimrichHannot\SubColumnsBootstrapBundle\Widget\ColsetPartWidget;
+use HeimrichHannot\SubColumnsBootstrapBundle\Widget\ColsetStartWidget;
 
 /**
  * Backend modules
@@ -17,6 +20,13 @@ $GLOBALS['BE_MOD']['design']['columnset'] = [
 $GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart';
 $GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart';
 $GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd';
+
+/**
+ * Widgets
+ */
+$GLOBALS['TL_FFL'][ColsetStartWidget::TYPE] = ColsetStartWidget::class;
+$GLOBALS['TL_FFL'][ColsetPartWidget::TYPE] = ColsetPartWidget::class;
+$GLOBALS['TL_FFL'][ColsetEndWidget::TYPE] = ColsetEndWidget::class;
 
 /**
  * Models
