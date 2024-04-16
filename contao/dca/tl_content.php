@@ -6,7 +6,7 @@ $dca = &$GLOBALS['TL_DCA']['tl_content'];
 
 $dca['config']['onload_callback'][] = ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet', 'appendColumnsetIdToPalette'];
 $dca['config']['onload_callback'][] = ['HeimrichHannot\SubColumnsBootstrapBundle\Backend\Content', 'createPalette'];
-$dca['config']['onsubmit_callback'][] = [ColumnsetContainer::class, 'onUpdate'];
+$dca['config']['onsubmit_callback'][] = [ColumnsetContainer::class, 'onSubmitCallback'];
 $dca['config']['ondelete_callback'][] = [ColumnsetContainer::class, 'onDelete'];
 
 /**

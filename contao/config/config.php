@@ -1,5 +1,6 @@
 <?php
 
+use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart;
 use HeimrichHannot\SubColumnsBootstrapBundle\EventListener\Contao\LoadDataContainerListener;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 use HeimrichHannot\SubColumnsBootstrapBundle\Widget\ColsetEndWidget;
@@ -17,7 +18,7 @@ $GLOBALS['BE_MOD']['design']['columnset'] = [
 /**
  * Content elements
  */
-$GLOBALS['TL_CTE']['subcolumn']['colsetStart'] = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart';
+$GLOBALS['TL_CTE']['subcolumn'][ColsetStart::TYPE] = ColsetStart::class;
 $GLOBALS['TL_CTE']['subcolumn']['colsetPart']  = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetPart';
 $GLOBALS['TL_CTE']['subcolumn']['colsetEnd']   = 'HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetEnd';
 

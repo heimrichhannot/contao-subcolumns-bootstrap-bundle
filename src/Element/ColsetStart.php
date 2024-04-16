@@ -17,6 +17,8 @@ use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
 class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberInterface
 {
+    public const TYPE = 'colsetStart';
+
     /** @noinspection PhpUndefinedFieldInspection */
     public function generate(): string
     {

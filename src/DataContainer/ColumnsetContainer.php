@@ -15,6 +15,7 @@ use Contao\StringUtil;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Exception;
+use HeimrichHannot\SubColumnsBootstrapBundle\Element\ColsetStart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetIdentifier;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use InvalidArgumentException;
@@ -301,21 +302,24 @@ class ColumnsetContainer
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    public function onUpdate(DataContainer $dc): bool
+    public function onSubmitCallback(DataContainer $dc): void
     {
         /** @var Result $record */
         $record = $dc->activeRecord;
+        if (ColsetStart::TYPE !== $record->type) {
+            return;
+        }
+
         $colsetIdentifier = $record->sc_columnset ?? null;
         $colset = $this->getColumnSettings($colsetIdentifier);
 
         if (empty($colset))
         {
-            return false;
+            return;
         }
 
         $children = StringUtil::deserialize($record->sc_childs ?? null) ?: null;
-
-        return $this->createOrUpdateColset($record, $colsetIdentifier, $colset, $children);
+        $this->createOrUpdateColset($record, $colsetIdentifier, $colset, $children);
     }
 
     private function updateEqualColset($record, array $children): bool
