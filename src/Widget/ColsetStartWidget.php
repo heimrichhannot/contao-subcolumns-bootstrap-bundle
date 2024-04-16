@@ -36,6 +36,10 @@ class ColsetStartWidget extends Widget
     {
         /** @var ElementHelper $helper */
         $helper = System::getContainer()->get(ElementHelper::class);
+        $colSet = $helper->getSet($this->sc_columnset);
+        if (!$colSet) {
+            return $this->Template->parse();
+        }
 
         $container = $helper->getColumnset($this->sc_columnset);
         $this->strSet = SubcolumnTypes::compatSetType();
@@ -47,23 +51,23 @@ class ColsetStartWidget extends Widget
         /**
          * CSS Code in das Pagelayout einfügen
          */
-        $mainCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? '';
-        $IEHacksCSS = $GLOBALS['TL_SUBCL'][$this->strSet]['files']['ie'] ?? false;
+        $mainCSS = $GLOBALS['TL_SUBCL'][$colSet->name]['files']['css'] ?? '';
+        $IEHacksCSS = $GLOBALS['TL_SUBCL'][$colSet->name]['files']['ie'] ?? false;
 
         $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
         $GLOBALS['TL_HEAD']['subcolumns'] = $IEHacksCSS ? '<!--[if lte IE 7]><link href="' . $IEHacksCSS . '" rel="stylesheet" type="text/css" /><![endif]--> ' : '';
 
         $objTemplate = new FrontendTemplate($this->strColTemplate);
 
-        $helper->legacyGridFormatting($objTemplate, $container, $this->sc_columnset, $this->fsc_gapuse, $this->fsc_gap);
+        $helper->legacyGridFormatting($objTemplate, $colSet, $this->fsc_gapuse, $this->fsc_gap);
 
         $scTypeClass = ' col-' . $this->fsc_type;
 
-        if (SubColumnsBootstrapBundle::validProfile($this->sc_columnset)) {
+        if (SubColumnsBootstrapBundle::validProfile($colSet->name)) {
             $scTypeClass = '';
         }
 
-        $objTemplate->scclass = ($this->fsc_equalize ? 'equalize ' : '') . $GLOBALS['TL_SUBCL'][$this->strSet]['scclass'] . ' colcount_' . count($container) . ' ' . $this->strSet . $scTypeClass . (' sc-type-' . $this->sc_type) . ($this->class ? ' ' . $this->class : '');
+        $objTemplate->scclass = ($this->fsc_equalize ? 'equalize ' : '') . $GLOBALS['TL_SUBCL'][$colSet->name]['scclass'] . ' colcount_' . count($container) . ' ' . $colSet->name . $scTypeClass . (' sc-type-' . $this->sc_type) . ($this->class ? ' ' . $this->class : '');
         return $objTemplate->parse();
     }
 

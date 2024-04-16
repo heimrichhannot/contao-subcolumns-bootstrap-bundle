@@ -5,6 +5,7 @@ namespace HeimrichHannot\SubColumnsBootstrapBundle\Helper;
 use Contao\BackendTemplate;
 use Contao\Template;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
+use HeimrichHannot\SubColumnsBootstrapBundle\Subcolumn\SubcolumnSet;
 
 class ElementHelper
 {
@@ -17,6 +18,22 @@ class ElementHelper
     public function __construct(ColumnsetContainer $columnsetContainer)
     {
         $this->columnsetContainer = $columnsetContainer;
+    }
+
+    public function getSet(string $identifier): ?SubcolumnSet
+    {
+        $exploded = explode('.', $identifier, 3);
+
+        if (count($exploded) !== 3) {
+            return null;
+        }
+
+        return new SubcolumnSet(
+            $exploded[0],
+            $exploded[1],
+            $exploded[2],
+            $this->getColumnset($identifier)
+        );
     }
 
     public function generateTitle(?string $columnSet, string $name, ?string $position = null): string
@@ -148,10 +165,10 @@ class ElementHelper
         return $rgb;
     }
 
-    public function legacyGridFormatting(Template $template, array $container, string $set, bool $useGap, ?string $gap)
+    public function legacyGridFormatting(Template $template, SubcolumnSet $colSet, bool $useGap, ?string $gap)
     {
-        $hasGap = (bool)$GLOBALS['TL_SUBCL'][$set]['gap'] ?? false;
-        $useInner = (bool)$GLOBALS['TL_SUBCL'][$set]['inside'] ?? false;
+        $hasGap = (bool)$GLOBALS['TL_SUBCL'][$colSet->name]['gap'] ?? false;
+        $useInner = (bool)$GLOBALS['TL_SUBCL'][$colSet->name]['inside'] ?? false;
 
         if (!$useGap || !$hasGap)
         {
@@ -159,11 +176,11 @@ class ElementHelper
         }
         else
         {
-            ElementHelper::calculateGap($template, $gap, count($container));
+            ElementHelper::calculateGap($template, $gap, $colSet->getColCount());
         }
 
         $template->useInside = $useInner;
-        $template->column = $container[0][0] . ' col_1' . ' first';
+        $template->column = $colSet->sets[0][0] . ' col_1' . ' first';
         $template->inside = $container[0][1] ?? '';
     }
 

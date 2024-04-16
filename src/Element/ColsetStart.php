@@ -81,17 +81,20 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
 
     protected function compile(): void
     {
-        if (!SubColumnsBootstrapBundle::validProfile())
+        /** @var ElementHelper $helper */
+        $helper = System::getContainer()->get(ElementHelper::class);
+
+        $colSet = $helper->getSet($this->sc_columnset);
+
+        if (!$colSet)
         {
             throw new Exception("Could not find a valid sub-column profile.");
         }
 
-        $profile = $this->strSet = SubColumnsBootstrapBundle::getProfile();
-
-        if (!isset($GLOBALS['TL_SUBCL'][$profile])) {
+        if (!isset($GLOBALS['TL_SUBCL'][$colSet->name])) {
             throw new Exception(
                 "The requested column-set profile could not be found. "
-                . "Type \"$profile\" was requested, but no such profile is defined. "
+                . "Type \"".$colSet->name."\" was requested, but no such profile is defined. "
                 . "Maybe your configuration is not correct?"
             );
         }
@@ -99,8 +102,8 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
         /**
          * CSS Code in das Pagelayout einfügen
          */
-        $mainCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['css'] ?? false;
-        $IEHacksCSS = $GLOBALS['TL_SUBCL'][$profile]['files']['ie'] ?? false;
+        $mainCSS = $GLOBALS['TL_SUBCL'][$colSet->name]['files']['css'] ?? false;
+        $IEHacksCSS = $GLOBALS['TL_SUBCL'][$colSet->name]['files']['ie'] ?? false;
 
         if ($mainCSS) {
             $GLOBALS['TL_CSS']['subcolumns'] = $mainCSS;
@@ -112,13 +115,10 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
 
         /** @var ColumnsetContainer $colsetContainer */
         $colsetContainer = System::getContainer()->get(ColumnsetContainer::class);
-        /** @var ElementHelper $helper */
-        $helper = System::getContainer()->get(ElementHelper::class);
-        $columnset = $helper->getColumnset($this->sc_columnset);
 
-        $helper->legacyGridFormatting($this->Template, $columnset, $this->sc_columnset, $this->sc_gapdefault, $this->sc_gap);
+        $helper->legacyGridFormatting($this->Template, $colSet, $this->sc_gapdefault, $this->sc_gap);
 
-        $colCount = count($columnset);
+        $colCount = count($colSet->sets);
 
         $equalize = '';
         if ($GLOBALS['TL_SUBCL'][$this->strSet]['equalize'] && $this->sc_equalize) {
@@ -129,8 +129,8 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
 
         $this->Template->useOutside = false;
         $this->Template->scclass = '';
-        $this->Template->inside = $this->Template->useInside ? ($columnset[0][1] ?? '') : '';
-        $this->Template->column = ($columnset[0][0] ?? '') . ($legacyInfos ? ' col_1' : '') . ' sc-col--1 first';;
+        $this->Template->inside = $this->Template->useInside ? ($colSet->sets[0][1] ?? '') : '';
+        $this->Template->column = ($colSet->sets[0][0] ?? '') . ($legacyInfos ? ' col_1' : '') . ' sc-col--1 first';;
 
         /*** Altered Pfeiffer code above ***/
 
