@@ -88,7 +88,7 @@ class ColsetStart extends FelixPfeifferColsetStart implements ServiceSubscriberI
 
         if (!$colSet)
         {
-            throw new Exception("Could not find a valid sub-column profile.");
+            return;
         }
 
         if (!isset($GLOBALS['TL_SUBCL'][$colSet->name])) {

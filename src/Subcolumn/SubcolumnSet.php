@@ -15,6 +15,9 @@ class SubcolumnSet
 
     private int $colCount;
 
+    /**
+     * Do not use this constructor directly. Use ElementHelper::getSet() instead.
+     */
     public function __construct(
         string $source,
         string $name,

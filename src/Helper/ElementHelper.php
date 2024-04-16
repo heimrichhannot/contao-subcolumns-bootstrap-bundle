@@ -6,6 +6,7 @@ use Contao\BackendTemplate;
 use Contao\Template;
 use HeimrichHannot\SubColumnsBootstrapBundle\DataContainer\ColumnsetContainer;
 use HeimrichHannot\SubColumnsBootstrapBundle\Subcolumn\SubcolumnSet;
+use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 class ElementHelper
 {
@@ -28,10 +29,16 @@ class ElementHelper
             return null;
         }
 
+        [$source, $name, $setName] = $exploded;
+
+        if ($name === 'tl_columnset') {
+            $name = SubColumnsBootstrapBundle::getProfile();
+        }
+
         return new SubcolumnSet(
-            $exploded[0],
-            $exploded[1],
-            $exploded[2],
+            $source,
+            $name,
+            $setName,
             $this->getColumnset($identifier)
         );
     }
