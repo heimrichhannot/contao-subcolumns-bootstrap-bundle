@@ -41,3 +41,15 @@ Courtesy to:
 ## Known issues
 
 - sorting via sort anchor (ajax) isn't working -> use synchronous cut action instead (the blue arrow)
+
+## Legacy CSS classes
+
+Set the following options in your `config.php` to get the old column set information classes back:
+
+```php
+$GLOBALS['TL_SUBCL']['bootstrap3']['legacyInfoCSS'] = true;
+$GLOBALS['TL_SUBCL']['bootstrap4']['legacyInfoCSS'] = true;
+$GLOBALS['TL_SUBCL']['bootstrap5']['legacyInfoCSS'] = true;
+```
+
+Enabled by default for `bootstrap3`.

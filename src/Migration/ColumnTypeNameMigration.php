@@ -16,13 +16,13 @@ class ColumnTypeNameMigration implements MigrationInterface
 
     public function shouldRun(): bool
     {
-        $filtered = SubColumnsBootstrapBundle::filterTypeString(Config::get('subcolumns') ?? '');
+        $filtered = SubColumnsBootstrapBundle::filterProfile(Config::get('subcolumns') ?? '');
         return $filtered && Config::get('subcolumns') !== $filtered;
     }
 
     public function run(): MigrationResult
     {
-        $filtered = SubColumnsBootstrapBundle::filterTypeString(Config::get('subcolumns') ?? '');
+        $filtered = SubColumnsBootstrapBundle::filterProfile(Config::get('subcolumns') ?? '');
         Config::set('subcolumns', $filtered);
         Config::persist('subcolumns', $filtered);
 

@@ -2,7 +2,9 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
+    bind:
+      $projectDir: '%kernel.project_dir%'
 
   HeimrichHannot\SubColumnsBootstrapBundle\:
-    resource: '../src/{Asset,DataContainer,EventListener,Migration}/*'
+    resource: '../src/{Asset,DataContainer,EventListener,Helper,Migration}/*'
     public: true

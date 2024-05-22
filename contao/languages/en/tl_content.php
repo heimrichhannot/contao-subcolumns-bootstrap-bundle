@@ -4,7 +4,7 @@ use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
 
 $lang = &$GLOBALS['TL_LANG']['tl_content'];
 
-if (SubColumnsBootstrapBundle::validSubType($GLOBALS['TL_CONFIG']['subcolumns'] ?? '', 4)) {
+if (SubColumnsBootstrapBundle::validProfile($GLOBALS['TL_CONFIG']['subcolumns'] ?? '', 4)) {
     $lang['sc_type'][0] = 'Sub columns';
     $lang['sc_type'][1] = 'Please choose how many columns should be used';
 }
