@@ -25,12 +25,18 @@ class SubColumnsBootstrapBundle extends Bundle
      */
     public static function filterTypeString(string $scType): ?string
     {
-        return $scType ? [
-            'boostrap4' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
-            'boostrap5' => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP4,
-            SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5 => SubColumnsBootstrapBundle::SUBCOLUMNS_TYPE_BOOTSTRAP5
-        ][$scType] ?? null : null;
+        if (!$scType) {
+            return null;
+        }
+        if ($GLOBALS['TL_SUBCL'][$scType] ?? null and \is_array($GLOBALS['TL_SUBCL'][$scType])) {
+            return $scType;
+        }
+        return [
+            'boostrap4' => self::SUBCOLUMNS_TYPE_BOOTSTRAP4,
+            'boostrap5' => self::SUBCOLUMNS_TYPE_BOOTSTRAP5,
+            self::SUBCOLUMNS_TYPE_BOOTSTRAP4 => self::SUBCOLUMNS_TYPE_BOOTSTRAP4,
+            self::SUBCOLUMNS_TYPE_BOOTSTRAP5 => self::SUBCOLUMNS_TYPE_BOOTSTRAP5
+        ][$scType] ?? null;
     }
 
     /**
@@ -54,7 +60,7 @@ class SubColumnsBootstrapBundle extends Bundle
      */
     public static function setSubType(string $subType): void
     {
-        static::$subType = static::filterTypeString($subType);
+        self::$subType = self::filterTypeString($subType);
     }
 
     /**
@@ -66,14 +72,14 @@ class SubColumnsBootstrapBundle extends Bundle
      */
     public static function getSubType(): string
     {
-        if (isset(static::$subType)) {
-            return static::$subType;
+        if (isset(self::$subType)) {
+            return self::$subType;
         }
 
         $subcolumns = Config::get('subcolumns') ?: 'bootstrap4';
-        static::$subType = SubColumnsBootstrapBundle::filterTypeString($subcolumns) ?: $subcolumns;
+        self::$subType = self::filterTypeString($subcolumns) ?: $subcolumns;
 
-        return static::$subType;
+        return self::$subType;
     }
 
     public function getPath(): string
