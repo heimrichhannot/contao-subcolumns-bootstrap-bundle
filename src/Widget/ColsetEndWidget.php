@@ -56,13 +56,7 @@ class ColsetEndWidget extends Widget
      */
     protected function generateBackend(ElementHelper $helper, array $arrColset): string
     {
-        $arrColor = unserialize($this->fsc_color);
-
-        if (count($arrColor) === 2 && empty($arrColor[1])) {
-            $arrColor = '';
-        } else {
-            $arrColor = ElementHelper::compileColor($arrColor);
-        }
+        $arrColor = ElementHelper::getColor($this->fsc_color);
 
         if (!$GLOBALS['TL_SUBCL'][$this->strSet]['files']['css']) {
 
