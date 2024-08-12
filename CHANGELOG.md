@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.1] - 2024-08-12
+- Fixed: issues with color compilation
+
 ## [1.11.2] - 2023-09-14
 - Fixed: subcolumn type not updated in settings (please run migration after update)
 
