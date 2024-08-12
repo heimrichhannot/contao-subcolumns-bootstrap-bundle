@@ -3,10 +3,12 @@
 namespace HeimrichHannot\SubColumnsBootstrapBundle\Element;
 
 use Contao\ContentModel;
+use Contao\StringUtil;
 use FelixPfeiffer\Subcolumns\colsetPart as FelixPfeifferColsetPart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\Color;
 
 class ColsetPart extends FelixPfeifferColsetPart
 {
@@ -34,16 +36,11 @@ class ColsetPart extends FelixPfeifferColsetPart
                 break;
         }
 
-        $arrColor = unserialize($this->sc_color);
-        if(count($arrColor) === 2 && empty($arrColor[1])) {
-            $arrColor = '';
-        } else {
-            $arrColor  = $this->compileColor($arrColor);
-        }
+        $color = Color::compile(StringUtil::deserialize($this->sc_color), true);
 
         if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false)) {
             $this->Template              = new \BackendTemplate('be_subcolumns');
-            $this->Template->setColor    = $arrColor;
+            $this->Template->setColor    = $color;
             $this->Template->colsetTitle = '### COLUMNSET START ' . $this->sc_type . ' <strong>' . $this->sc_name . '</strong> ###';
             #$this->Template->visualSet = $strMiniset;
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'], $colID);
@@ -70,7 +67,7 @@ class ColsetPart extends FelixPfeifferColsetPart
         $strMiniset .= '</div>';
 
         $this->Template           = new \BackendTemplate('be_subcolumns');
-        $this->Template->setColor = $arrColor;
+        $this->Template->setColor = $color;
 
         $parent = \ContentModel::findByPk($this->sc_parent);
 

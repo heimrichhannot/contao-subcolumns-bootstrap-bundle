@@ -10,6 +10,7 @@ use FelixPfeiffer\Subcolumns\colsetStart as FelixPfeifferColsetStart;
 use HeimrichHannot\SubColumnsBootstrapBundle\Backend\ColumnSet;
 use HeimrichHannot\SubColumnsBootstrapBundle\Model\ColumnsetModel;
 use HeimrichHannot\SubColumnsBootstrapBundle\SubColumnsBootstrapBundle;
+use HeimrichHannot\SubColumnsBootstrapBundle\Util\Color;
 
 class ColsetStart extends FelixPfeifferColsetStart
 {
@@ -22,18 +23,12 @@ class ColsetStart extends FelixPfeifferColsetStart
             return ContentElement::generate();
         }
 
-        $arrColor = unserialize($this->sc_color);
-        // avoid firing compileColor for php8 compatibility
-        if (is_array($arrColor) && count($arrColor) === 2 && empty($arrColor[1])) {
-            $arrColor = '';
-        } else {
-            $arrColor  = $this->compileColor($arrColor);
-        }
+        $color = Color::compile(StringUtil::deserialize($this->sc_color), true);
 
-        if(!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
+        if (!($GLOBALS['TL_SUBCL'][$this->strSet]['files']['css'] ?? false))
         {
             $this->Template = new BackendTemplate('be_subcolumns');
-            $this->Template->setColor = $arrColor;
+            $this->Template->setColor = $color;
             $this->Template->colsetTitle = '### COLUMNSET START '.$this->sc_type.' <strong>'.$this->sc_name.'</strong> ###';
             $this->Template->hint = sprintf($GLOBALS['TL_LANG']['MSC']['contentAfter'],$GLOBALS['TL_LANG']['MSC']['sc_first']);
 
@@ -65,7 +60,7 @@ class ColsetStart extends FelixPfeifferColsetStart
         }
 
         $this->Template = new BackendTemplate('be_subcolumns');
-        $this->Template->setColor = $arrColor;
+        $this->Template->setColor = $color;
 
         if (($columnSet = ColumnsetModel::findByPk($this->columnset_id)) !== null) {
             System::loadLanguageFile('tl_columnset');
