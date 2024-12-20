@@ -41,7 +41,11 @@ class ColsetPartWidget extends Widget
         $this->strSet = $GLOBALS['TL_CONFIG']['subcolumns'] ?: 'yaml3';
         $this->strSet = SubColumnsBootstrapBundle::filterProfile($this->strSet);
 
-        $container = $helper->getColumnset($this->sc_columnset);
+        try {
+            $container = $helper->getColumnset($this->sc_columnset);
+        } catch (\Exception $e) {
+            return '';
+        }
 
 
         if (TL_MODE == 'BE')

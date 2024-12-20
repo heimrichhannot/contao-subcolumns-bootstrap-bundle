@@ -38,7 +38,7 @@ class ColsetStartWidget extends Widget
         $helper = System::getContainer()->get(ElementHelper::class);
         $colSet = $helper->getSet($this->sc_columnset);
         if (!$colSet) {
-            return $this->Template->parse();
+            return '';
         }
 
         $container = $helper->getColumnset($this->sc_columnset);
