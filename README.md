@@ -1,3 +1,16 @@
+> [!CAUTION]
+> **DEPRECATED**
+> 
+> This bundle has reached its end of life. We will continue to fix critical bugs only.
+>
+> We recommend to replace this bundle with
+> [contao-bootstrap/grid](https://github.com/contao-bootstrap/grid).
+> 
+> If you want to attempt a migration, please refer to
+> [heimrichhannot/contao-subcolumns2grid-migration-bundle](https://github.com/heimrichhannot/contao-subcolumns2grid-migration-bundle).
+
+---
+
 # Contao Subcolumns Bootstrap Bundle
 
 This Contao 4 bundle adds support for the bootstrap 4 grid to [felixpfeiffer/subcolumns](https://github.com/felixpfeiffer/Contao-Subcolumns).
